@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"log"
 
 	"gh-hubbub/consts"
@@ -29,7 +30,7 @@ type OrgModel struct {
 	keys      keyMaps.OrgKeyMap
 
 	// Focus is the current focus of the model
-	// We should pass this to the repo model so it can update its focus
+	// We should just be using a state machine here
 	focus   consts.Focus
 	width   int
 	height  int
@@ -111,13 +112,21 @@ func (m *OrgModel) UpdateRepoList() {
 	}
 
 	list := list.New(items, style.DefaultDelegate, m.width, m.height-2)
-	list.Title = "Organization: " + m.Title
+	list.Title = getTitle(m.Title, m.Filters)
 	list.Styles.Title = style.TitleStyle
 	list.SetStatusBarItemName("Repository", "Repositories")
 	list.SetShowHelp(false)
 	list.SetShowTitle(true)
 
 	m.repoList = list
+}
+
+func getTitle(t string, filters []structs.Filter) string {
+	title := "Organization: " + t
+	if len(filters) > 0 {
+		return fmt.Sprintf("%s (%s)", title, filters[0].String())
+	}
+	return title
 }
 
 func (m *OrgModel) helpView() string {
