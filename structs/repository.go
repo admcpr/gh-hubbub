@@ -110,11 +110,3 @@ func NewRepository(rq RepositoryQuery) Repository {
 		},
 	}
 }
-
-type Organization struct {
-	Name         string
-	Id           string
-	Login        string
-	Url          string
-	Repositories []Repository
-}
