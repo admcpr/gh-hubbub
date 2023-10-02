@@ -35,5 +35,5 @@ func (f FilterInt) Matches(setting Setting) bool {
 }
 
 func (f FilterInt) String() string {
-	return fmt.Sprintf("%s > %s between %d and %d", f.Tab, f.Name, f.From, f.To)
+	return fmt.Sprintf("%s between %d and %d", f.Name, f.From, f.To)
 }

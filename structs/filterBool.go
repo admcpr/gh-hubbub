@@ -32,5 +32,5 @@ func (f FilterBool) Matches(setting Setting) bool {
 }
 
 func (f FilterBool) String() string {
-	return fmt.Sprintf("%s > %s = %s", f.Tab, f.Name, YesNo(f.Value))
+	return fmt.Sprintf("%s = %s", f.Name, YesNo(f.Value))
 }

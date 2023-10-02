@@ -30,7 +30,7 @@ func TestTabs_RenderTabs(t *testing.T) {
 				width:       35,
 				activeTab:   0,
 			},
-			want: "╭─────────╮╭─────────╮╭───────────╮\n│  Tab 1  ││  Tab 2  ││   Tab 3   │\n│         └┴─────────┴┴───────────┤"},
+			want: " ─────────────────────────────────── \n    Tab 1      Tab 2       Tab 3     "},
 		{
 			name: "Three Tabs, Active 1",
 			args: args{
@@ -38,7 +38,7 @@ func TestTabs_RenderTabs(t *testing.T) {
 				width:       30,
 				activeTab:   1,
 			},
-			want: "╭────────╮╭────────╮╭────────╮\n│ Tab 1  ││ Tab 2  ││ Tab 3  │\n├────────┴┘        └┴────────┤"},
+			want: " ─────────────────────────── \n   Tab 1    Tab 2    Tab 3   "},
 		{
 			name: "Three Tabs, Active 2",
 			args: args{
@@ -46,7 +46,7 @@ func TestTabs_RenderTabs(t *testing.T) {
 				width:       25,
 				activeTab:   2,
 			},
-			want: "╭──────╮╭──────╮╭───────╮\n│Tab 1 ││Tab 2 ││ Tab 3 │\n├──────┴┴──────┴┘       │"},
+			want: " ────────────────────── \n  Tab 1  Tab 2  Tab 3   "},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
