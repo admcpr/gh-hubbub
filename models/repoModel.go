@@ -143,15 +143,12 @@ func (m RepoModel) View() string {
 		return ""
 	}
 
-	settingsStyle := style.AppStyle.Copy().Border(lipgloss.RoundedBorder()).
-		BorderForeground(style.BlueLighter).Padding(0).Margin(0)
-
 	var tabs = RenderTabs(m.repository.SettingsTabs, m.width, m.activeTab)
 	if m.filterHasFocus() {
 		filter := lipgloss.NewStyle().Width(m.width - 2).Height(m.height - 7).Render(m.FilterModel.View())
 		return lipgloss.JoinVertical(lipgloss.Left, tabs, filter)
 	} else {
-		settings := settingsStyle.Width(m.width - 2).Height(m.height - 7).Render(m.settingsTable.View())
+		settings := style.Settings.Width(m.width - 2).Height(m.height - 7).Render(m.settingsTable.View())
 		return lipgloss.JoinVertical(lipgloss.Left, tabs, settings)
 	}
 }
@@ -175,10 +172,9 @@ func NewSettingsTable(activeSettings []structs.Setting, width int) table.Model {
 
 func GetTableStyles() table.Styles {
 	return table.Styles{
-		Selected: lipgloss.NewStyle().Bold(true).Background(style.Pink),
-		Header: lipgloss.NewStyle().Bold(true).Foreground(style.Blue).BorderStyle(lipgloss.NormalBorder()).
-			BorderBottom(true).BorderForeground(style.BlueLighter),
-		Cell: lipgloss.NewStyle().Padding(0),
+		Selected: style.TableSelected,
+		Header:   style.TableHeader,
+		Cell:     style.TableCell,
 	}
 }
 

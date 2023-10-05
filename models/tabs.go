@@ -18,13 +18,11 @@ func RenderTabs(tabSettings []structs.SettingsTab, width, activeTab int) string 
 	var renderedTabs []string
 
 	for i, t := range tabs {
-		tabStyle := lipgloss.NewStyle().BorderForeground(style.BlueLighter).
-			Border(lipgloss.NormalBorder(), true, false, false, false).
-			Align(lipgloss.Center)
+		tabStyle := style.Tab
 		isFirst, isLast, isActive := i == 0, i == len(tabs)-1, i == activeTab
 
 		if isActive {
-			tabStyle = tabStyle.Foreground(style.Pink).BorderForeground(style.Pink)
+			tabStyle = style.TabActive
 		}
 
 		if isLast {

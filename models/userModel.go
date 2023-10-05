@@ -99,7 +99,7 @@ func (m UserModel) View() string {
 		return "Authenticating with github ..."
 	}
 
-	return style.AppStyle.Render(m.list.View())
+	return style.App.Render(m.list.View())
 }
 
 func buildOrgListModel(organisations []structs.Organisation, width, height int, user structs.User) list.Model {
@@ -112,7 +112,7 @@ func buildOrgListModel(organisations []structs.Organisation, width, height int, 
 
 	list.Title = "User: " + user.Name
 	list.SetStatusBarItemName("Organisation", "Organisations")
-	list.Styles.Title = style.TitleStyle
+	list.Styles.Title = style.Title
 	list.SetShowTitle(true)
 
 	return list

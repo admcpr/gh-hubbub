@@ -113,7 +113,7 @@ func (m *OrgModel) UpdateRepoList() {
 
 	list := list.New(items, style.DefaultDelegate, m.width, m.height-2)
 	list.Title = getTitle(m.Title, m.Filters)
-	list.Styles.Title = style.TitleStyle
+	list.Styles.Title = style.Title
 	list.SetStatusBarItemName("Repository", "Repositories")
 	list.SetShowHelp(false)
 	list.SetShowTitle(true)
@@ -209,8 +209,8 @@ func (m OrgModel) View() string {
 		return "getting repos ..."
 	}
 
-	var repoList = style.AppStyle.Width(half(m.width)).Render(m.repoList.View())
-	var settings = style.AppStyle.Width(half(m.width)).Render(m.repoModel.View())
+	var repoList = style.App.Width(half(m.width)).Render(m.repoList.View())
+	var settings = style.App.Width(half(m.width)).Render(m.repoModel.View())
 	help := m.helpView()
 	var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings, help)
 

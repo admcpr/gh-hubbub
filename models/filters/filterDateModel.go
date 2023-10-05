@@ -111,10 +111,10 @@ func (m DateModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m DateModel) View() string {
 	errorText := ""
 	if m.fromInput.Err != nil {
-		errorText = "\n" + style.ErrorStyle.Render(m.fromInput.Err.Error())
+		errorText = "\n" + style.Error.Render(m.fromInput.Err.Error())
 	}
 	if m.toInput.Err != nil {
-		errorText = "\n" + style.ErrorStyle.Render(m.toInput.Err.Error())
+		errorText = "\n" + style.Error.Render(m.toInput.Err.Error())
 	}
 	return m.Title + " " + m.fromInput.View() + " " + m.toInput.View() + errorText
 }

@@ -13,15 +13,28 @@ var (
 	BlueLighter  = lipgloss.Color("#4cc9f0")
 	White        = lipgloss.Color("#dddddd")
 
-	AppStyle = lipgloss.NewStyle().Padding(0, 0).Foreground(White).BorderForeground(Blue)
+	App = lipgloss.NewStyle().Padding(0, 0).Foreground(White).BorderForeground(Blue)
 
-	TitleStyle = lipgloss.NewStyle().
-			Foreground(Blue).
-			BorderForeground(BlueLighter).
-			Border(lipgloss.NormalBorder(), false, false, true, false).
-			Padding(1, 1, 0, 1)
+	Tab = lipgloss.NewStyle().BorderForeground(BlueLighter).
+		Border(lipgloss.NormalBorder(), true, false, false, false).
+		Align(lipgloss.Center)
+	TabActive = Tab.Foreground(Pink).BorderForeground(Pink)
 
-	ErrorStyle = lipgloss.NewStyle().Foreground(PurpleDarker)
+	Title = lipgloss.NewStyle().
+		Foreground(Blue).
+		BorderForeground(BlueLighter).
+		Border(lipgloss.NormalBorder(), false, false, true, false).
+		Padding(1, 1, 0, 1)
+
+	Settings = App.Copy().Border(lipgloss.RoundedBorder()).
+			BorderForeground(BlueLighter).Padding(0).Margin(0)
+
+	Error = lipgloss.NewStyle().Foreground(PurpleDarker)
+
+	TableSelected = lipgloss.NewStyle().Bold(true).Background(Pink)
+	TableHeader   = lipgloss.NewStyle().Bold(true).Foreground(Blue).BorderStyle(lipgloss.NormalBorder()).
+			BorderBottom(true).BorderForeground(BlueLighter)
+	TableCell = lipgloss.NewStyle().Padding(0)
 
 	DefaultDelegate = BuildDefaultDelegate()
 )
