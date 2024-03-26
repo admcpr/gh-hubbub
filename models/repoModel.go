@@ -16,7 +16,7 @@ import (
 )
 
 type RepoModel struct {
-	repository  structs.Repository
+	repository  structs.RepositorySettings
 	FilterModel tea.Model
 
 	settingsTable table.Model
@@ -33,7 +33,7 @@ type RepoModel struct {
 
 func NewRepoModel(width, height int) RepoModel {
 	return RepoModel{
-		repository: structs.Repository{},
+		repository: structs.RepositorySettings{},
 		width:      width,
 		height:     height,
 		help:       help.New(),
@@ -49,7 +49,7 @@ func (m *RepoModel) filterHasFocus() bool {
 	return m.focus == consts.FocusFilter
 }
 
-func (m *RepoModel) SelectRepo(repository structs.Repository, width, height int) {
+func (m *RepoModel) SelectRepo(repository structs.RepositorySettings, width, height int) {
 	m.repository = repository
 	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, width)
 

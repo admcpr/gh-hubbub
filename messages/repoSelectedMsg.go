@@ -5,7 +5,7 @@ import (
 )
 
 type RepoSelectMsg struct {
-	Repository structs.Repository
+	Repository structs.RepositorySettings
 	Width      int
 	Height     int
 }

@@ -82,7 +82,7 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			MainModel[consts.OrganisationModelName] = orgModel
 
-			return orgModel, orgModel.GetRepositories
+			return orgModel, nil
 		}
 	}
 

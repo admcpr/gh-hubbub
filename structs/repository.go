@@ -33,7 +33,7 @@ func NewSetting(name string, value interface{}) Setting {
 	return Setting{Name: name, Value: value, Type: reflect.TypeOf(value)}
 }
 
-type Repository struct {
+type RepositorySettings struct {
 	Name         string
 	Url          string
 	SettingsTabs []SettingsTab
@@ -44,10 +44,10 @@ type SettingsTab struct {
 	Settings []Setting
 }
 
-func NewRepository(rq RepositoryQuery) Repository {
+func NewRepository(rq Repository) RepositorySettings {
 	rule := rq.DefaultBranchRef.BranchProtectionRule
 
-	return Repository{
+	return RepositorySettings{
 		Name: rq.Name,
 		Url:  rq.Url,
 		SettingsTabs: []SettingsTab{

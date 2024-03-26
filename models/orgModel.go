@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"gh-hubbub/consts"
 	"gh-hubbub/keyMaps"
@@ -12,17 +13,27 @@ import (
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/cli/go-gh/v2/pkg/api"
 	graphql "github.com/cli/shurcooL-graphql"
 )
 
+const (
+	padding  = 2
+	maxWidth = 80
+)
+
+type orgQueryMsg structs.OrganizationQuery
+type repoQueryMsg structs.RepositoryQuery
+
 type OrgModel struct {
 	Title   string
 	Filters []structs.Filter
 
-	Repositories []structs.Repository
+	repoCount    int
+	Repositories []structs.RepositorySettings
 
 	repoList  list.Model
 	repoModel tea.Model
@@ -36,6 +47,10 @@ type OrgModel struct {
 	height  int
 	loaded  bool
 	getting bool
+
+	repos []structs.Repository
+
+	progress progress.Model
 }
 
 func (m OrgModel) NewRepoSelectMsg() messages.RepoSelectMsg {
@@ -57,14 +72,15 @@ func NewOrgModel(title string, width, height int) OrgModel {
 		repoList:  list.New([]list.Item{}, list.NewDefaultDelegate(), width/2, height),
 		Filters:   []structs.Filter{},
 		getting:   true,
+		progress:  progress.New(progress.WithDefaultGradient()),
 	}
 }
 
-func (m *OrgModel) FilteredRepositories() []structs.Repository {
+func (m *OrgModel) FilteredRepositories() []structs.RepositorySettings {
 	if len(m.Filters) == 0 {
 		return m.Repositories
 	}
-	filteredRepos := []structs.Repository{}
+	filteredRepos := []structs.RepositorySettings{}
 	for _, repo := range m.Repositories {
 		if RepoMatchesFilters(repo, m.Filters) {
 			filteredRepos = append(filteredRepos, repo)
@@ -73,7 +89,7 @@ func (m *OrgModel) FilteredRepositories() []structs.Repository {
 	return filteredRepos
 }
 
-func RepoMatchesFilters(repo structs.Repository, filters []structs.Filter) bool {
+func RepoMatchesFilters(repo structs.RepositorySettings, filters []structs.Filter) bool {
 	// TODO: This is gonna get slow, fast, for big orgs. Faster pls.
 	// TODO: Obviously this is also buggy if there are multiple filters, it'll only check the first one
 	for _, filter := range filters {
@@ -91,16 +107,16 @@ func RepoMatchesFilters(repo structs.Repository, filters []structs.Filter) bool 
 }
 
 func (m *OrgModel) UpdateRepositories(oq structs.OrganizationQuery) {
-	edges := oq.Organization.Repositories.Edges
-	m.Repositories = make([]structs.Repository, len(edges))
-	items := make([]list.Item, len(edges))
-	for i, repoQuery := range edges {
-		repo := structs.NewRepository(repoQuery.Node)
-		m.Repositories[i] = repo
-		items[i] = structs.NewListItem(repo.Name, repo.Url)
-	}
+	// nodes := oq.Organization.Repositories.Node
+	// m.Repositories = make([]structs.RepositorySettings, len(edges))
+	// items := make([]list.Item, len(edges))
+	// for i, repoQuery := range edges {
+	// 	repo := structs.NewRepository(repoQuery.Node.Repository)
+	// 	m.Repositories[i] = repo
+	// 	items[i] = structs.NewListItem(repo.Name, repo.Url)
+	// }
 
-	m.UpdateRepoList()
+	// m.UpdateRepoList()
 	m.getting = false
 }
 
@@ -138,7 +154,7 @@ func (m *OrgModel) listFocusedAndNotFiltering() bool {
 }
 
 func (m OrgModel) Init() tea.Cmd {
-	return nil
+	return getRepoList(m.Title)
 }
 
 func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -152,12 +168,28 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.loaded = true
 		}
 
+	case orgQueryMsg:
+		repos := msg.Organization.Repositories.Nodes
+		cmds := []tea.Cmd{m.progress.SetPercent(0.1)}
+		m.repoCount = len(msg.Organization.Repositories.Nodes)
+		for _, repo := range repos {
+			cmds = append(cmds, getRepoDetails(m.Title, repo.Name))
+		}
+		return m, tea.Batch(cmds...)
+
+	case repoQueryMsg:
+		m.repos = append(m.repos, msg.Repository)
+		cmd := m.progress.IncrPercent(0.9 / float64(m.repoCount))
+
+		return m, cmd
+
+	case progress.FrameMsg:
+		progressModel, cmd := m.progress.Update(msg)
+		m.progress = progressModel.(progress.Model)
+		return m, cmd
+
 	case messages.FocusMsg:
 		m.focus = msg.Focus
-
-	case messages.RepoListMsg:
-		m.UpdateRepositories(msg.OrganizationQuery)
-		m.repoModel, _ = m.repoModel.Update(m.NewRepoSelectMsg())
 
 	case tea.KeyMsg:
 		switch msg.Type {
@@ -205,8 +237,8 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m OrgModel) View() string {
-	if m.getting {
-		return "getting repos ..."
+	if m.progress.Percent() < 1.0 {
+		return m.ProgressView()
 	}
 
 	var repoList = style.App.Width(half(m.width)).Render(m.repoList.View())
@@ -219,22 +251,55 @@ func (m OrgModel) View() string {
 	return lipgloss.JoinHorizontal(lipgloss.Top, views...)
 }
 
-func (m OrgModel) GetRepositories() tea.Msg {
-	client, err := api.DefaultGraphQLClient()
-	if err != nil {
-		return messages.AuthenticationErrorMsg{Err: err}
+func (m OrgModel) ProgressView() string {
+	pad := strings.Repeat(" ", padding)
+	progress := "\n" + pad + m.progress.View() + "\n\n" + pad + "Getting repositories ... "
+	if m.repoCount < 1 {
+		return progress
 	}
+	return progress + fmt.Sprintf("%d of %d", len(m.repos), m.repoCount)
+}
 
-	var organizationQuery = structs.OrganizationQuery{}
+func getRepoDetails(owner string, name string) tea.Cmd {
+	return func() tea.Msg {
+		client, err := api.DefaultGraphQLClient()
+		if err != nil {
+			log.Fatal(err)
+		}
+		repoQuery := structs.RepositoryQuery{}
 
-	variables := map[string]interface{}{
-		"login": graphql.String(m.Title),
-		"first": graphql.Int(100),
+		variables := map[string]interface{}{
+			"owner": graphql.String(owner),
+			"name":  graphql.String(name),
+		}
+		err = client.Query("Repository", &repoQuery, variables)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return repoQueryMsg(repoQuery)
 	}
-	err = client.Query("OrganizationRepositories", &organizationQuery, variables)
-	if err != nil {
-		log.Fatal(err)
-	}
+}
 
-	return messages.RepoListMsg{OrganizationQuery: organizationQuery}
+func getRepoList(login string) tea.Cmd {
+	return func() tea.Msg {
+
+		client, err := api.DefaultGraphQLClient()
+		if err != nil {
+			return messages.AuthenticationErrorMsg{Err: err}
+		}
+
+		var organizationQuery = structs.OrganizationQuery{}
+
+		variables := map[string]interface{}{
+			"login": graphql.String(login),
+			"first": graphql.Int(100),
+		}
+		err = client.Query("OrganizationRepositories", &organizationQuery, variables)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return orgQueryMsg(organizationQuery)
+		// return messages.RepoListMsg{OrganizationQuery: organizationQuery}
+	}
 }
