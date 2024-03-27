@@ -271,6 +271,7 @@ func getRepoDetails(owner string, name string) tea.Cmd {
 		variables := map[string]interface{}{
 			"owner": graphql.String(owner),
 			"name":  graphql.String(name),
+			// "first": graphql.Int(100),
 		}
 		err = client.Query("Repository", &repoQuery, variables)
 		if err != nil {

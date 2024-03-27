@@ -41,22 +41,22 @@ type Repository struct {
 	PullRequests struct {
 		TotalCount int
 	} `graphql:"pullRequests(states: OPEN)"`
-	Rulesets []struct {
-		Nodes []struct {
-			Conditions []struct {
-				RepositoryProperty struct {
-					Include struct {
-						Name           string
-						PropertyValues []string
-					}
-					Exclude struct {
-						Name           string
-						PropertyValues []string
-					}
-				}
-			}
-		} `graphql:"nodes"`
-	} `graphql:"rulesets(first: $first)"`
+	// Rulesets []struct {
+	// 	Nodes []struct {
+	// 		Conditions []struct {
+	// 			RepositoryProperty struct {
+	// 				Include struct {
+	// 					Name           string
+	// 					PropertyValues []string
+	// 				}
+	// 				Exclude struct {
+	// 					Name           string
+	// 					PropertyValues []string
+	// 				}
+	// 			}
+	// 		}
+	// 	} `graphql:"nodes"`
+	// } `graphql:"rulesets(first: $first)"`
 }
 
 type BranchProtectionRuleQuery struct {
