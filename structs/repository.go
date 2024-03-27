@@ -44,44 +44,44 @@ type SettingsTab struct {
 	Settings []Setting
 }
 
-func NewRepository(rq Repository) RepositorySettings {
-	rule := rq.DefaultBranchRef.BranchProtectionRule
+func NewRepository(r Repository) RepositorySettings {
+	rule := r.DefaultBranchRef.BranchProtectionRule
 
 	return RepositorySettings{
-		Name: rq.Name,
-		Url:  rq.Url,
+		Name: r.Name,
+		Url:  r.Url,
 		SettingsTabs: []SettingsTab{
 			{
 				Name: "Overview",
 				Settings: []Setting{
-					NewSetting("Private", rq.IsPrivate),
-					NewSetting("Template", rq.IsTemplate),
-					NewSetting("Archived", rq.IsArchived),
-					NewSetting("Disabled", rq.IsDisabled),
-					NewSetting("Fork", rq.IsFork),
-					NewSetting("Last updated", rq.UpdatedAt),
-					NewSetting("Stars", rq.StargazerCount),
-					NewSetting("Wiki", rq.HasWikiEnabled),
-					NewSetting("Issues", rq.HasIssuesEnabled),
-					NewSetting("Projects", rq.HasProjectsEnabled),
-					NewSetting("Discussions", rq.HasDiscussionsEnabled),
+					NewSetting("Private", r.IsPrivate),
+					NewSetting("Template", r.IsTemplate),
+					NewSetting("Archived", r.IsArchived),
+					NewSetting("Disabled", r.IsDisabled),
+					NewSetting("Fork", r.IsFork),
+					NewSetting("Last updated", r.UpdatedAt),
+					NewSetting("Stars", r.StargazerCount),
+					NewSetting("Wiki", r.HasWikiEnabled),
+					NewSetting("Issues", r.HasIssuesEnabled),
+					NewSetting("Projects", r.HasProjectsEnabled),
+					NewSetting("Discussions", r.HasDiscussionsEnabled),
 				},
 			},
 			{
 				Name: "Pull Requests",
 				Settings: []Setting{
-					NewSetting("Allow merge commits", rq.MergeCommitAllowed),
-					NewSetting("Allow squash merging", rq.SquashMergeAllowed),
-					NewSetting("Allow rebase merging", rq.RebaseMergeAllowed),
-					NewSetting("Allow auto-merge", rq.AutoMergeAllowed),
-					NewSetting("Automatically delete head branches", rq.DeleteBranchOnMerge),
-					NewSetting("Open pull requests", rq.PullRequests.TotalCount),
+					NewSetting("Allow merge commits", r.MergeCommitAllowed),
+					NewSetting("Allow squash merging", r.SquashMergeAllowed),
+					NewSetting("Allow rebase merging", r.RebaseMergeAllowed),
+					NewSetting("Allow auto-merge", r.AutoMergeAllowed),
+					NewSetting("Automatically delete head branches", r.DeleteBranchOnMerge),
+					NewSetting("Open pull requests", r.PullRequests.TotalCount),
 				},
 			},
 			{
 				Name: "Default Branch",
 				Settings: []Setting{
-					NewSetting("Name", rq.DefaultBranchRef.Name),
+					NewSetting("Name", r.DefaultBranchRef.Name),
 					NewSetting("Require approving reviews", rule.RequiresApprovingReviews),
 					NewSetting("Number of approvals required", rule.RequiredApprovingReviewCount),
 					NewSetting("Dismiss stale requests", rule.DismissesStaleReviews),
@@ -103,8 +103,8 @@ func NewRepository(rq Repository) RepositorySettings {
 			{
 				Name: "Security",
 				Settings: []Setting{
-					NewSetting("Vulnerability alerts enabled", rq.HasVulnerabilityAlertsEnabled),
-					NewSetting("Vulnerability alert count", rq.VulnerabilityAlerts.TotalCount),
+					NewSetting("Vulnerability alerts enabled", r.HasVulnerabilityAlertsEnabled),
+					NewSetting("Vulnerability alert count", r.VulnerabilityAlerts.TotalCount),
 				},
 			},
 		},

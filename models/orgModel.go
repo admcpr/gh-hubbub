@@ -32,8 +32,8 @@ type OrgModel struct {
 	Title   string
 	Filters []structs.Filter
 
-	repoCount    int
-	Repositories []structs.RepositorySettings
+	repoCount int
+	repos     []structs.RepositorySettings
 
 	repoList  list.Model
 	repoModel tea.Model
@@ -42,20 +42,16 @@ type OrgModel struct {
 
 	// Focus is the current focus of the model
 	// We should just be using a state machine here
-	focus   consts.Focus
-	width   int
-	height  int
-	loaded  bool
-	getting bool
-
-	repos []structs.Repository
+	focus  consts.Focus
+	width  int
+	height int
 
 	progress progress.Model
 }
 
 func (m OrgModel) NewRepoSelectMsg() messages.RepoSelectMsg {
 	return messages.RepoSelectMsg{
-		Repository: m.Repositories[m.repoList.Index()],
+		Repository: m.repos[m.repoList.Index()],
 		Width:      m.width / 2,
 		Height:     m.height,
 	}
@@ -71,17 +67,16 @@ func NewOrgModel(title string, width, height int) OrgModel {
 		repoModel: NewRepoModel(width/2, height),
 		repoList:  list.New([]list.Item{}, list.NewDefaultDelegate(), width/2, height),
 		Filters:   []structs.Filter{},
-		getting:   true,
 		progress:  progress.New(progress.WithDefaultGradient()),
 	}
 }
 
 func (m *OrgModel) FilteredRepositories() []structs.RepositorySettings {
 	if len(m.Filters) == 0 {
-		return m.Repositories
+		return m.repos
 	}
 	filteredRepos := []structs.RepositorySettings{}
-	for _, repo := range m.Repositories {
+	for _, repo := range m.repos {
 		if RepoMatchesFilters(repo, m.Filters) {
 			filteredRepos = append(filteredRepos, repo)
 		}
@@ -117,7 +112,6 @@ func (m *OrgModel) UpdateRepositories(oq structs.OrganizationQuery) {
 	// }
 
 	// m.UpdateRepoList()
-	m.getting = false
 }
 
 func (m *OrgModel) UpdateRepoList() {
@@ -161,12 +155,9 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
-
-	// Window size changed
 	case tea.WindowSizeMsg:
-		if !m.loaded {
-			m.loaded = true
-		}
+		// Handle window resizes
+		return m, nil
 
 	case orgQueryMsg:
 		repos := msg.Organization.Repositories.Nodes
@@ -178,7 +169,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case repoQueryMsg:
-		m.repos = append(m.repos, msg.Repository)
+		m.repos = append(m.repos, structs.NewRepository(msg.Repository))
 		cmd := m.progress.IncrPercent(0.9 / float64(m.repoCount))
 
 		return m, cmd
@@ -237,7 +228,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m OrgModel) View() string {
-	if m.progress.Percent() < 1.0 {
+	if m.progress.Percent() < 1 {
 		return m.ProgressView()
 	}
 
@@ -254,6 +245,7 @@ func (m OrgModel) View() string {
 func (m OrgModel) ProgressView() string {
 	pad := strings.Repeat(" ", padding)
 	progress := "\n" + pad + m.progress.View() + "\n\n" + pad + "Getting repositories ... "
+
 	if m.repoCount < 1 {
 		return progress
 	}
@@ -277,13 +269,13 @@ func getRepoDetails(owner string, name string) tea.Cmd {
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		return repoQueryMsg(repoQuery)
 	}
 }
 
 func getRepoList(login string) tea.Cmd {
 	return func() tea.Msg {
-
 		client, err := api.DefaultGraphQLClient()
 		if err != nil {
 			return messages.AuthenticationErrorMsg{Err: err}
@@ -301,6 +293,5 @@ func getRepoList(login string) tea.Cmd {
 		}
 
 		return orgQueryMsg(organizationQuery)
-		// return messages.RepoListMsg{OrganizationQuery: organizationQuery}
 	}
 }
