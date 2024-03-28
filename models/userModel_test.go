@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	messages "gh-hubbub/messages"
 	structs "gh-hubbub/structs"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -23,8 +22,8 @@ func TestUserModel_Update(t *testing.T) {
 		wantCmd   tea.Cmd
 	}{
 		// TODO: Add test cases.
-		{"Authentication Success", UserModel{}, args{messages.AuthenticationMsg{User: testUser}}, UserModel{Authenticated: true, User: testUser}, getOrganisations},
-		{"Authentication Failure", UserModel{}, args{messages.AuthenticationErrorMsg{}}, UserModel{Authenticated: false}, nil},
+		{"Authentication Success", UserModel{}, args{AuthenticationMsg{User: testUser}}, UserModel{Authenticated: true, User: testUser}, getOrganisations},
+		{"Authentication Failure", UserModel{}, args{AuthenticationErrorMsg{}}, UserModel{Authenticated: false}, nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

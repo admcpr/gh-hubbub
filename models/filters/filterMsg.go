@@ -1,4 +1,4 @@
-package messages
+package filters
 
 import (
 	"gh-hubbub/consts"

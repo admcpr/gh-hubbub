@@ -110,3 +110,7 @@ func NewRepository(r Repository) RepositorySettings {
 		},
 	}
 }
+
+func GetListItem(repo RepositorySettings) ListItem {
+	return NewListItem(repo.Name, repo.Url)
+}

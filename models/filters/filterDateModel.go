@@ -2,7 +2,6 @@ package filters
 
 import (
 	"fmt"
-	"gh-hubbub/messages"
 
 	"strconv"
 	"strings"
@@ -143,5 +142,5 @@ func (m *DateModel) GetValue() (time.Time, time.Time, error) {
 func (m DateModel) SendAddFilterMsg() tea.Msg {
 	from, to, _ := m.GetValue()
 
-	return messages.NewAddFilterMsg(structs.NewFilterDate(m.Tab, m.Title, from, to))
+	return NewAddFilterMsg(structs.NewFilterDate(m.Tab, m.Title, from, to))
 }

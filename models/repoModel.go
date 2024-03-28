@@ -3,7 +3,6 @@ package models
 import (
 	"gh-hubbub/consts"
 	"gh-hubbub/keyMaps"
-	"gh-hubbub/messages"
 	"gh-hubbub/models/filters"
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
@@ -86,7 +85,7 @@ func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.loaded = true
 		}
 		return m, nil
-	case messages.RepoSelectMsg:
+	case RepoSelectMsg:
 		m.SelectRepo(msg.Repository, msg.Width, msg.Height)
 	case tea.KeyMsg:
 		switch msg.Type {
@@ -99,9 +98,9 @@ func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m, cmd = m.UpdateRepoModel(msg.Type)
 			}
 		}
-	case messages.FocusMsg:
+	case FocusMsg:
 		m.focus = msg.Focus
-	case messages.FilterMsg:
+	case filters.FilterMsg:
 		switch msg.Action {
 		case consts.FilterConfirm:
 			m.focus = consts.FocusTabs
@@ -179,7 +178,7 @@ func GetTableStyles() table.Styles {
 }
 
 func (m *RepoModel) SendFocusMsg() tea.Msg {
-	return messages.NewFocusMsg(m.focus)
+	return NewFocusMsg(m.focus)
 }
 
 func (m *RepoModel) FocusList() tea.Msg {

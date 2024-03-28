@@ -1,8 +1,6 @@
 package filters
 
 import (
-	"gh-hubbub/messages"
-
 	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -64,5 +62,5 @@ func (m *BoolModel) Focus() tea.Cmd {
 }
 
 func (m BoolModel) SendAddFilterMsg() tea.Msg {
-	return messages.NewAddFilterMsg(structs.NewFilterBool(m.Tab, m.Title, m.GetValue()))
+	return NewAddFilterMsg(structs.NewFilterBool(m.Tab, m.Title, m.GetValue()))
 }

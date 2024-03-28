@@ -2,7 +2,6 @@ package filters
 
 import (
 	"fmt"
-	"gh-hubbub/messages"
 	"gh-hubbub/structs"
 	"strconv"
 
@@ -95,5 +94,5 @@ func (m *IntModel) GetValue() (int, int) {
 func (m IntModel) SendAddFilterMsg() tea.Msg {
 	from, to := m.GetValue()
 
-	return messages.NewAddFilterMsg(structs.NewFilterInt(m.Tab, m.Title, from, to))
+	return NewAddFilterMsg(structs.NewFilterInt(m.Tab, m.Title, from, to))
 }

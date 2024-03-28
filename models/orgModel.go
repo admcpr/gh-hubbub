@@ -7,7 +7,7 @@ import (
 
 	"gh-hubbub/consts"
 	"gh-hubbub/keyMaps"
-	"gh-hubbub/messages"
+	"gh-hubbub/models/filters"
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
@@ -27,6 +27,16 @@ const (
 
 type orgQueryMsg structs.OrganizationQuery
 type repoQueryMsg structs.RepositoryQuery
+type FocusMsg struct{ Focus consts.Focus }
+type RepoSelectMsg struct {
+	Repository structs.RepositorySettings
+	Width      int
+	Height     int
+}
+
+func NewFocusMsg(focus consts.Focus) FocusMsg {
+	return FocusMsg{Focus: focus}
+}
 
 type OrgModel struct {
 	Title   string
@@ -49,8 +59,8 @@ type OrgModel struct {
 	progress progress.Model
 }
 
-func (m OrgModel) NewRepoSelectMsg() messages.RepoSelectMsg {
-	return messages.RepoSelectMsg{
+func (m OrgModel) NewRepoSelectMsg() RepoSelectMsg {
+	return RepoSelectMsg{
 		Repository: m.repos[m.repoList.Index()],
 		Width:      m.width / 2,
 		Height:     m.height,
@@ -170,7 +180,13 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case repoQueryMsg:
 		m.repos = append(m.repos, structs.NewRepository(msg.Repository))
-		cmd := m.progress.IncrPercent(0.9 / float64(m.repoCount))
+
+		if m.repoCount == len(m.repos) {
+			m.UpdateRepoList()
+			cmd = m.progress.SetPercent(1.0)
+		} else {
+			cmd = m.progress.IncrPercent(0.9 / float64(m.repoCount))
+		}
 
 		return m, cmd
 
@@ -179,7 +195,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.progress = progressModel.(progress.Model)
 		return m, cmd
 
-	case messages.FocusMsg:
+	case FocusMsg:
 		m.focus = msg.Focus
 
 	case tea.KeyMsg:
@@ -208,7 +224,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case consts.FocusTabs, consts.FocusFilter:
 			m.repoModel, cmd = m.repoModel.Update(msg)
 		}
-	case messages.FilterMsg:
+	case filters.FilterMsg:
 		switch msg.Action {
 		case consts.FilterDelete:
 			// Remove the filter from the list
@@ -220,7 +236,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case consts.FilterAdd:
 			m.Filters = []structs.Filter{msg.Filter}
 			m.UpdateRepoList()
-			m.repoModel, cmd = m.repoModel.Update(messages.NewConfirmFilterMsg(nil))
+			m.repoModel, cmd = m.repoModel.Update(filters.NewConfirmFilterMsg(nil))
 		}
 	}
 
@@ -278,7 +294,7 @@ func getRepoList(login string) tea.Cmd {
 	return func() tea.Msg {
 		client, err := api.DefaultGraphQLClient()
 		if err != nil {
-			return messages.AuthenticationErrorMsg{Err: err}
+			return AuthenticationErrorMsg{Err: err}
 		}
 
 		var organizationQuery = structs.OrganizationQuery{}

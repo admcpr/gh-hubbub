@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"gh-hubbub/consts"
-	"gh-hubbub/messages"
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
@@ -12,6 +11,11 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/cli/go-gh/v2/pkg/api"
 )
+
+type AuthenticationMsg struct{ User structs.User }
+type AuthenticationErrorMsg struct{ Err error }
+type ErrMsg struct{ Err error }
+type OrgListMsg struct{ Organisations []structs.Organisation }
 
 type UserModel struct {
 	Authenticating bool
@@ -56,18 +60,18 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, nil
 
-	case messages.AuthenticationMsg:
+	case AuthenticationMsg:
 		m.Authenticating = false
 		m.Authenticated = true
 		m.User = msg.User
 		return m, getOrganisations
 
-	case messages.AuthenticationErrorMsg:
+	case AuthenticationErrorMsg:
 		m.Authenticating = false
 		m.Authenticated = false
 		return m, nil
 
-	case messages.OrgListMsg:
+	case OrgListMsg:
 		m.list = buildOrgListModel(msg.Organisations, m.width, m.height, m.User)
 		return m, nil
 
@@ -121,31 +125,31 @@ func buildOrgListModel(organisations []structs.Organisation, width, height int, 
 func checkLoginStatus() tea.Msg {
 	client, err := api.DefaultRESTClient()
 	if err != nil {
-		return messages.AuthenticationErrorMsg{Err: err}
+		return AuthenticationErrorMsg{Err: err}
 	}
 	response := structs.User{}
 
 	err = client.Get("user", &response)
 	if err != nil {
 		fmt.Println(err)
-		return messages.AuthenticationErrorMsg{Err: err}
+		return AuthenticationErrorMsg{Err: err}
 	}
 
-	return messages.AuthenticationMsg{User: response}
+	return AuthenticationMsg{User: response}
 }
 
 func getOrganisations() tea.Msg {
 	client, err := api.DefaultRESTClient()
 	if err != nil {
-		return messages.AuthenticationErrorMsg{Err: err}
+		return AuthenticationErrorMsg{Err: err}
 	}
 	response := []structs.Organisation{}
 
 	err = client.Get("user/orgs", &response)
 	if err != nil {
 		fmt.Println(err)
-		return messages.ErrMsg{Err: err}
+		return ErrMsg{Err: err}
 	}
 
-	return messages.OrgListMsg{Organisations: response}
+	return OrgListMsg{Organisations: response}
 }
