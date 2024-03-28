@@ -1,4 +1,4 @@
-package structs
+package queries
 
 import (
 	"time"
@@ -33,7 +33,7 @@ type Repository struct {
 	UpdatedAt                     time.Time
 	DefaultBranchRef              struct {
 		Name                 string
-		BranchProtectionRule BranchProtectionRuleQuery `graphql:"branchProtectionRule"`
+		BranchProtectionRule BranchProtectionRule `graphql:"branchProtectionRule"`
 	} `graphql:"defaultBranchRef"`
 	VulnerabilityAlerts struct {
 		TotalCount int
@@ -59,7 +59,7 @@ type Repository struct {
 	// } `graphql:"rulesets(first: $first)"`
 }
 
-type BranchProtectionRuleQuery struct {
+type BranchProtectionRule struct {
 	AllowsDeletions                bool
 	AllowsForcePushes              bool
 	DismissesStaleReviews          bool

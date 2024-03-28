@@ -2,8 +2,8 @@ package models
 
 import (
 	"gh-hubbub/consts"
+	"gh-hubbub/filters"
 	"gh-hubbub/keyMaps"
-	"gh-hubbub/models/filters"
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 	"time"

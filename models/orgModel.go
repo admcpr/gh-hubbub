@@ -6,8 +6,9 @@ import (
 	"strings"
 
 	"gh-hubbub/consts"
+	"gh-hubbub/filters"
 	"gh-hubbub/keyMaps"
-	"gh-hubbub/models/filters"
+	"gh-hubbub/queries"
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
@@ -25,8 +26,8 @@ const (
 	maxWidth = 80
 )
 
-type orgQueryMsg structs.OrganizationQuery
-type repoQueryMsg structs.RepositoryQuery
+type orgQueryMsg queries.OrganizationQuery
+type repoQueryMsg queries.RepositoryQuery
 type FocusMsg struct{ Focus consts.Focus }
 type RepoSelectMsg struct {
 	Repository structs.RepositorySettings
@@ -40,7 +41,7 @@ func NewFocusMsg(focus consts.Focus) FocusMsg {
 
 type OrgModel struct {
 	Title   string
-	Filters []structs.Filter
+	Filters []filters.Filter
 
 	repoCount int
 	repos     []structs.RepositorySettings
@@ -76,7 +77,7 @@ func NewOrgModel(title string, width, height int) OrgModel {
 		keys:      keyMaps.NewOrgKeyMap(),
 		repoModel: NewRepoModel(width/2, height),
 		repoList:  list.New([]list.Item{}, list.NewDefaultDelegate(), width/2, height),
-		Filters:   []structs.Filter{},
+		Filters:   []filters.Filter{},
 		progress:  progress.New(progress.WithDefaultGradient()),
 	}
 }
@@ -94,7 +95,7 @@ func (m *OrgModel) FilteredRepositories() []structs.RepositorySettings {
 	return filteredRepos
 }
 
-func RepoMatchesFilters(repo structs.RepositorySettings, filters []structs.Filter) bool {
+func RepoMatchesFilters(repo structs.RepositorySettings, filters []filters.Filter) bool {
 	// TODO: This is gonna get slow, fast, for big orgs. Faster pls.
 	// TODO: Obviously this is also buggy if there are multiple filters, it'll only check the first one
 	for _, filter := range filters {
@@ -111,7 +112,7 @@ func RepoMatchesFilters(repo structs.RepositorySettings, filters []structs.Filte
 	return false
 }
 
-func (m *OrgModel) UpdateRepositories(oq structs.OrganizationQuery) {
+func (m *OrgModel) UpdateRepositories(oq queries.OrganizationQuery) {
 	// nodes := oq.Organization.Repositories.Node
 	// m.Repositories = make([]structs.RepositorySettings, len(edges))
 	// items := make([]list.Item, len(edges))
@@ -141,7 +142,7 @@ func (m *OrgModel) UpdateRepoList() {
 	m.repoList = list
 }
 
-func getTitle(t string, filters []structs.Filter) string {
+func getTitle(t string, filters []filters.Filter) string {
 	title := "Organization: " + t
 	if len(filters) > 0 {
 		return fmt.Sprintf("%s (%s)", title, filters[0].String())
@@ -234,7 +235,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		case consts.FilterAdd:
-			m.Filters = []structs.Filter{msg.Filter}
+			m.Filters = []filters.Filter{msg.Filter}
 			m.UpdateRepoList()
 			m.repoModel, cmd = m.repoModel.Update(filters.NewConfirmFilterMsg(nil))
 		}
@@ -274,7 +275,7 @@ func getRepoDetails(owner string, name string) tea.Cmd {
 		if err != nil {
 			log.Fatal(err)
 		}
-		repoQuery := structs.RepositoryQuery{}
+		repoQuery := queries.RepositoryQuery{}
 
 		variables := map[string]interface{}{
 			"owner": graphql.String(owner),
@@ -297,7 +298,7 @@ func getRepoList(login string) tea.Cmd {
 			return AuthenticationErrorMsg{Err: err}
 		}
 
-		var organizationQuery = structs.OrganizationQuery{}
+		var organizationQuery = queries.OrganizationQuery{}
 
 		variables := map[string]interface{}{
 			"login": graphql.String(login),

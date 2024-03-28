@@ -1,37 +1,8 @@
 package structs
 
 import (
-	"fmt"
-	"reflect"
-	"time"
+	"gh-hubbub/queries"
 )
-
-type Setting struct {
-	Name  string
-	Value interface{}
-	Type  reflect.Type
-}
-
-func (s Setting) String() string {
-	formattedValue := ""
-
-	switch value := s.Value.(type) {
-	case bool:
-		formattedValue = YesNo(value)
-	case string:
-		formattedValue = value
-	case time.Time:
-		formattedValue = value.Format("2006/01/02")
-	case int:
-		formattedValue = fmt.Sprint(value)
-	}
-
-	return formattedValue
-}
-
-func NewSetting(name string, value interface{}) Setting {
-	return Setting{Name: name, Value: value, Type: reflect.TypeOf(value)}
-}
 
 type RepositorySettings struct {
 	Name         string
@@ -44,7 +15,7 @@ type SettingsTab struct {
 	Settings []Setting
 }
 
-func NewRepository(r Repository) RepositorySettings {
+func NewRepository(r queries.Repository) RepositorySettings {
 	rule := r.DefaultBranchRef.BranchProtectionRule
 
 	return RepositorySettings{

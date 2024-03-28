@@ -2,7 +2,6 @@ package filters
 
 import (
 	"fmt"
-	"gh-hubbub/structs"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -94,5 +93,5 @@ func (m *IntModel) GetValue() (int, int) {
 func (m IntModel) SendAddFilterMsg() tea.Msg {
 	from, to := m.GetValue()
 
-	return NewAddFilterMsg(structs.NewFilterInt(m.Tab, m.Title, from, to))
+	return NewAddFilterMsg(NewFilterInt(m.Tab, m.Title, from, to))
 }

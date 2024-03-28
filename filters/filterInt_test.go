@@ -1,6 +1,7 @@
-package structs
+package filters
 
 import (
+	"gh-hubbub/structs"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,43 +38,43 @@ func TestFilterInt_Matches(t *testing.T) {
 	tests := []struct {
 		name    string
 		filter  FilterInt
-		setting Setting
+		setting structs.Setting
 		want    bool
 	}{
 		{
 			name:    "value between from and to returns true",
 			filter:  NewFilterInt("", "", zero, hundred),
-			setting: NewSetting("", ten),
+			setting: structs.NewSetting("", ten),
 			want:    true,
 		},
 		{
 			name:    "value equal from returns true",
 			filter:  NewFilterInt("", "", zero, hundred),
-			setting: NewSetting("", zero),
+			setting: structs.NewSetting("", zero),
 			want:    true,
 		},
 		{
 			name:    "value equal to returns true",
 			filter:  NewFilterInt("", "", zero, hundred),
-			setting: NewSetting("", hundred),
+			setting: structs.NewSetting("", hundred),
 			want:    true,
 		},
 		{
 			name:    "value less than from returns false",
 			filter:  NewFilterInt("", "", ten, hundred),
-			setting: NewSetting("", zero),
+			setting: structs.NewSetting("", zero),
 			want:    false,
 		},
 		{
 			name:    "value greater than to returns false",
 			filter:  NewFilterInt("", "", zero, ten),
-			setting: NewSetting("", hundred),
+			setting: structs.NewSetting("", hundred),
 			want:    false,
 		},
 		{
 			name:    "wrong type returns false",
 			filter:  NewFilterInt("", "", zero, hundred),
-			setting: NewSetting("", "it's a string"),
+			setting: structs.NewSetting("", "it's a string"),
 			want:    false,
 		},
 	}

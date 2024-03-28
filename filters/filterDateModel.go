@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -142,5 +141,5 @@ func (m *DateModel) GetValue() (time.Time, time.Time, error) {
 func (m DateModel) SendAddFilterMsg() tea.Msg {
 	from, to, _ := m.GetValue()
 
-	return NewAddFilterMsg(structs.NewFilterDate(m.Tab, m.Title, from, to))
+	return NewAddFilterMsg(NewFilterDate(m.Tab, m.Title, from, to))
 }

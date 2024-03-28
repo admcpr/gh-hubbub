@@ -1,7 +1,8 @@
-package structs
+package filters
 
 import (
 	"fmt"
+	"gh-hubbub/structs"
 	"reflect"
 )
 
@@ -24,7 +25,7 @@ func (f FilterInt) GetName() string {
 	return f.Name
 }
 
-func (f FilterInt) Matches(setting Setting) bool {
+func (f FilterInt) Matches(setting structs.Setting) bool {
 	if setting.Type != reflect.TypeOf(f.From) {
 		return false
 	}

@@ -1,6 +1,7 @@
-package structs
+package filters
 
 import (
+	"gh-hubbub/structs"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -34,25 +35,25 @@ func TestFilterBool_Matches(t *testing.T) {
 	tests := []struct {
 		name    string
 		filter  FilterBool
-		setting Setting
+		setting structs.Setting
 		want    bool
 	}{
 		{
 			name:    "matching value returns true",
 			filter:  NewFilterBool("", "", true),
-			setting: NewSetting("", true),
+			setting: structs.NewSetting("", true),
 			want:    true,
 		},
 		{
 			name:    "non-matching value returns false",
 			filter:  NewFilterBool("", "", false),
-			setting: NewSetting("", false),
+			setting: structs.NewSetting("", false),
 			want:    true,
 		},
 		{
 			name:    "wrong type returns false",
 			filter:  NewFilterBool("", "", false),
-			setting: NewSetting("", "it's a string"),
+			setting: structs.NewSetting("", "it's a string"),
 			want:    false,
 		},
 	}

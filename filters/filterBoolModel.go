@@ -62,5 +62,5 @@ func (m *BoolModel) Focus() tea.Cmd {
 }
 
 func (m BoolModel) SendAddFilterMsg() tea.Msg {
-	return NewAddFilterMsg(structs.NewFilterBool(m.Tab, m.Title, m.GetValue()))
+	return NewAddFilterMsg(NewFilterBool(m.Tab, m.Title, m.GetValue()))
 }

@@ -1,7 +1,8 @@
-package structs
+package filters
 
 import (
 	"fmt"
+	"gh-hubbub/structs"
 	"reflect"
 )
 
@@ -23,7 +24,7 @@ func (f FilterBool) GetName() string {
 	return f.Name
 }
 
-func (f FilterBool) Matches(setting Setting) bool {
+func (f FilterBool) Matches(setting structs.Setting) bool {
 	if setting.Type != reflect.TypeOf(f.Value) {
 		return false
 	}
@@ -32,5 +33,5 @@ func (f FilterBool) Matches(setting Setting) bool {
 }
 
 func (f FilterBool) String() string {
-	return fmt.Sprintf("%s = %s", f.Name, YesNo(f.Value))
+	return fmt.Sprintf("%s = %s", f.Name, structs.YesNo(f.Value))
 }

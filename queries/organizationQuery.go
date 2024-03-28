@@ -1,4 +1,4 @@
-package structs
+package queries
 
 type OrganizationQuery struct {
 	Organization struct {

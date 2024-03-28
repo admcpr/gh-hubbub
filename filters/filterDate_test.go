@@ -1,6 +1,7 @@
-package structs
+package filters
 
 import (
+	"gh-hubbub/structs"
 	"testing"
 	"time"
 
@@ -39,43 +40,43 @@ func TestFilterDate_Matches(t *testing.T) {
 	tests := []struct {
 		name    string
 		filter  FilterDate
-		setting Setting
+		setting structs.Setting
 		want    bool
 	}{
 		{
 			name:    "value between from and to returns true",
 			filter:  NewFilterDate("", "", yesterday, tomorrow),
-			setting: NewSetting("", now),
+			setting: structs.NewSetting("", now),
 			want:    true,
 		},
 		{
 			name:    "value equal from returns true",
 			filter:  NewFilterDate("", "", yesterday, tomorrow),
-			setting: NewSetting("", yesterday),
+			setting: structs.NewSetting("", yesterday),
 			want:    true,
 		},
 		{
 			name:    "value equal to returns true",
 			filter:  NewFilterDate("", "", yesterday, tomorrow),
-			setting: NewSetting("", tomorrow),
+			setting: structs.NewSetting("", tomorrow),
 			want:    true,
 		},
 		{
 			name:    "value less than from returns false",
 			filter:  NewFilterDate("", "", now, tomorrow),
-			setting: NewSetting("", yesterday),
+			setting: structs.NewSetting("", yesterday),
 			want:    false,
 		},
 		{
 			name:    "value greater than to returns false",
 			filter:  NewFilterDate("", "", yesterday, now),
-			setting: NewSetting("", tomorrow),
+			setting: structs.NewSetting("", tomorrow),
 			want:    false,
 		},
 		{
 			name:    "wrong type returns false",
 			filter:  NewFilterDate("", "", yesterday, tomorrow),
-			setting: NewSetting("", "it's a string"),
+			setting: structs.NewSetting("", "it's a string"),
 			want:    false,
 		},
 	}
