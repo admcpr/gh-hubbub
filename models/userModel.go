@@ -12,14 +12,10 @@ import (
 	"github.com/cli/go-gh/v2/pkg/api"
 )
 
-type AuthenticationMsg struct{ User structs.User }
-type AuthenticationErrorMsg struct{ Err error }
 type ErrMsg struct{ Err error }
 type OrgListMsg struct{ Organisations []structs.Organisation }
 
 type UserModel struct {
-	Authenticating bool
-	Authenticated  bool
 	User           structs.User
 	SelectedOrgUrl string
 	list           list.Model
@@ -28,9 +24,9 @@ type UserModel struct {
 	height         int
 }
 
-func NewUserModel() UserModel {
+func NewUserModel(user structs.User) UserModel {
 	return UserModel{
-		Authenticating: true,
+		User: user,
 		list: list.New(
 			[]list.Item{},
 			list.NewDefaultDelegate(),
@@ -41,7 +37,7 @@ func NewUserModel() UserModel {
 }
 
 func (m UserModel) Init() tea.Cmd {
-	return checkLoginStatus
+	return getOrganisations
 }
 
 func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -58,17 +54,6 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.list.SetHeight(m.height)
 			m.loaded = true
 		}
-		return m, nil
-
-	case AuthenticationMsg:
-		m.Authenticating = false
-		m.Authenticated = true
-		m.User = msg.User
-		return m, getOrganisations
-
-	case AuthenticationErrorMsg:
-		m.Authenticating = false
-		m.Authenticated = false
 		return m, nil
 
 	case OrgListMsg:
@@ -96,13 +81,6 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m UserModel) View() string {
-	if !m.Authenticating && !m.Authenticated {
-		return fmt.Sprintln("You are not authenticated try running `gh auth login`. Press q to quit.")
-	}
-	if m.Authenticating {
-		return "Authenticating with github ..."
-	}
-
 	return style.App.Render(m.list.View())
 }
 
@@ -120,22 +98,6 @@ func buildOrgListModel(organisations []structs.Organisation, width, height int, 
 	list.SetShowTitle(true)
 
 	return list
-}
-
-func checkLoginStatus() tea.Msg {
-	client, err := api.DefaultRESTClient()
-	if err != nil {
-		return AuthenticationErrorMsg{Err: err}
-	}
-	response := structs.User{}
-
-	err = client.Get("user", &response)
-	if err != nil {
-		fmt.Println(err)
-		return AuthenticationErrorMsg{Err: err}
-	}
-
-	return AuthenticationMsg{User: response}
 }
 
 func getOrganisations() tea.Msg {

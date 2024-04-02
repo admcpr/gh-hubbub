@@ -11,20 +11,65 @@ import (
 
 var MainModel []tea.Model
 
+type State int
+
+const (
+	Authenticating State = iota
+	GettingOrgs
+	ListingOrgs
+	GettingRepos
+	ListingRepos
+	FilteringRepos
+	EditingRepoFilter
+)
+
+func (s State) Next() {
+	if s != EditingRepoFilter {
+		s++
+	}
+}
+
+func (s State) Previous() {
+	if s != Authenticating {
+		s--
+	}
+}
+
+func (s State) Update(msg tea.Msg) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "esc":
+			s.Previous()
+		case "enter":
+			s.Next()
+		}
+	}
+}
+
+type AuthenticationErrorMsg struct{ Err error }
+type AuthenticatedMsg struct{ User structs.User }
+
 type MainModelV2 struct {
 	spinner   spinner.Model
 	UserModel UserModel
 	OrgModel  OrgModel
 	RepoModel RepoModel
 
-	User structs.User
+	state State
 }
 
 func NewMainModelV2() MainModelV2 {
+
+	for i := 0; i < 10; i++ {
+
+	}
+
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	return MainModelV2{
 		spinner: s,
+		state:   Authenticating,
 	}
 }
 
@@ -45,6 +90,11 @@ func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			return m, nil
 		}
+	case AuthenticatedMsg:
+		m.UserModel = NewUserModel(msg.User)
+		m.state = GettingOrgs
+		return m.UserModel, m.UserModel.Init()
+
 	default:
 		m.spinner, cmd = m.spinner.Update(msg)
 		return m, cmd
@@ -52,7 +102,16 @@ func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m MainModelV2) View() string {
-	return fmt.Sprintf("%s Authenticating ... \n\n", m.spinner.View())
+	switch m.state {
+	case Authenticating:
+		return fmt.Sprintf("%s Authenticating ... \n\n", m.spinner.View())
+	case GettingOrgs, ListingOrgs:
+		return m.UserModel.View()
+	case GettingRepos, ListingRepos, FilteringRepos, EditingRepoFilter:
+		return m.RepoModel.View()
+	default:
+		return "Unknown state"
+	}
 }
 
 func getUser() tea.Msg {
@@ -68,5 +127,5 @@ func getUser() tea.Msg {
 		return AuthenticationErrorMsg{Err: err}
 	}
 
-	return AuthenticationMsg{User: response}
+	return AuthenticatedMsg{User: response}
 }
