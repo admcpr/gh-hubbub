@@ -15,7 +15,6 @@ type State int
 
 const (
 	Authenticating State = iota
-	GettingOrgs
 	ListingOrgs
 	GettingRepos
 	ListingRepos
@@ -35,18 +34,6 @@ func (s State) Previous() {
 	}
 }
 
-func (s State) Update(msg tea.Msg) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "esc":
-			s.Previous()
-		case "enter":
-			s.Next()
-		}
-	}
-}
-
 type AuthenticationErrorMsg struct{ Err error }
 type AuthenticatedMsg struct{ User structs.User }
 
@@ -57,14 +44,12 @@ type MainModelV2 struct {
 	RepoModel RepoModel
 
 	state State
+
+	width  int
+	height int
 }
 
 func NewMainModelV2() MainModelV2 {
-
-	for i := 0; i < 10; i++ {
-
-	}
-
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	return MainModelV2{
@@ -83,32 +68,56 @@ func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
+
+	case tea.WindowSizeMsg:
+		m.height = msg.Height
+		m.width = msg.Width
+		return m, nil
+
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "esc", "ctrl+c":
+		case "esc":
+			m.state.Previous()
+		case "enter":
+			switch m.state {
+			case ListingOrgs:
+				selectedName := m.UserModel.SelectedOrg().Login
+				m.OrgModel = NewOrgModel(selectedName, m.width, m.height)
+				m.state.Next()
+				cmd = m.OrgModel.Init()
+			}
+		case "ctrl+c":
 			return m, tea.Quit
 		default:
-			return m, nil
+			switch m.state {
+			case ListingOrgs:
+				m.UserModel, cmd = m.UserModel.Update(msg)
+			}
 		}
 	case AuthenticatedMsg:
-		m.UserModel = NewUserModel(msg.User)
-		m.state = GettingOrgs
-		return m.UserModel, m.UserModel.Init()
+		m.UserModel = NewUserModel(msg.User, m.width, m.height)
+		m.state = ListingOrgs
+		return m, m.UserModel.Init()
 
 	default:
-		m.spinner, cmd = m.spinner.Update(msg)
-		return m, cmd
+		switch m.state {
+		case Authenticating:
+			m.spinner, cmd = m.spinner.Update(msg)
+		case ListingOrgs:
+			m.UserModel, cmd = m.UserModel.Update(msg)
+		}
 	}
+	return m, cmd
 }
 
 func (m MainModelV2) View() string {
 	switch m.state {
 	case Authenticating:
 		return fmt.Sprintf("%s Authenticating ... \n\n", m.spinner.View())
-	case GettingOrgs, ListingOrgs:
+	case ListingOrgs:
 		return m.UserModel.View()
 	case GettingRepos, ListingRepos, FilteringRepos, EditingRepoFilter:
-		return m.RepoModel.View()
+		return m.OrgModel.View()
 	default:
 		return "Unknown state"
 	}
