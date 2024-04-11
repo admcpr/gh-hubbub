@@ -154,15 +154,11 @@ func (m *OrgModel) helpView() string {
 	return m.help.View(m.keys)
 }
 
-func (m *OrgModel) listFocusedAndNotFiltering() bool {
-	return m.focus == consts.FocusList && !m.repoList.SettingFilter()
-}
-
 func (m OrgModel) Init() tea.Cmd {
 	return getRepoList(m.Title)
 }
 
-func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m OrgModel) Update(msg tea.Msg) (OrgModel, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -199,32 +195,32 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case FocusMsg:
 		m.focus = msg.Focus
 
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyEnter:
-			// If we're focussed on the list and we're not filtering, we want to focus on the repo model
-			if m.listFocusedAndNotFiltering() {
-				m.focus = m.focus.Next()
-				return m, nil
-			}
-		case tea.KeyEsc:
-			// Esc goes back so go to the previous model if we're focussed on the list
-			if m.listFocusedAndNotFiltering() {
-				return MainModel[consts.UserModelName], nil
-			}
-		case tea.KeyCtrlC:
-			return m, tea.Quit
-		}
-		switch m.focus {
-		case consts.FocusList:
-			var tabCmd tea.Cmd
+	// case tea.KeyMsg:
+	// 	switch msg.Type {
+	// 	case tea.KeyEnter:
+	// 		// If we're focussed on the list and we're not filtering, we want to focus on the repo model
+	// 		if m.listFocusedAndNotFiltering() {
+	// 			m.focus = m.focus.Next()
+	// 			return m, nil
+	// 		}
+	// 	case tea.KeyEsc:
+	// 		// Esc goes back so go to the previous model if we're focussed on the list
+	// 		if m.listFocusedAndNotFiltering() {
+	// 			return MainModel[consts.UserModelName], nil
+	// 		}
+	// 	case tea.KeyCtrlC:
+	// 		return m, tea.Quit
+	// 	}
+	// 	switch m.focus {
+	// 	case consts.FocusList:
+	// 		var tabCmd tea.Cmd
 
-			m.repoList, cmd = m.repoList.Update(msg)
-			m.repoModel, tabCmd = m.repoModel.Update(m.NewRepoSelectMsg())
-			return m, tea.Batch(cmd, tabCmd)
-		case consts.FocusTabs, consts.FocusFilter:
-			m.repoModel, cmd = m.repoModel.Update(msg)
-		}
+	// 		m.repoList, cmd = m.repoList.Update(msg)
+	// 		m.repoModel, tabCmd = m.repoModel.Update(m.NewRepoSelectMsg())
+	// 		return m, tea.Batch(cmd, tabCmd)
+	// 	case consts.FocusTabs, consts.FocusFilter:
+	// 		m.repoModel, cmd = m.repoModel.Update(msg)
+	// 	}
 	case filters.FilterMsg:
 		switch msg.Action {
 		case consts.FilterDelete:

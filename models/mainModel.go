@@ -16,7 +16,6 @@ type State int
 const (
 	Authenticating State = iota
 	ListingOrgs
-	GettingRepos
 	ListingRepos
 	FilteringRepos
 	EditingRepoFilter
@@ -83,30 +82,34 @@ func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case ListingOrgs:
 				selectedName := m.UserModel.SelectedOrg().Login
 				m.OrgModel = NewOrgModel(selectedName, m.width, m.height)
-				m.state.Next()
+				m.state = ListingRepos
 				cmd = m.OrgModel.Init()
+				return m, cmd
 			}
 		case "ctrl+c":
 			return m, tea.Quit
-		default:
-			switch m.state {
-			case ListingOrgs:
-				m.UserModel, cmd = m.UserModel.Update(msg)
-			}
+			// default:
+			// 	switch m.state {
+			// 	case ListingOrgs:
+			// 		m.UserModel, cmd = m.UserModel.Update(msg)
+			// 	}
 		}
 	case AuthenticatedMsg:
 		m.UserModel = NewUserModel(msg.User, m.width, m.height)
 		m.state = ListingOrgs
 		return m, m.UserModel.Init()
 
-	default:
-		switch m.state {
-		case Authenticating:
-			m.spinner, cmd = m.spinner.Update(msg)
-		case ListingOrgs:
-			m.UserModel, cmd = m.UserModel.Update(msg)
-		}
 	}
+
+	switch m.state {
+	case Authenticating:
+		m.spinner, cmd = m.spinner.Update(msg)
+	case ListingOrgs:
+		m.UserModel, cmd = m.UserModel.Update(msg)
+	case ListingRepos:
+		m.OrgModel, cmd = m.OrgModel.Update(msg)
+	}
+
 	return m, cmd
 }
 
@@ -116,7 +119,7 @@ func (m MainModelV2) View() string {
 		return fmt.Sprintf("%s Authenticating ... \n\n", m.spinner.View())
 	case ListingOrgs:
 		return m.UserModel.View()
-	case GettingRepos, ListingRepos, FilteringRepos, EditingRepoFilter:
+	case ListingRepos, FilteringRepos, EditingRepoFilter:
 		return m.OrgModel.View()
 	default:
 		return "Unknown state"
