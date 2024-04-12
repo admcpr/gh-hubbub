@@ -29,11 +29,6 @@ const (
 type orgQueryMsg queries.OrganizationQuery
 type repoQueryMsg queries.RepositoryQuery
 type FocusMsg struct{ Focus consts.Focus }
-type RepoSelectMsg struct {
-	Repository structs.RepositorySettings
-	Width      int
-	Height     int
-}
 
 func NewFocusMsg(focus consts.Focus) FocusMsg {
 	return FocusMsg{Focus: focus}
@@ -58,14 +53,6 @@ type OrgModel struct {
 	height int
 
 	progress progress.Model
-}
-
-func (m OrgModel) NewRepoSelectMsg() RepoSelectMsg {
-	return RepoSelectMsg{
-		Repository: m.repos[m.repoList.Index()],
-		Width:      m.width / 2,
-		Height:     m.height,
-	}
 }
 
 func NewOrgModel(title string, width, height int) OrgModel {
@@ -112,19 +99,6 @@ func RepoMatchesFilters(repo structs.RepositorySettings, filters []filters.Filte
 	return false
 }
 
-func (m *OrgModel) UpdateRepositories(oq queries.OrganizationQuery) {
-	// nodes := oq.Organization.Repositories.Node
-	// m.Repositories = make([]structs.RepositorySettings, len(edges))
-	// items := make([]list.Item, len(edges))
-	// for i, repoQuery := range edges {
-	// 	repo := structs.NewRepository(repoQuery.Node.Repository)
-	// 	m.Repositories[i] = repo
-	// 	items[i] = structs.NewListItem(repo.Name, repo.Url)
-	// }
-
-	// m.UpdateRepoList()
-}
-
 func (m *OrgModel) UpdateRepoList() {
 	filteredRepositories := m.FilteredRepositories()
 	items := make([]list.Item, len(filteredRepositories))
@@ -162,10 +136,6 @@ func (m OrgModel) Update(msg tea.Msg) (OrgModel, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		// Handle window resizes
-		return m, nil
-
 	case orgQueryMsg:
 		repos := msg.Organization.Repositories.Nodes
 		cmds := []tea.Cmd{m.progress.SetPercent(0.1)}
@@ -235,6 +205,9 @@ func (m OrgModel) Update(msg tea.Msg) (OrgModel, tea.Cmd) {
 			m.UpdateRepoList()
 			m.repoModel, cmd = m.repoModel.Update(filters.NewConfirmFilterMsg(nil))
 		}
+
+	default:
+		m.repoList, cmd = m.repoList.Update(msg)
 	}
 
 	return m, cmd

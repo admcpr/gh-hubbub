@@ -85,8 +85,6 @@ func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.loaded = true
 		}
 		return m, nil
-	case RepoSelectMsg:
-		m.SelectRepo(msg.Repository, msg.Width, msg.Height)
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEsc:
