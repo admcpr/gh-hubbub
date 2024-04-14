@@ -106,7 +106,7 @@ func (m *OrgModel) UpdateRepoList() {
 		items[i] = structs.NewListItem(repo.Name, repo.Url)
 	}
 
-	list := list.New(items, style.DefaultDelegate, m.width, m.height-2)
+	list := list.New(items, style.DefaultDelegate, m.width/2, m.height-2)
 	list.Title = getTitle(m.Title, m.Filters)
 	list.Styles.Title = style.Title
 	list.SetStatusBarItemName("Repository", "Repositories")
