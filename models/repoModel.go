@@ -11,7 +11,6 @@ import (
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type RepoModel struct {
@@ -52,8 +51,8 @@ func (m *RepoModel) SelectRepo(repository structs.RepositorySettings, width, hei
 	m.repository = repository
 	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, width)
 
-	m.width = width
-	m.height = height
+	// m.width = width
+	// m.height = height
 }
 
 func (m *RepoModel) SelectTab(index int) {
@@ -76,7 +75,7 @@ func (m *RepoModel) InitFilterEditor() {
 	}
 }
 
-func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -140,39 +139,40 @@ func (m RepoModel) View() string {
 		return ""
 	}
 
-	var tabs = RenderTabs(m.repository.SettingsTabs, m.width, m.activeTab)
-	if m.filterHasFocus() {
-		filter := lipgloss.NewStyle().Width(m.width - 2).Height(m.height - 7).Render(m.FilterModel.View())
-		return lipgloss.JoinVertical(lipgloss.Left, tabs, filter)
-	} else {
-		settings := style.Settings.Width(m.width - 2).Height(m.height - 7).Render(m.settingsTable.View())
-		return lipgloss.JoinVertical(lipgloss.Left, tabs, settings)
-	}
+	// var tabs = RenderTabs(m.repository.SettingsTabs, m.width, m.activeTab)
+
+	return style.Settings.Width(m.width - 2).Height(20).Render(m.settingsTable.View())
+
+	// if m.filterHasFocus() {
+	// 	filter := lipgloss.NewStyle().Width(m.width - 2).Height(20).Render(m.FilterModel.View())
+	// 	// filter := lipgloss.NewStyle().Width(m.width - 2).Height(m.height - 7).Render(m.FilterModel.View())
+	// 	return lipgloss.JoinVertical(lipgloss.Left, tabs, filter)
+	// } else {
+	// 	settings := style.Settings.Width(m.width - 2).Height(20).Render(m.settingsTable.View())
+	// 	// settings := style.Settings.Width(m.width - 2).Height(m.height - 7).Render(m.settingsTable.View())
+	// 	return lipgloss.JoinVertical(lipgloss.Left, tabs, settings)
+	// }
 }
 
 func NewSettingsTable(activeSettings []structs.Setting, width int) table.Model {
-	widthWithoutBorder := width - 2
-	quarterWidth := quarter(widthWithoutBorder)
+	// widthWithoutBorder := width - 2
+	// quarterWidth := quarter(widthWithoutBorder)
 
 	columns := []table.Column{
-		{Title: "Setting", Width: (widthWithoutBorder - quarterWidth)},
-		{Title: "Value", Width: quarterWidth}}
+		{Title: "Setting", Width: width / 3},
+		{Title: "Value", Width: width / 3}}
 
 	rows := make([]table.Row, len(activeSettings))
 	for i, setting := range activeSettings {
 		rows[i] = table.Row{setting.Name, setting.String()}
 	}
 
-	return table.New(table.WithColumns(columns),
-		table.WithRows(rows), table.WithFocused(true), table.WithStyles(GetTableStyles()))
-}
+	table := table.New(table.WithColumns(columns),
+		table.WithRows(rows), table.WithFocused(true), table.WithStyles(table.DefaultStyles()))
 
-func GetTableStyles() table.Styles {
-	return table.Styles{
-		Selected: style.TableSelected,
-		Header:   style.TableHeader,
-		Cell:     style.TableCell,
-	}
+	table.SetHeight(10)
+
+	return table
 }
 
 func (m *RepoModel) SendFocusMsg() tea.Msg {

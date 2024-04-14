@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"gh-hubbub/consts"
 	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/spinner"
@@ -85,6 +86,8 @@ func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.state = ListingRepos
 				cmd = m.OrgModel.Init()
 				return m, cmd
+			case ListingRepos:
+				m.OrgModel.focus = consts.FocusTabs
 			}
 		case "ctrl+c":
 			return m, tea.Quit

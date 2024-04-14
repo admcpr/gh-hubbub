@@ -42,7 +42,7 @@ type OrgModel struct {
 	repos     []structs.RepositorySettings
 
 	repoList  list.Model
-	repoModel tea.Model
+	repoModel RepoModel
 	help      help.Model
 	keys      keyMaps.OrgKeyMap
 
@@ -150,6 +150,7 @@ func (m OrgModel) Update(msg tea.Msg) (OrgModel, tea.Cmd) {
 
 		if m.repoCount == len(m.repos) {
 			m.UpdateRepoList()
+			m.repoModel.SelectRepo(m.repos[m.repoList.Index()], m.width, m.height)
 			cmd = m.progress.SetPercent(1.0)
 		} else {
 			cmd = m.progress.IncrPercent(0.9 / float64(m.repoCount))
@@ -217,7 +218,7 @@ func (m OrgModel) View() string {
 	if m.progress.Percent() < 1 {
 		return m.ProgressView()
 	}
-
+	m.repoModel.SelectRepo(m.repos[m.repoList.Index()], m.width, m.height)
 	var repoList = style.App.Width(half(m.width)).Render(m.repoList.View())
 	var settings = style.App.Width(half(m.width)).Render(m.repoModel.View())
 	help := m.helpView()

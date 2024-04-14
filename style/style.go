@@ -31,11 +31,6 @@ var (
 
 	Error = lipgloss.NewStyle().Foreground(PurpleDarker)
 
-	TableSelected = lipgloss.NewStyle().Bold(true).Background(Pink)
-	TableHeader   = lipgloss.NewStyle().Bold(true).Foreground(Blue).BorderStyle(lipgloss.NormalBorder()).
-			BorderBottom(true).BorderForeground(BlueLighter)
-	TableCell = lipgloss.NewStyle().Padding(0)
-
 	DefaultDelegate = BuildDefaultDelegate()
 )
 
