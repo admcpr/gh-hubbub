@@ -3,12 +3,10 @@ package models
 import (
 	"gh-hubbub/consts"
 	"gh-hubbub/filters"
-	"gh-hubbub/keyMaps"
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 	"time"
 
-	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -19,12 +17,8 @@ type RepoModel struct {
 
 	settingsTable table.Model
 
-	help help.Model
-	keys keyMaps.RepoKeyMap
-
 	activeTab int
 	focus     consts.Focus
-	loaded    bool
 	width     int
 	height    int
 }
@@ -34,9 +28,15 @@ func NewRepoModel(width, height int) RepoModel {
 		repository: structs.RepositorySettings{},
 		width:      width,
 		height:     height,
-		help:       help.New(),
-		keys:       keyMaps.NewRepoKeyMap(),
 	}
+}
+
+func (m *RepoModel) SetWidth(width int) {
+	m.width = width
+}
+
+func (m *RepoModel) SetHeight(height int) {
+	m.height = height
 }
 
 func (m RepoModel) Init() tea.Cmd {
@@ -47,12 +47,9 @@ func (m *RepoModel) filterHasFocus() bool {
 	return m.focus == consts.FocusFilter
 }
 
-func (m *RepoModel) SelectRepo(repository structs.RepositorySettings, width, height int) {
+func (m *RepoModel) SelectRepo(repository structs.RepositorySettings) {
 	m.repository = repository
-	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, width)
-
-	// m.width = width
-	// m.height = height
+	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, m.width)
 }
 
 func (m *RepoModel) SelectTab(index int) {
@@ -79,11 +76,6 @@ func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		if !m.loaded {
-			m.loaded = true
-		}
-		return m, nil
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEsc:
@@ -95,16 +87,7 @@ func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 				m, cmd = m.UpdateRepoModel(msg.Type)
 			}
 		}
-	case FocusMsg:
-		m.focus = msg.Focus
-	case filters.FilterMsg:
-		switch msg.Action {
-		case consts.FilterConfirm:
-			m.focus = consts.FocusTabs
-			cmd = m.SendFocusMsg
-		}
 	}
-
 	return m, cmd
 }
 
@@ -112,14 +95,6 @@ func (m RepoModel) UpdateRepoModel(keyType tea.KeyType) (RepoModel, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch keyType {
-	case tea.KeyEnter:
-		if !m.filterHasFocus() {
-			m.InitFilterEditor()
-			m.focus = consts.FocusFilter
-			cmd = m.SendFocusMsg
-		}
-	case tea.KeyEsc:
-		cmd = m.FocusList
 	case tea.KeyRight:
 		m.SelectTab(min(m.activeTab+1, len(m.repository.SettingsTabs)-1))
 	case tea.KeyLeft:
@@ -141,7 +116,9 @@ func (m RepoModel) View() string {
 
 	// var tabs = RenderTabs(m.repository.SettingsTabs, m.width, m.activeTab)
 
-	return style.Settings.Width(m.width - 2).Height(20).Render(m.settingsTable.View())
+	frameWidth, frameHeight := style.Settings.GetFrameSize()
+
+	return style.Settings.Width(m.width - frameWidth).Height(m.height - frameHeight).Render(m.settingsTable.View())
 
 	// if m.filterHasFocus() {
 	// 	filter := lipgloss.NewStyle().Width(m.width - 2).Height(20).Render(m.FilterModel.View())
@@ -155,20 +132,19 @@ func (m RepoModel) View() string {
 }
 
 func NewSettingsTable(activeSettings []structs.Setting, width int) table.Model {
-	// widthWithoutBorder := width - 2
-	// quarterWidth := quarter(widthWithoutBorder)
+	quarterWidth := quarter(width) - 1
 
 	columns := []table.Column{
-		{Title: "Setting", Width: width / 3},
-		{Title: "Value", Width: width / 3}}
+		{Title: "", Width: quarterWidth},
+		{Title: "", Width: quarterWidth}}
 
 	rows := make([]table.Row, len(activeSettings))
 	for i, setting := range activeSettings {
 		rows[i] = table.Row{setting.Name, setting.String()}
 	}
 
-	table := table.New(table.WithColumns(columns),
-		table.WithRows(rows), table.WithFocused(true), table.WithStyles(table.DefaultStyles()))
+	table := table.New(table.WithColumns(columns), table.WithRows(rows),
+		table.WithFocused(true), table.WithStyles(table.DefaultStyles()))
 
 	table.SetHeight(10)
 

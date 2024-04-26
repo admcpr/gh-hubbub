@@ -7,12 +7,10 @@ import (
 
 	"gh-hubbub/consts"
 	"gh-hubbub/filters"
-	"gh-hubbub/keyMaps"
 	"gh-hubbub/queries"
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
-	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
@@ -43,8 +41,6 @@ type OrgModel struct {
 
 	repoList  list.Model
 	repoModel RepoModel
-	help      help.Model
-	keys      keyMaps.OrgKeyMap
 
 	// Focus is the current focus of the model
 	// We should just be using a state machine here
@@ -60,8 +56,6 @@ func NewOrgModel(title string, width, height int) OrgModel {
 		Title:     title,
 		width:     width,
 		height:    height,
-		help:      help.New(),
-		keys:      keyMaps.NewOrgKeyMap(),
 		repoModel: NewRepoModel(width/2, height),
 		repoList:  list.New([]list.Item{}, list.NewDefaultDelegate(), width/2, height),
 		Filters:   []filters.Filter{},
@@ -124,10 +118,6 @@ func getTitle(t string, filters []filters.Filter) string {
 	return title
 }
 
-func (m *OrgModel) helpView() string {
-	return m.help.View(m.keys)
-}
-
 func (m OrgModel) Init() tea.Cmd {
 	return getRepoList(m.Title)
 }
@@ -150,7 +140,7 @@ func (m OrgModel) Update(msg tea.Msg) (OrgModel, tea.Cmd) {
 
 		if m.repoCount == len(m.repos) {
 			m.UpdateRepoList()
-			m.repoModel.SelectRepo(m.repos[m.repoList.Index()], m.width, m.height)
+			m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
 			cmd = m.progress.SetPercent(1.0)
 		} else {
 			cmd = m.progress.IncrPercent(0.9 / float64(m.repoCount))
@@ -218,11 +208,10 @@ func (m OrgModel) View() string {
 	if m.progress.Percent() < 1 {
 		return m.ProgressView()
 	}
-	m.repoModel.SelectRepo(m.repos[m.repoList.Index()], m.width, m.height)
+	m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
 	var repoList = style.App.Width(half(m.width)).Render(m.repoList.View())
 	var settings = style.App.Width(half(m.width)).Render(m.repoModel.View())
-	help := m.helpView()
-	var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings, help)
+	var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings)
 
 	var views = []string{repoList, rightPanel}
 

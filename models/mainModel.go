@@ -77,6 +77,9 @@ func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc":
+			if m.state == ListingOrgs {
+				return m, tea.Quit
+			}
 			m.state.Previous()
 		case "enter":
 			switch m.state {
