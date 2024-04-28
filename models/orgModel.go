@@ -63,6 +63,14 @@ func NewOrgModel(title string, width, height int) OrgModel {
 	}
 }
 
+func (m *OrgModel) SetWidth(width int) {
+	m.width = width
+}
+
+func (m *OrgModel) SetHeight(height int) {
+	m.height = height
+}
+
 func (m *OrgModel) FilteredRepositories() []structs.RepositorySettings {
 	if len(m.Filters) == 0 {
 		return m.repos

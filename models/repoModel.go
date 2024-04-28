@@ -132,11 +132,11 @@ func (m RepoModel) View() string {
 }
 
 func NewSettingsTable(activeSettings []structs.Setting, width int) table.Model {
-	quarterWidth := quarter(width) - 1
+	halfWidth := half(width) - 1
 
 	columns := []table.Column{
-		{Title: "", Width: quarterWidth},
-		{Title: "", Width: quarterWidth}}
+		{Title: "", Width: halfWidth},
+		{Title: "", Width: halfWidth}}
 
 	rows := make([]table.Row, len(activeSettings))
 	for i, setting := range activeSettings {

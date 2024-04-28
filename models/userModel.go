@@ -32,6 +32,14 @@ func NewUserModel(user structs.User, width, height int) UserModel {
 	return UserModel{User: user, list: userList}
 }
 
+func (m *UserModel) SetWidth(width int) {
+	m.list.SetWidth(width)
+}
+
+func (m *UserModel) SetHeight(height int) {
+	m.list.SetHeight(height)
+}
+
 func (m UserModel) Init() tea.Cmd {
 	return getOrganisations
 }

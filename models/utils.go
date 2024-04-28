@@ -1,11 +1,13 @@
 package models
 
+import "math"
+
 func half(width int) int {
-	return width / 2
+	return int(math.Floor(float64(width) / 2.0))
 }
 
 func quarter(width int) int {
-	return width / 4
+	return int(math.Floor(float64(width) / 4.0))
 }
 
 func max(a, b int) int {
