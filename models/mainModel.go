@@ -18,6 +18,7 @@ const (
 	Authenticating State = iota
 	ListingOrgs
 	ListingRepos
+	SelectedRepo
 	FilteringRepos
 	EditingRepoFilter
 )
@@ -58,6 +59,20 @@ func NewMainModelV2() MainModelV2 {
 	}
 }
 
+func (m *MainModelV2) SetWidth(width int) {
+	m.width = width
+	m.UserModel.SetWidth(width)
+	m.OrgModel.SetWidth(width)
+	m.RepoModel.SetWidth(width)
+}
+
+func (m *MainModelV2) SetHeight(height int) {
+	m.height = height
+	m.UserModel.SetHeight(height)
+	m.OrgModel.SetHeight(height)
+	m.RepoModel.SetHeight(height)
+}
+
 func (m MainModelV2) Init() tea.Cmd {
 	cmds := []tea.Cmd{m.spinner.Tick, getUser}
 
@@ -70,8 +85,8 @@ func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	case tea.WindowSizeMsg:
-		m.height = msg.Height
-		m.width = msg.Width
+		m.SetHeight(msg.Height)
+		m.SetWidth(msg.Width)
 		return m, nil
 
 	case tea.KeyMsg:
@@ -90,7 +105,9 @@ func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = m.OrgModel.Init()
 				return m, cmd
 			case ListingRepos:
+				m.state = SelectedRepo
 				m.OrgModel.focus = consts.FocusTabs
+				return m, cmd
 			}
 		case "ctrl+c":
 			return m, tea.Quit
@@ -125,7 +142,7 @@ func (m MainModelV2) View() string {
 		return fmt.Sprintf("%s Authenticating ... \n\n", m.spinner.View())
 	case ListingOrgs:
 		return m.UserModel.View()
-	case ListingRepos, FilteringRepos, EditingRepoFilter:
+	case ListingRepos, FilteringRepos, EditingRepoFilter, SelectedRepo:
 		return m.OrgModel.View()
 	default:
 		return "Unknown state"

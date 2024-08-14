@@ -13,8 +13,8 @@ func RenderTabs(tabSettings []structs.SettingsTab, width, activeTab int) string 
 		tabs = append(tabs, t.Name)
 	}
 
-	// tabWidth := (width - 4) / len(tabs)
-	tabWidth := 5
+	tabWidth := (width - 4) / len(tabs)
+	// tabWidth := 5
 
 	var renderedTabs []string
 

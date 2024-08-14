@@ -9,6 +9,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type RepoModel struct {
@@ -114,11 +115,10 @@ func (m RepoModel) View() string {
 		return ""
 	}
 
-	// var tabs = RenderTabs(m.repository.SettingsTabs, m.width, m.activeTab)
-
 	frameWidth, frameHeight := style.Settings.GetFrameSize()
+	var tabs = RenderTabs(m.repository.SettingsTabs, m.width, m.activeTab)
 
-	return style.Settings.Width(m.width - frameWidth).Height(m.height - frameHeight).Render(m.settingsTable.View())
+	// return style.Settings.Width(m.width - frameWidth).Height(m.height - frameHeight).Render(m.settingsTable.View())
 
 	// if m.filterHasFocus() {
 	// 	filter := lipgloss.NewStyle().Width(m.width - 2).Height(20).Render(m.FilterModel.View())
@@ -126,8 +126,8 @@ func (m RepoModel) View() string {
 	// 	return lipgloss.JoinVertical(lipgloss.Left, tabs, filter)
 	// } else {
 	// 	settings := style.Settings.Width(m.width - 2).Height(20).Render(m.settingsTable.View())
-	// 	// settings := style.Settings.Width(m.width - 2).Height(m.height - 7).Render(m.settingsTable.View())
-	// 	return lipgloss.JoinVertical(lipgloss.Left, tabs, settings)
+	settings := style.Settings.Width(m.width - frameWidth).Height(m.height - frameHeight - 2).Render(m.settingsTable.View())
+	return lipgloss.JoinVertical(lipgloss.Left, tabs, settings)
 	// }
 }
 
