@@ -48,7 +48,7 @@ func (m UserModel) Init() tea.Cmd {
 	return getOrganisations
 }
 
-func (m UserModel) Update(msg tea.Msg) (UserModel, tea.Cmd) {
+func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
