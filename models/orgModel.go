@@ -5,7 +5,6 @@ import (
 	"log"
 	"strings"
 
-	"gh-hubbub/consts"
 	"gh-hubbub/filters"
 	"gh-hubbub/queries"
 	"gh-hubbub/structs"
@@ -25,11 +24,6 @@ const (
 
 type orgQueryMsg queries.OrganizationQuery
 type repoQueryMsg queries.RepositoryQuery
-type FocusMsg struct{ Focus consts.Focus }
-
-func NewFocusMsg(focus consts.Focus) FocusMsg {
-	return FocusMsg{Focus: focus}
-}
 
 type OrgModel struct {
 	Title   string
@@ -41,9 +35,6 @@ type OrgModel struct {
 	repoList  list.Model
 	repoModel RepoModel
 
-	// Focus is the current focus of the model
-	// We should just be using a state machine here
-	focus  consts.Focus
 	width  int
 	height int
 
@@ -160,9 +151,6 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.progress = progressModel.(progress.Model)
 		return m, cmd
 
-	case FocusMsg:
-		m.focus = msg.Focus
-
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEsc:
@@ -189,14 +177,14 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// 	}
 	case filters.FilterMsg:
 		switch msg.Action {
-		case consts.FilterDelete:
+		case filters.FilterDelete:
 			// Remove the filter from the list
 			for i, filter := range m.Filters {
 				if filter.GetTab() == msg.Filter.GetTab() && filter.GetName() == msg.Filter.GetName() {
 					m.Filters = append(m.Filters[:i], m.Filters[i+1:]...)
 				}
 			}
-		case consts.FilterAdd:
+		case filters.FilterAdd:
 			m.Filters = []filters.Filter{msg.Filter}
 			m.UpdateRepoList()
 			m.repoModel, cmd = m.repoModel.Update(filters.NewConfirmFilterMsg(nil))
@@ -215,11 +203,10 @@ func (m OrgModel) View() string {
 	}
 	m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
 	var repoList = style.App.Width(half(m.width)).Render(m.repoList.View())
-	// var settings = style.App.Width(half(m.width)).Render(m.repoModel.View())
-	// var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings)
+	var settings = style.App.Width(half(m.width)).Render(m.repoModel.View())
+	var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings)
 
-	// var views = []string{repoList, rightPanel}
-	var views = []string{repoList}
+	var views = []string{repoList, rightPanel}
 
 	return lipgloss.JoinHorizontal(lipgloss.Top, views...)
 }
