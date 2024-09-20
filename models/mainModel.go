@@ -2,6 +2,7 @@ package models
 
 import (
 	"gh-hubbub/structs"
+	"reflect"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -39,15 +40,9 @@ type NextMessage struct{ ModelData interface{} }
 type PreviousMessage struct{}
 
 type MainModelV2 struct {
-	stack     Stack
-	models    []tea.Model
-	authModel AuthenticatingModel
-	UserModel UserModel
-	OrgModel  OrgModel
-	RepoModel RepoModel
-	yes       bool
-	width     int
-	height    int
+	stack  Stack
+	width  int
+	height int
 }
 
 func NewMainModelV2() MainModelV2 {
@@ -61,26 +56,23 @@ func NewMainModelV2() MainModelV2 {
 
 func (m *MainModelV2) SetWidth(width int) {
 	m.width = width
-	m.UserModel.SetWidth(width)
-	m.OrgModel.SetWidth(width)
-	m.RepoModel.SetWidth(width)
+	// TODO: Set width of stack head
 }
 
 func (m *MainModelV2) SetHeight(height int) {
 	m.height = height
-	m.UserModel.SetHeight(height)
-	m.OrgModel.SetHeight(height)
-	m.RepoModel.SetHeight(height)
+	// TODO: Set height of stack head
 }
 
 func (m MainModelV2) Init() tea.Cmd {
-	return m.authModel.Init()
+	child, _ := m.stack.Peek()
+	return child.Init()
 }
 
 func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// This should only do a couple of things
 	// 1. Handle ctrl+c to quit
-	// 2. Handle window sizing
+	// 2. Handle window sizing ✔️
 	// 3. Handle Forward & Back navigation (creating models as needed) and updating state
 	// 4. Call Update on the active model
 
@@ -95,55 +87,49 @@ func (m MainModelV2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch msg.String() {
-		// case "esc":
-		// 	if m.state == ListingOrgs {
-		// 		return m, tea.Quit
-		// 	}
-		// 	m.state = m.state.Previous()
-		// 	return m, nil
-		// case "enter":
-		// 	switch m.state {
-		// 	case ListingOrgs:
-		// 		selectedName := m.UserModel.SelectedOrg().Login
-		// 		m.OrgModel = NewOrgModel(selectedName, m.width, m.height)
-		// 		m.state = ListingRepos
-		// 		cmd = m.OrgModel.Init()
-		// 		return m, cmd
-		// 	case ListingRepos:
-		// 		m.state = SelectedRepo
-		// 		m.OrgModel.focus = consts.FocusTabs
-		// 		return m, cmd
-		// 	}
 		case "ctrl+c":
 			return m, tea.Quit
+		default:
+			cmd = m.UpdateChild(msg)
 		}
 	case NextMessage:
-		m.yes = true
+		// TODO: This is where we should be pushing the new model onto the stack
+		nextModel := m.NextModel(msg)
+		m.stack.Push(nextModel)
+		return m, nextModel.Init()
+	case PreviousMessage:
+		_, err := m.stack.Pop()
+		if err != nil {
+			return m, tea.Quit
+		}
 		return m, nil
+	default:
+		cmd = m.UpdateChild(msg)
 	}
-
-	// switch m.state {
-	// case ListingOrgs:
-	// 	m.UserModel, cmd = m.UserModel.Update(msg)
-	// case ListingRepos:
-	// 	m.OrgModel, cmd = m.OrgModel.Update(msg)
-	// }
-	m.authModel, cmd = m.authModel.Update(msg)
 
 	return m, cmd
 }
 
+func (m *MainModelV2) UpdateChild(msg tea.Msg) tea.Cmd {
+	var cmd tea.Cmd
+	currentModel, _ := m.stack.Pop()
+	currentModel, cmd = currentModel.Update(msg)
+	m.stack.Push(currentModel)
+	return cmd
+}
+
 func (m MainModelV2) View() string {
-	if m.yes {
-		return "Yes"
+	child, _ := m.stack.Peek()
+	return child.View()
+}
+
+func (m MainModelV2) NextModel(message NextMessage) tea.Model {
+	var newModel tea.Model
+	switch m.stack.TypeOfHead() {
+	case reflect.TypeOf(AuthenticatingModel{}):
+		newModel = NewUserModel(message.ModelData.(structs.User), m.width, m.height)
+	case reflect.TypeOf(UserModel{}):
+		newModel = NewOrgModel(message.ModelData.(string), m.width, m.height)
 	}
-	return m.authModel.View()
-	// switch m.state {
-	// case ListingOrgs:
-	// 	return m.UserModel.View()
-	// case ListingRepos, FilteringRepos, EditingRepoFilter, SelectedRepo:
-	// 	return m.OrgModel.View()
-	// default:
-	// 	return "Unknown state"
-	// }
+	return newModel
 }

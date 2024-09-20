@@ -110,7 +110,7 @@ func (m RepoModel) UpdateRepoModel(keyType tea.KeyType) (RepoModel, tea.Cmd) {
 }
 
 func (m RepoModel) View() string {
-	if m.repository.SettingsTabs == nil || len(m.repository.SettingsTabs) == 0 {
+	if len(m.repository.SettingsTabs) == 0 {
 		// Can this ever happen ????
 		return ""
 	}

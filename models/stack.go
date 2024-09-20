@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"reflect"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -31,5 +32,14 @@ func (s *Stack) Peek() (tea.Model, error) {
 	if len(s.elements) == 0 {
 		return nil, errors.New("stack is empty")
 	}
-	return s.elements[len(s.elements)-1], nil
+	element := s.elements[len(s.elements)-1]
+	return element, nil
+}
+
+func (s *Stack) Len() int {
+	return len(s.elements)
+}
+
+func (s *Stack) TypeOfHead() reflect.Type {
+	return reflect.TypeOf(s.elements[len(s.elements)-1])
 }

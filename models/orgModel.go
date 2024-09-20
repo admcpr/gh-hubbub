@@ -118,7 +118,7 @@ func (m *OrgModel) UpdateRepoList() {
 }
 
 func getTitle(t string, filters []filters.Filter) string {
-	title := "Organization: " + t
+	title := t + "/"
 	if len(filters) > 0 {
 		return fmt.Sprintf("%s (%s)", title, filters[0].String())
 	}
@@ -129,7 +129,7 @@ func (m OrgModel) Init() tea.Cmd {
 	return getRepoList(m.Title)
 }
 
-func (m OrgModel) Update(msg tea.Msg) (OrgModel, tea.Cmd) {
+func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -163,6 +163,12 @@ func (m OrgModel) Update(msg tea.Msg) (OrgModel, tea.Cmd) {
 	case FocusMsg:
 		m.focus = msg.Focus
 
+	case tea.KeyMsg:
+		switch msg.Type {
+		case tea.KeyEsc:
+			return m, handleEscape
+		}
+
 	// case tea.KeyMsg:
 	// 	switch msg.Type {
 	// 	case tea.KeyEnter:
@@ -171,14 +177,6 @@ func (m OrgModel) Update(msg tea.Msg) (OrgModel, tea.Cmd) {
 	// 			m.focus = m.focus.Next()
 	// 			return m, nil
 	// 		}
-	// 	case tea.KeyEsc:
-	// 		// Esc goes back so go to the previous model if we're focussed on the list
-	// 		if m.listFocusedAndNotFiltering() {
-	// 			return MainModel[consts.UserModelName], nil
-	// 		}
-	// 	case tea.KeyCtrlC:
-	// 		return m, tea.Quit
-	// 	}
 	// 	switch m.focus {
 	// 	case consts.FocusList:
 	// 		var tabCmd tea.Cmd
@@ -217,10 +215,11 @@ func (m OrgModel) View() string {
 	}
 	m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
 	var repoList = style.App.Width(half(m.width)).Render(m.repoList.View())
-	var settings = style.App.Width(half(m.width)).Render(m.repoModel.View())
-	var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings)
+	// var settings = style.App.Width(half(m.width)).Render(m.repoModel.View())
+	// var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings)
 
-	var views = []string{repoList, rightPanel}
+	// var views = []string{repoList, rightPanel}
+	var views = []string{repoList}
 
 	return lipgloss.JoinHorizontal(lipgloss.Top, views...)
 }
@@ -277,4 +276,8 @@ func getRepoList(login string) tea.Cmd {
 
 		return orgQueryMsg(organizationQuery)
 	}
+}
+
+func handleEscape() tea.Msg {
+	return PreviousMessage{}
 }

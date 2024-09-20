@@ -63,6 +63,38 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = m.list.SetItems(items)
 
 		return m, cmd
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "enter":
+			// selectedName := m.organisations[m.list.Index()].Login
+			cmd = func() tea.Msg {
+				return NextMessage{ModelData: "bbfc-horizon"}
+			}
+			return m, cmd
+		default:
+			m.list, cmd = m.list.Update(msg)
+			return m, cmd
+		}
+
+		// case "esc":
+		// 	if m.state == ListingOrgs {
+		// 		return m, tea.Quit
+		// 	}
+		// 	m.state = m.state.Previous()
+		// 	return m, nil
+		// case "enter":
+		// 	switch m.state {
+		// 	case ListingOrgs:
+		// 		selectedName := m.UserModel.SelectedOrg().Login
+		// 		m.OrgModel = NewOrgModel(selectedName, m.width, m.height)
+		// 		m.state = ListingRepos
+		// 		cmd = m.OrgModel.Init()
+		// 		return m, cmd
+		// 	case ListingRepos:
+		// 		m.state = SelectedRepo
+		// 		m.OrgModel.focus = consts.FocusTabs
+		// 		return m, cmd
+		// 	}
 	}
 
 	m.list, cmd = m.list.Update(msg)
