@@ -9,6 +9,9 @@ import (
 	"github.com/cli/go-gh/v2/pkg/api"
 )
 
+type AuthenticationErrorMsg struct{ Err error }
+type AuthenticatedMsg struct{ User structs.User }
+
 type AuthenticatingModel struct {
 	spinner spinner.Model
 	error   error

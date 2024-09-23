@@ -54,9 +54,9 @@ func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
-		case tea.KeyRight:
+		case tea.KeyTab:
 			m.SelectTab(min(m.activeTab+1, len(m.repository.SettingsTabs)-1))
-		case tea.KeyLeft:
+		case tea.KeyShiftTab:
 			m.SelectTab(max(m.activeTab-1, 0))
 		}
 	}
@@ -91,8 +91,10 @@ func NewSettingsTable(activeSettings []structs.Setting, width int) table.Model {
 		rows[i] = table.Row{setting.Name, setting.String()}
 	}
 
-	table := table.New(table.WithColumns(columns), table.WithRows(rows),
-		table.WithFocused(true), table.WithStyles(table.DefaultStyles()))
+	// table := table.New(table.WithColumns(columns), table.WithRows(rows),
+	// 	table.WithFocused(true), table.WithStyles(table.DefaultStyles()))
+
+	table := table.New(table.WithColumns(columns), table.WithRows(rows))
 
 	return table
 }

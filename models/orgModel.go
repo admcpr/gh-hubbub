@@ -155,6 +155,12 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyEsc:
 			return m, handleEscape
+		case tea.KeyTab, tea.KeyShiftTab:
+			m.repoModel, cmd = m.repoModel.Update(msg)
+			return m, cmd
+		default:
+			m.repoList, cmd = m.repoList.Update(msg)
+			return m, cmd
 		}
 
 	// case tea.KeyMsg:
