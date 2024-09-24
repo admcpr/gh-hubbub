@@ -26,9 +26,6 @@ var (
 		Border(lipgloss.NormalBorder(), false, false, true, false).
 		Padding(1, 1, 0, 1)
 
-	Settings = App.Copy().Border(lipgloss.RoundedBorder()).
-			BorderForeground(BlueLighter).Padding(0).Margin(0)
-
 	Error = lipgloss.NewStyle().Foreground(PurpleDarker)
 
 	DefaultDelegate = BuildDefaultDelegate()

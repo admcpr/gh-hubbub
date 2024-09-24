@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type RepoModel struct {
+type RepoModelList struct {
 	repository    structs.RepositorySettings
 	settingsTable table.Model
 
@@ -18,37 +18,37 @@ type RepoModel struct {
 	height    int
 }
 
-func NewRepoModel(width, height int) RepoModel {
-	return RepoModel{
+func NewRepoModelList(width, height int) RepoModelList {
+	return RepoModelList{
 		repository: structs.RepositorySettings{},
 		width:      width,
 		height:     height,
 	}
 }
 
-func (m *RepoModel) SetWidth(width int) {
+func (m *RepoModelList) SetWidth(width int) {
 	m.width = width
 }
 
-func (m *RepoModel) SetHeight(height int) {
+func (m *RepoModelList) SetHeight(height int) {
 	m.height = height
 }
 
-func (m RepoModel) Init() tea.Cmd {
+func (m RepoModelList) Init() tea.Cmd {
 	return nil
 }
 
-func (m *RepoModel) SelectRepo(repository structs.RepositorySettings) {
+func (m *RepoModelList) SelectRepo(repository structs.RepositorySettings) {
 	m.repository = repository
-	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, m.width)
+	m.settingsTable = NewSettingsList(m.repository.SettingsTabs[m.activeTab].Settings, m.width)
 }
 
-func (m *RepoModel) SelectTab(index int) {
+func (m *RepoModelList) SelectTab(index int) {
 	m.activeTab = index
-	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, m.width)
+	m.settingsTable = NewSettingsList(m.repository.SettingsTabs[m.activeTab].Settings, m.width)
 }
 
-func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
+func (m RepoModelList) Update(msg tea.Msg) (RepoModelList, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -63,7 +63,7 @@ func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 	return m, cmd
 }
 
-func (m RepoModel) View() string {
+func (m RepoModelList) View() string {
 	if len(m.repository.SettingsTabs) == 0 {
 		// Can this ever happen ????
 		return ""
@@ -79,7 +79,7 @@ func (m RepoModel) View() string {
 	return lipgloss.JoinVertical(lipgloss.Left, settings)
 }
 
-func NewSettingsTable(activeSettings []structs.Setting, width int) table.Model {
+func NewSettingsList(activeSettings []structs.Setting, width int) table.Model {
 	halfWidth := half(width)
 
 	columns := []table.Column{
