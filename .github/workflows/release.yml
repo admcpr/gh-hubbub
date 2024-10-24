@@ -11,4 +11,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: cli/gh-extension-precompile@v1
+      # - uses: cli/gh-extension-precompile@v1
+      # TODO: let's make this work again once the refactor is complete
