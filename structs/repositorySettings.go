@@ -46,7 +46,7 @@ func NewRepository(r queries.Repository) RepositorySettings {
 					NewSetting("Allow rebase merging", r.RebaseMergeAllowed),
 					NewSetting("Allow auto-merge", r.AutoMergeAllowed),
 					NewSetting("Automatically delete head branches", r.DeleteBranchOnMerge),
-					NewSetting("Open pull requests", r.PullRequests.TotalCount),
+					NewSetting("Open pull requests", r.OpenPullRequests.TotalCount),
 				},
 			},
 			{
