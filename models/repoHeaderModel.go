@@ -15,10 +15,8 @@ type RepoHeaderModel struct {
 
 func NewRepoHeaderModel(width int, titles []string, index int) RepoHeaderModel {
 	p := paginator.New()
-	p.Type = paginator.Dots
+	p.Type = paginator.Arabic
 	p.PerPage = 1
-	// p.ActiveDot = "⁜"
-	// p.InactiveDot = ""
 	p.SetTotalPages(len(titles))
 	p.Page = index
 
