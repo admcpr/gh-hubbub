@@ -4,39 +4,32 @@ import (
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
-	"github.com/charmbracelet/bubbles/paginator"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 type RepoModel struct {
+	repoHeader    RepoHeaderModel
 	repository    structs.RepositorySettings
 	settingsTable table.Model
-	paginator     paginator.Model
 	activeTab     int
 	width         int
 	height        int
 }
 
 func NewRepoModel(width, height int) RepoModel {
-	p := paginator.New()
-	p.Type = paginator.Dots
-	p.PerPage = 1
-	p.ActiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "235", Dark: "252"}).Render("•")
-	p.InactiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "250", Dark: "238"}).Render("•")
-	p.SetTotalPages(4)
-
 	return RepoModel{
+		repoHeader: NewRepoHeaderModel(width, []string{}, 0),
 		repository: structs.RepositorySettings{},
 		width:      width,
 		height:     height,
-		paginator:  p,
 	}
 }
 
 func (m *RepoModel) SetWidth(width int) {
 	m.width = width
+	m.repoHeader.SetWidth(width)
 }
 
 func (m *RepoModel) SetHeight(height int) {
@@ -48,12 +41,16 @@ func (m RepoModel) Init() tea.Cmd {
 }
 
 func (m *RepoModel) SelectRepo(repository structs.RepositorySettings) {
+	groups := []string{}
+	for _, value := range repository.SettingsTabs {
+		groups = append(groups, value.Name)
+	}
+	m.repoHeader = NewRepoHeaderModel(m.width, groups, m.activeTab)
 	m.repository = repository
 	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, m.width)
 }
 
 func (m *RepoModel) SelectTab(index int) {
-	m.paginator.Page = index
 	m.activeTab = index
 	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, m.width)
 }
@@ -70,12 +67,14 @@ func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 			} else {
 				m.SelectTab(0)
 			}
+			m.repoHeader, _ = m.repoHeader.Update(TabSelectMessage{Index: m.activeTab})
 		case tea.KeyShiftTab:
 			if m.activeTab > 0 {
 				m.SelectTab(m.activeTab - 1)
 			} else {
 				m.SelectTab(len(m.repository.SettingsTabs) - 1)
 			}
+			m.repoHeader, _ = m.repoHeader.Update(TabSelectMessage{Index: m.activeTab})
 		}
 	}
 	return m, cmd
@@ -88,15 +87,12 @@ func (m RepoModel) View() string {
 	}
 
 	// frameWidth, frameHeight := style.Settings.GetFrameSize()
-
-	header := m.paginator.View() + " " + m.repository.SettingsTabs[m.activeTab].Name
-
 	settings := style.App.
 		Width(m.width).
 		// Height(5).
 		Render(m.settingsTable.View())
 
-	return lipgloss.JoinVertical(lipgloss.Left, header, settings)
+	return lipgloss.JoinVertical(lipgloss.Left, m.repoHeader.View(), settings)
 }
 
 func NewSettingsTable(activeSettings []structs.Setting, width int) table.Model {
