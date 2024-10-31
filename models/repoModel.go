@@ -11,7 +11,7 @@ import (
 
 type RepoModel struct {
 	repoHeader    RepoHeaderModel
-	repository    structs.RepositorySettings
+	repository    structs.RepoProperties
 	settingsTable table.Model
 	activeTab     int
 	width         int
@@ -21,7 +21,7 @@ type RepoModel struct {
 func NewRepoModel(width, height int) RepoModel {
 	return RepoModel{
 		repoHeader: NewRepoHeaderModel(width, []string{}, 0),
-		repository: structs.RepositorySettings{},
+		repository: structs.RepoProperties{Properties: []structs.RepoProperty{}, PropertyGroups: map[string][]structs.RepoProperty{}},
 		width:      width,
 		height:     height,
 	}
@@ -40,19 +40,17 @@ func (m RepoModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m *RepoModel) SelectRepo(repository structs.RepositorySettings) {
-	groups := []string{}
-	for _, value := range repository.SettingsTabs {
-		groups = append(groups, value.Name)
-	}
-	m.repoHeader = NewRepoHeaderModel(m.width, groups, m.activeTab)
+func (m *RepoModel) SelectRepo(repository structs.RepoProperties) {
 	m.repository = repository
-	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, m.width)
+	key := m.repository.Keys[m.activeTab]
+	m.repoHeader = NewRepoHeaderModel(m.width, m.repository.Keys, m.activeTab)
+	m.settingsTable = NewSettingsTable(m.repository.PropertyGroups[key], m.width)
 }
 
 func (m *RepoModel) SelectTab(index int) {
 	m.activeTab = index
-	m.settingsTable = NewSettingsTable(m.repository.SettingsTabs[m.activeTab].Settings, m.width)
+	key := m.repository.Keys[index]
+	m.settingsTable = NewSettingsTable(m.repository.PropertyGroups[key], m.width)
 }
 
 func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
@@ -62,7 +60,7 @@ func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyTab:
-			if m.activeTab < len(m.repository.SettingsTabs)-1 {
+			if m.activeTab < len(m.repository.PropertyGroups)-1 {
 				m.SelectTab(m.activeTab + 1)
 			} else {
 				m.SelectTab(0)
@@ -72,7 +70,7 @@ func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 			if m.activeTab > 0 {
 				m.SelectTab(m.activeTab - 1)
 			} else {
-				m.SelectTab(len(m.repository.SettingsTabs) - 1)
+				m.SelectTab(len(m.repository.PropertyGroups) - 1)
 			}
 			m.repoHeader, _ = m.repoHeader.Update(TabSelectMessage{Index: m.activeTab})
 		}
@@ -81,7 +79,7 @@ func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 }
 
 func (m RepoModel) View() string {
-	if len(m.repository.SettingsTabs) == 0 {
+	if len(m.repository.PropertyGroups) == 0 {
 		// Can this ever happen ????
 		return ""
 	}
@@ -95,7 +93,7 @@ func (m RepoModel) View() string {
 	return lipgloss.JoinVertical(lipgloss.Left, m.repoHeader.View(), settings)
 }
 
-func NewSettingsTable(activeSettings []structs.Setting, width int) table.Model {
+func NewSettingsTable(activeSettings []structs.RepoProperty, width int) table.Model {
 	halfWidth := half(width)
 
 	columns := []table.Column{

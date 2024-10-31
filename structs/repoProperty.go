@@ -1,15 +1,21 @@
 package structs
 
 import (
+	"fmt"
 	"gh-hubbub/queries"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
+	"time"
 )
 
 type RepoProperties struct {
+	Name           string
+	Url            string
 	Properties     []RepoProperty
 	PropertyGroups map[string][]RepoProperty
+	Keys           []string
 }
 
 func NewRepoProperties(r queries.Repository) RepoProperties {
@@ -18,7 +24,18 @@ func NewRepoProperties(r queries.Repository) RepoProperties {
 	for _, p := range properties {
 		propertyGroups[p.Group] = append(propertyGroups[p.Group], p)
 	}
-	return RepoProperties{Properties: properties, PropertyGroups: propertyGroups}
+	keys := make([]string, 0, len(propertyGroups))
+	for k := range propertyGroups {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return RepoProperties{
+		Name:           r.Name,
+		Url:            r.Url,
+		Properties:     properties,
+		PropertyGroups: propertyGroups,
+		Keys:           keys,
+	}
 }
 
 type RepoProperty struct {
@@ -27,6 +44,21 @@ type RepoProperty struct {
 	Value       interface{}
 	Type        string
 	Description string
+}
+
+func (s RepoProperty) String() string {
+	switch value := s.Value.(type) {
+	case bool:
+		return YesNo(value)
+	case string:
+		return value
+	case time.Time:
+		return value.Format("2006/01/02")
+	case int:
+		return fmt.Sprint(value)
+	default:
+		return "Unknown type"
+	}
 }
 
 func NewRepoProperty(name string, group string, value interface{}, typeStr string, description string) RepoProperty {

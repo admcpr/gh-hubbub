@@ -30,7 +30,7 @@ type OrgModel struct {
 	Filters []filters.Filter
 
 	repoCount int
-	repos     []structs.RepositorySettings
+	repos     []structs.RepoProperties
 
 	repoList  list.Model
 	repoModel RepoModel
@@ -61,17 +61,17 @@ func (m *OrgModel) SetHeight(height int) {
 	m.height = height
 }
 
-func (m *OrgModel) FilteredRepositories() []structs.RepositorySettings {
-	if len(m.Filters) == 0 {
-		return m.repos
-	}
-	filteredRepos := []structs.RepositorySettings{}
-	for _, repo := range m.repos {
-		if RepoMatchesFilters(repo, m.Filters) {
-			filteredRepos = append(filteredRepos, repo)
-		}
-	}
-	return filteredRepos
+func (m *OrgModel) FilteredRepositories() []structs.RepoProperties {
+	// if len(m.Filters) == 0 {
+	return m.repos
+	// }
+	// filteredRepos := []structs.RepositorySettings{}
+	// for _, repo := range m.repos {
+	// 	if RepoMatchesFilters(repo, m.Filters) {
+	// 		filteredRepos = append(filteredRepos, repo)
+	// 	}
+	// }
+	// return filteredRepos
 }
 
 func RepoMatchesFilters(repo structs.RepositorySettings, filters []filters.Filter) bool {
@@ -134,7 +134,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case repoQueryMsg:
-		m.repos = append(m.repos, structs.NewRepository(msg.Repository))
+		m.repos = append(m.repos, structs.NewRepoProperties(msg.Repository))
 
 		if m.repoCount == len(m.repos) {
 			m.UpdateRepoList()
@@ -208,6 +208,7 @@ func (m OrgModel) View() string {
 		return m.ProgressView()
 	}
 	m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
+
 	var repoList = style.App.Width(half(m.width)).Render(m.repoList.View())
 	var settings = style.App.Width(half(m.width)).Render(m.repoModel.View())
 	var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings)
