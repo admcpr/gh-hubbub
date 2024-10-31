@@ -1,20 +1,13 @@
 package models
 
 import (
-	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
 	"github.com/charmbracelet/lipgloss"
 )
 
-func RenderTabs(tabSettings []structs.SettingsTab, width, activeTab int) string {
-	tabs := []string{}
-	for _, t := range tabSettings {
-		tabs = append(tabs, t.Name)
-	}
-
+func RenderTabs(tabs []string, width, activeTab int) string {
 	tabWidth := (width - 4) / len(tabs)
-	// tabWidth := 5
 
 	var renderedTabs []string
 

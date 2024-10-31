@@ -5,7 +5,6 @@ import (
 	"log"
 	"strings"
 
-	"gh-hubbub/filters"
 	"gh-hubbub/queries"
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
@@ -26,9 +25,7 @@ type orgQueryMsg queries.OrganizationQuery
 type repoQueryMsg queries.RepositoryQuery
 
 type OrgModel struct {
-	Title   string
-	Filters []filters.Filter
-
+	Title     string
 	repoCount int
 	repos     []structs.RepoProperties
 
@@ -48,7 +45,6 @@ func NewOrgModel(title string, width, height int) OrgModel {
 		height:    height,
 		repoModel: NewRepoModel(width/2, height),
 		repoList:  list.New([]list.Item{}, list.NewDefaultDelegate(), width/2, height),
-		Filters:   []filters.Filter{},
 		progress:  progress.New(progress.WithDefaultGradient()),
 	}
 }
@@ -61,59 +57,21 @@ func (m *OrgModel) SetHeight(height int) {
 	m.height = height
 }
 
-func (m *OrgModel) FilteredRepositories() []structs.RepoProperties {
-	// if len(m.Filters) == 0 {
-	return m.repos
-	// }
-	// filteredRepos := []structs.RepositorySettings{}
-	// for _, repo := range m.repos {
-	// 	if RepoMatchesFilters(repo, m.Filters) {
-	// 		filteredRepos = append(filteredRepos, repo)
-	// 	}
-	// }
-	// return filteredRepos
-}
-
-func RepoMatchesFilters(repo structs.RepositorySettings, filters []filters.Filter) bool {
-	// TODO: This is gonna get slow, fast, for big orgs. Faster pls.
-	// TODO: Obviously this is also buggy if there are multiple filters, it'll only check the first one
-	for _, filter := range filters {
-		for _, tab := range repo.SettingsTabs {
-			if tab.Name == filter.GetTab() {
-				for _, setting := range tab.Settings {
-					if setting.Name == filter.GetName() {
-						return filter.Matches(setting)
-					}
-				}
-			}
-		}
-	}
-	return false
-}
-
 func (m *OrgModel) UpdateRepoList() {
-	filteredRepositories := m.FilteredRepositories()
+	filteredRepositories := m.repos
 	items := make([]list.Item, len(filteredRepositories))
-	for i, repo := range m.FilteredRepositories() {
+	for i, repo := range m.repos {
 		items[i] = structs.NewListItem(repo.Name, repo.Url)
 	}
 
 	list := list.New(items, style.DefaultDelegate, m.width/2, m.height-2)
-	list.Title = getTitle(m.Title, m.Filters)
+	list.Title = m.Title
 	list.Styles.Title = style.Title
 	list.SetStatusBarItemName("Repository", "Repositories")
 	list.SetShowHelp(false)
 	list.SetShowTitle(true)
 
 	m.repoList = list
-}
-
-func getTitle(t string, filters []filters.Filter) string {
-	title := t + "/"
-	if len(filters) > 0 {
-		return fmt.Sprintf("%s (%s)", title, filters[0].String())
-	}
-	return title
 }
 
 func (m OrgModel) Init() tea.Cmd {
@@ -181,20 +139,6 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// 	case consts.FocusTabs, consts.FocusFilter:
 	// 		m.repoModel, cmd = m.repoModel.Update(msg)
 	// 	}
-	case filters.FilterMsg:
-		switch msg.Action {
-		case filters.FilterDelete:
-			// Remove the filter from the list
-			for i, filter := range m.Filters {
-				if filter.GetTab() == msg.Filter.GetTab() && filter.GetName() == msg.Filter.GetName() {
-					m.Filters = append(m.Filters[:i], m.Filters[i+1:]...)
-				}
-			}
-		case filters.FilterAdd:
-			m.Filters = []filters.Filter{msg.Filter}
-			m.UpdateRepoList()
-			m.repoModel, cmd = m.repoModel.Update(filters.NewConfirmFilterMsg(nil))
-		}
 
 	default:
 		m.repoList, cmd = m.repoList.Update(msg)
