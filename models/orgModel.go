@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"strings"
 
@@ -24,6 +25,39 @@ const (
 type orgQueryMsg queries.OrganizationQuery
 type repoQueryMsg queries.RepositoryQuery
 
+var (
+	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
+	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+)
+
+type item string
+
+func (i item) FilterValue() string { return "" }
+
+type itemDelegate struct{}
+
+func (d itemDelegate) Height() int                             { return 1 }
+func (d itemDelegate) Spacing() int                            { return 1 }
+func (d itemDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
+func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
+	i, ok := listItem.(item)
+	if !ok {
+		fmt.Fprintf(w, "invalid item type: %T", listItem)
+		return
+	}
+
+	str := string(i)
+
+	fn := itemStyle.Render
+	if index == m.Index() {
+		fn = func(s ...string) string {
+			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+		}
+	}
+
+	fmt.Fprint(w, fn(str))
+}
+
 type OrgModel struct {
 	Title     string
 	repoCount int
@@ -44,7 +78,7 @@ func NewOrgModel(title string, width, height int) OrgModel {
 		width:     width,
 		height:    height,
 		repoModel: NewRepoModel(width/2, height),
-		repoList:  list.New([]list.Item{}, list.NewDefaultDelegate(), width/2, height),
+		repoList:  list.New([]list.Item{}, itemDelegate{}, width/2, height),
 		progress:  progress.New(progress.WithDefaultGradient()),
 	}
 }
@@ -61,10 +95,10 @@ func (m *OrgModel) UpdateRepoList() {
 	filteredRepositories := m.repos
 	items := make([]list.Item, len(filteredRepositories))
 	for i, repo := range m.repos {
-		items[i] = structs.NewListItem(repo.Name, repo.Url)
+		items[i] = item(repo.Name)
 	}
 
-	list := list.New(items, style.DefaultDelegate, m.width/2, m.height-2)
+	list := list.New(items, itemDelegate{}, m.width/2, m.height-2)
 	list.Title = m.Title
 	list.Styles.Title = style.Title
 	list.SetStatusBarItemName("Repository", "Repositories")
@@ -120,26 +154,6 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.repoList, cmd = m.repoList.Update(msg)
 			return m, cmd
 		}
-
-	// case tea.KeyMsg:
-	// 	switch msg.Type {
-	// 	case tea.KeyEnter:
-	// 		// If we're focussed on the list and we're not filtering, we want to focus on the repo model
-	// 		if m.listFocusedAndNotFiltering() {
-	// 			m.focus = m.focus.Next()
-	// 			return m, nil
-	// 		}
-	// 	switch m.focus {
-	// 	case consts.FocusList:
-	// 		var tabCmd tea.Cmd
-
-	// 		m.repoList, cmd = m.repoList.Update(msg)
-	// 		m.repoModel, tabCmd = m.repoModel.Update(m.NewRepoSelectMsg())
-	// 		return m, tea.Batch(cmd, tabCmd)
-	// 	case consts.FocusTabs, consts.FocusFilter:
-	// 		m.repoModel, cmd = m.repoModel.Update(msg)
-	// 	}
-
 	default:
 		m.repoList, cmd = m.repoList.Update(msg)
 	}
