@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"sort"
 
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
@@ -54,10 +55,13 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case OrgListMsg:
 		m.organisations = msg.Organisations
+		sort.Slice(m.organisations, func(i, j int) bool {
+			return m.organisations[i].Login < m.organisations[j].Login
+		})
+
 		items := make([]list.Item, len(m.organisations))
 		for i, org := range m.organisations {
 			items[i] = structs.NewListItem(org.Login, org.Url)
-
 		}
 
 		cmd = m.list.SetItems(items)
@@ -66,35 +70,15 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
-			// selectedName := m.organisations[m.list.Index()].Login
+			selectedOrg := m.organisations[m.list.Index()].Login
 			cmd = func() tea.Msg {
-				return NextMessage{ModelData: "bbfc-horizon"}
+				return NextMessage{ModelData: selectedOrg}
 			}
 			return m, cmd
 		default:
 			m.list, cmd = m.list.Update(msg)
 			return m, cmd
 		}
-
-		// case "esc":
-		// 	if m.state == ListingOrgs {
-		// 		return m, tea.Quit
-		// 	}
-		// 	m.state = m.state.Previous()
-		// 	return m, nil
-		// case "enter":
-		// 	switch m.state {
-		// 	case ListingOrgs:
-		// 		selectedName := m.UserModel.SelectedOrg().Login
-		// 		m.OrgModel = NewOrgModel(selectedName, m.width, m.height)
-		// 		m.state = ListingRepos
-		// 		cmd = m.OrgModel.Init()
-		// 		return m, cmd
-		// 	case ListingRepos:
-		// 		m.state = SelectedRepo
-		// 		m.OrgModel.focus = consts.FocusTabs
-		// 		return m, cmd
-		// 	}
 	}
 
 	m.list, cmd = m.list.Update(msg)
