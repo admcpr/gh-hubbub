@@ -65,6 +65,25 @@ func NewRepoProperty(name string, group string, value interface{}, typeStr strin
 	return RepoProperty{Name: name, Group: group, Value: value, Type: typeStr, Description: description}
 }
 
+// func ToProperties(r queries.Repository) []RepoProperty {
+// 	var properties []RepoProperty
+// 	t := reflect.TypeOf(r)
+// 	v := reflect.ValueOf(r)
+
+// 	for i := 0; i < t.NumField(); i++ {
+// 		field := t.Field(i)
+
+// 		name := splitCamelCase(field.Name)
+// 		desc := field.Tag.Get("desc")
+// 		group := field.Tag.Get("group")
+// 		typeStr := field.Type.String()
+
+// 		properties = append(properties, NewRepoProperty(name, group, v.Field(i).Interface(), typeStr, desc))
+// 	}
+
+// 	return properties
+// }
+
 func ToProperties(r queries.Repository) []RepoProperty {
 	var properties []RepoProperty
 	t := reflect.TypeOf(r)
@@ -72,13 +91,44 @@ func ToProperties(r queries.Repository) []RepoProperty {
 
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
+		value := v.Field(i)
 
-		name := splitCamelCase(field.Name)
-		desc := field.Tag.Get("desc")
-		group := field.Tag.Get("group")
-		typeStr := field.Type.String()
+		properties = append(properties, processField(field, value)...)
+	}
 
-		properties = append(properties, NewRepoProperty(name, group, v.Field(i).Interface(), typeStr, desc))
+	return properties
+}
+
+func processField(field reflect.StructField, value reflect.Value) []RepoProperty {
+	var properties []RepoProperty
+
+	name := field.Tag.Get("name")
+	if name == "" {
+		name = splitCamelCase(field.Name)
+	}
+	desc := field.Tag.Get("desc")
+	group := field.Tag.Get("group")
+	typeStr := field.Type.String()
+
+	if typeStr == "time.Time" || typeStr == "int" || typeStr == "string" || typeStr == "bool" {
+		properties = append(properties, NewRepoProperty(name, group, value.Interface(), typeStr, desc))
+	} else {
+		switch field.Type.Kind() {
+		case reflect.Struct:
+			// Recursively process nested struct
+			for i := 0; i < field.Type.NumField(); i++ {
+				nestedField := field.Type.Field(i)
+				nestedValue := value.Field(i)
+				properties = append(properties, processField(nestedField, nestedValue)...)
+			}
+		case reflect.Ptr:
+			// Handle pointer to struct
+			if !value.IsNil() && value.Elem().Kind() == reflect.Struct {
+				properties = append(properties, processField(field, value.Elem())...)
+			} else {
+				properties = append(properties, NewRepoProperty(name, group, value.Interface(), typeStr, desc))
+			}
+		}
 	}
 
 	return properties

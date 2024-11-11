@@ -16,7 +16,7 @@ type MainModel struct {
 	height int
 }
 
-func NewMainModelV2() MainModel {
+func NewMainModel() MainModel {
 	stack := Stack{}
 	stack.Push(NewAuthenticatingModel())
 
@@ -44,7 +44,7 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// This should only do a couple of things
 	// 1. Handle ctrl+c to quit ✔️
 	// 2. Handle window sizing ✔️
-	// 3. Handle Forward & Back navigation (creating models as needed) and updating state
+	// 3. Handle Forward & Back navigation (creating models as needed) and updating state ✔️
 	// 4. Call Update on the active model ✔️
 
 	var cmd tea.Cmd
@@ -64,7 +64,6 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmd = m.UpdateChild(msg)
 		}
 	case NextMessage:
-		// TODO: This is where we should be pushing the new model onto the stack
 		nextModel := m.NextModel(msg)
 		m.stack.Push(nextModel)
 		return m, nextModel.Init()

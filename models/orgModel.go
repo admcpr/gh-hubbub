@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sort"
 	"strings"
 
 	"gh-hubbub/queries"
@@ -91,12 +92,16 @@ func (m *OrgModel) SetHeight(height int) {
 	m.height = height
 }
 
-func (m *OrgModel) UpdateRepoList() {
+func (m *OrgModel) populateRepoList() {
 	filteredRepositories := m.repos
 	items := make([]list.Item, len(filteredRepositories))
 	for i, repo := range m.repos {
 		items[i] = item(repo.Name)
 	}
+
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].(item) < items[j].(item)
+	})
 
 	list := list.New(items, itemDelegate{}, m.width/2, m.height-2)
 	list.Title = m.Title
@@ -106,6 +111,7 @@ func (m *OrgModel) UpdateRepoList() {
 	list.SetShowTitle(true)
 
 	m.repoList = list
+	m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
 }
 
 func (m OrgModel) Init() tea.Cmd {
@@ -129,8 +135,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.repos = append(m.repos, structs.NewRepoProperties(msg.Repository))
 
 		if m.repoCount == len(m.repos) {
-			m.UpdateRepoList()
-			m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
+			m.populateRepoList()
 			cmd = m.progress.SetPercent(1.0)
 		} else {
 			cmd = m.progress.IncrPercent(0.9 / float64(m.repoCount))

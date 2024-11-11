@@ -3,6 +3,8 @@ package structs
 import (
 	"gh-hubbub/queries"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestToProperties(t *testing.T) {
@@ -21,6 +23,9 @@ func TestToProperties(t *testing.T) {
 }
 
 func TestNewRepoProperties(t *testing.T) {
+	expectedPropertyCount := 49
+	expectedPropertyGroupCount := 5
+
 	repo := queries.Repository{
 		Id:            "123",
 		Name:          "test-repo",
@@ -30,11 +35,6 @@ func TestNewRepoProperties(t *testing.T) {
 
 	repoProperties := NewRepoProperties(repo)
 
-	if len(repoProperties.Properties) != 50 {
-		t.Fatalf("expected 4 properties, got %d", len(repoProperties.Properties))
-	}
-
-	if len(repoProperties.PropertyGroups) != 8 {
-		t.Fatalf("expected 4 property groups, got %d", len(repoProperties.PropertyGroups))
-	}
+	assert.Equal(t, expectedPropertyCount, len(repoProperties.Properties))
+	assert.Equal(t, expectedPropertyGroupCount, len(repoProperties.PropertyGroups))
 }
