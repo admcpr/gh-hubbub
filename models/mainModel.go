@@ -19,6 +19,7 @@ type MainModel struct {
 func NewMainModel() MainModel {
 	stack := Stack{}
 	stack.Push(NewAuthenticatingModel())
+	// stack.Push(NewFiltersModel())
 
 	return MainModel{
 		stack: stack,
@@ -100,6 +101,9 @@ func (m MainModel) NextModel(message NextMessage) tea.Model {
 		newModel = NewUserModel(message.ModelData.(structs.User), m.width, m.height)
 	case reflect.TypeOf(UserModel{}):
 		newModel = NewOrgModel(message.ModelData.(string), m.width, m.height)
+	case reflect.TypeOf(OrgModel{}):
+		newModel = NewFiltersModel()
 	}
+
 	return newModel
 }

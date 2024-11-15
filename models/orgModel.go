@@ -149,6 +149,10 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case tea.KeyMsg:
+		switch msg.String() {
+		case "F", "f":
+			return m, handleNext
+		}
 		switch msg.Type {
 		case tea.KeyEsc:
 			return m, handleEscape

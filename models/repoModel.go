@@ -79,11 +79,6 @@ func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
 }
 
 func (m RepoModel) View() string {
-	if len(m.repository.PropertyGroups) == 0 {
-		// Can this ever happen ????
-		return ""
-	}
-
 	// frameWidth, frameHeight := style.Settings.GetFrameSize()
 	settings := style.App.
 		Width(m.width).
@@ -105,10 +100,19 @@ func NewSettingsTable(activeSettings []structs.RepoProperty, width int) table.Mo
 		rows[i] = table.Row{setting.Name, setting.String()}
 	}
 
-	// table := table.New(table.WithColumns(columns), table.WithRows(rows),
-	// 	table.WithFocused(true), table.WithStyles(table.DefaultStyles()))
+	// Make table cells not wrap
+	s := table.DefaultStyles()
+	s.Cell = s.Cell.MaxWidth(halfWidth).Inline(true)
 
-	table := table.New(table.WithColumns(columns), table.WithRows(rows))
+	table := table.New(
+		table.WithColumns(columns),
+		table.WithRows(rows),
+		table.WithStyles(s),
+	)
 
 	return table
+}
+
+func handleNext() tea.Msg {
+	return NextMessage{}
 }
