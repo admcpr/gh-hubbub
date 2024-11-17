@@ -18,8 +18,8 @@ type MainModel struct {
 
 func NewMainModel() MainModel {
 	stack := Stack{}
-	stack.Push(NewAuthenticatingModel())
-	// stack.Push(NewFiltersModel())
+	// stack.Push(NewAuthenticatingModel())
+	stack.Push(NewFiltersModel())
 
 	return MainModel{
 		stack: stack,

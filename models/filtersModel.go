@@ -19,7 +19,12 @@ type FiltersModel struct {
 	repository   queries.Repository
 	help         help.Model
 	keymap       keymap
-	descriptions map[string]string
+	properties   map[string]property
+}
+
+type property struct {
+	Description string
+	Type        string
 }
 
 func NewFiltersModel() FiltersModel {
@@ -45,7 +50,7 @@ func NewFiltersModel() FiltersModel {
 		repository:   repository,
 		help:         help,
 		keymap:       keymap,
-		descriptions: make(map[string]string),
+		properties:   make(map[string]property),
 	}
 }
 
@@ -81,7 +86,7 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var suggestions []string
 		for _, r := range msg.Properties {
 			suggestions = append(suggestions, r.Name)
-			m.descriptions[r.Name] = r.Description
+			m.properties[r.Name] = property{r.Description, r.Type}
 		}
 		m.textinput.SetSuggestions(suggestions)
 	}
@@ -92,18 +97,24 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m FiltersModel) View() string {
+
 	return fmt.Sprintf(
-		"Pick a Property :\n\n%s\n\n   %s\n\n%s\n\n",
+		"Pick a Property :\n\n%s\n\n   %s\n\n%s\n\n%s\n\n",
 		m.textinput.View(),
 		m.LookupDescription(),
 		m.help.View(m.keymap),
+		m.CurrentProperty().Type,
 	)
 }
 
 type filtersListMessage structs.RepoProperties
 
 func (m FiltersModel) LookupDescription() string {
-	return m.descriptions[m.textinput.CurrentSuggestion()]
+	return m.properties[m.textinput.CurrentSuggestion()].Description
+}
+
+func (m FiltersModel) CurrentProperty() property {
+	return m.properties[m.textinput.CurrentSuggestion()]
 }
 
 func getFilters() tea.Msg {
