@@ -1,4 +1,4 @@
-package filters
+package models
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -17,12 +18,6 @@ type DateModel struct {
 	Name      string
 	fromInput textinput.Model
 	toInput   textinput.Model
-}
-
-type DateRangeFilterMessage struct {
-	Name string
-	From time.Time
-	To   time.Time
 }
 
 func dateValidator(s, prompt string) error {
@@ -152,5 +147,5 @@ func (m *DateModel) GetValue() (time.Time, time.Time, error) {
 func (m DateModel) SendAddFilterMsg() tea.Msg {
 	from, to, _ := m.GetValue()
 
-	return DateRangeFilterMessage{m.Name, from, to}
+	return structs.NewFilterDate(m.Name, from, to)
 }

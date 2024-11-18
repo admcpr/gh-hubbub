@@ -1,4 +1,4 @@
-package filters
+package models
 
 import (
 	"gh-hubbub/structs"

@@ -1,9 +1,9 @@
-# gh-hubbub
+# gh-repospy
 
 ## Installation
 Install [GitHub CLI]() and run the following command:
 ```
-gh extension install admcpr/gh-hubbub
+gh extension install admcpr/gh-repospy
 ```
 
 ## Usage

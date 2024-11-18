@@ -1,4 +1,4 @@
-package filters
+package models
 
 import (
 	"gh-hubbub/structs"
@@ -41,7 +41,7 @@ func (m BoolModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case tea.KeyEnter.String():
-			return m, m.SendAddFilterMsg
+			return m, m.SendFilterMsg
 		case "y", "Y":
 			m.input.SetValue("Yes")
 		case "n", "N":
@@ -64,6 +64,6 @@ func (m *BoolModel) Focus() tea.Cmd {
 	return m.input.Focus()
 }
 
-func (m BoolModel) SendAddFilterMsg() tea.Msg {
-	return BoolFilterMessage{m.Name, m.GetValue()}
+func (m BoolModel) SendFilterMsg() tea.Msg {
+	return structs.NewFilterBool(m.Name, m.GetValue())
 }

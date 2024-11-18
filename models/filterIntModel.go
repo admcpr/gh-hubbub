@@ -1,7 +1,8 @@
-package filters
+package models
 
 import (
 	"fmt"
+	"gh-hubbub/structs"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -12,12 +13,6 @@ type IntModel struct {
 	Name      string
 	fromInput textinput.Model
 	toInput   textinput.Model
-}
-
-type IntRangeFilterMessage struct {
-	Name string
-	From int
-	To   int
 }
 
 func intValidator(s, prompt string) error {
@@ -96,6 +91,5 @@ func (m *IntModel) GetValue() (int, int) {
 
 func (m IntModel) SendAddFilterMsg() tea.Msg {
 	from, to := m.GetValue()
-
-	return IntRangeFilterMessage{m.Name, from, to}
+	return structs.NewFilterInt(m.Name, from, to)
 }
