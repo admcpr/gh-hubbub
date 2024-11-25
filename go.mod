@@ -16,12 +16,11 @@ require (
 require (
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
-	github.com/charmbracelet/colorprofile v0.1.9 // indirect
+	github.com/charmbracelet/colorprofile v0.1.6 // indirect
 	github.com/charmbracelet/harmonica v0.2.0 // indirect
-	github.com/charmbracelet/x/ansi v0.5.2 // indirect
-	github.com/charmbracelet/x/cellbuf v0.0.6 // indirect
+	github.com/charmbracelet/x/ansi v0.4.3 // indirect
+	github.com/charmbracelet/x/cellbuf v0.0.3 // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
-	github.com/charmbracelet/x/vt v0.0.0-20241122161412-4559bf4d941d // indirect
 	github.com/charmbracelet/x/wcwidth v0.0.0-20241122161412-4559bf4d941d // indirect
 	github.com/charmbracelet/x/windows v0.2.0 // indirect
 	github.com/cli/safeexec v1.0.1 // indirect
