@@ -4,7 +4,7 @@ import (
 	"gh-hubbub/structs"
 	"testing"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 func TestNewFilterBoolModel(t *testing.T) {
@@ -52,7 +52,7 @@ func TestFilterBoolModel_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{tt.msgKey}}
+			msg := tea.KeyEnter
 			m, _ := tt.model.Update(msg)
 
 			filterBooleanModel, _ := m.(BoolModel)

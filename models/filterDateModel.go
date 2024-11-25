@@ -10,8 +10,8 @@ import (
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/bubbles/v2/textinput"
+	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 type DateModel struct {
@@ -71,8 +71,8 @@ func NewDateModel(name string, from, to time.Time) DateModel {
 	return m
 }
 
-func (m DateModel) Init() tea.Cmd {
-	return textinput.Blink
+func (m DateModel) Init() (tea.Model, tea.Cmd) {
+	return m, textinput.Blink
 }
 
 func (m DateModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -82,10 +82,10 @@ func (m DateModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch msg.String() {
-		case tea.KeyEnter.String():
+		case "enter":
 			// TODO: validate
 			return m, m.SendAddFilterMsg
-		case tea.KeyTab.String():
+		case "tab":
 			if m.fromInput.Focused() {
 				m.fromInput.Blur()
 				m.toInput.Focus()

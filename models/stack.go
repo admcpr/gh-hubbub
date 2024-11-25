@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 // Stack represents a stack data structure

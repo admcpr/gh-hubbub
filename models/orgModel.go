@@ -11,10 +11,10 @@ import (
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
-	"github.com/charmbracelet/bubbles/list"
-	"github.com/charmbracelet/bubbles/progress"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/bubbles/v2/list"
+	"github.com/charmbracelet/bubbles/v2/progress"
+	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 	"github.com/cli/go-gh/v2/pkg/api"
 	graphql "github.com/cli/shurcooL-graphql"
 )
@@ -114,8 +114,8 @@ func (m *OrgModel) populateRepoList() {
 	m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
 }
 
-func (m OrgModel) Init() tea.Cmd {
-	return getRepoList(m.Title)
+func (m OrgModel) Init() (tea.Model, tea.Cmd) {
+	return m, getRepoList(m.Title)
 }
 
 func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -153,11 +153,12 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "F", "f":
 			return m, handleNext
 		}
-		switch msg.Type {
-		case tea.KeyEsc:
+		switch msg.String() {
+		case "esc":
 			return m, handleEscape
-		case tea.KeyTab, tea.KeyShiftTab:
-			m.repoModel, cmd = m.repoModel.Update(msg)
+		case "tab", "shift+tab":
+			repoModel, cmd := m.repoModel.Update(msg)
+			m.repoModel = repoModel.(RepoModel)
 			return m, cmd
 		default:
 			m.repoList, cmd = m.repoList.Update(msg)

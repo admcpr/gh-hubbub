@@ -4,9 +4,9 @@ import (
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
-	"github.com/charmbracelet/bubbles/table"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/bubbles/v2/table"
+	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 type RepoModel struct {
@@ -36,8 +36,8 @@ func (m *RepoModel) SetHeight(height int) {
 	m.height = height
 }
 
-func (m RepoModel) Init() tea.Cmd {
-	return nil
+func (m RepoModel) Init() (tea.Model, tea.Cmd) {
+	return m, nil
 }
 
 func (m *RepoModel) SelectRepo(repository structs.RepoProperties) {
@@ -53,26 +53,28 @@ func (m *RepoModel) SelectTab(index int) {
 	m.settingsTable = NewSettingsTable(m.repository.PropertyGroups[key], m.width)
 }
 
-func (m RepoModel) Update(msg tea.Msg) (RepoModel, tea.Cmd) {
+func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyTab:
+		switch msg.String() {
+		case "tab":
 			if m.activeTab < len(m.repository.PropertyGroups)-1 {
 				m.SelectTab(m.activeTab + 1)
 			} else {
 				m.SelectTab(0)
 			}
-			m.repoHeader, _ = m.repoHeader.Update(TabSelectMessage{Index: m.activeTab})
-		case tea.KeyShiftTab:
+			repoHeader, _ := m.repoHeader.Update(TabSelectMessage{Index: m.activeTab})
+			m.repoHeader = repoHeader.(RepoHeaderModel)
+		case "shift+tab":
 			if m.activeTab > 0 {
 				m.SelectTab(m.activeTab - 1)
 			} else {
 				m.SelectTab(len(m.repository.PropertyGroups) - 1)
 			}
-			m.repoHeader, _ = m.repoHeader.Update(TabSelectMessage{Index: m.activeTab})
+			repoHeader, _ := m.repoHeader.Update(TabSelectMessage{Index: m.activeTab})
+			m.repoHeader = repoHeader.(RepoHeaderModel)
 		}
 	}
 	return m, cmd

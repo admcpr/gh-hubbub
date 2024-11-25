@@ -3,7 +3,7 @@ package models
 import (
 	"gh-hubbub/style"
 
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 func RenderTabs(tabs []string, width, activeTab int) string {

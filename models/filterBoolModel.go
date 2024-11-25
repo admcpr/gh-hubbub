@@ -3,8 +3,8 @@ package models
 import (
 	"gh-hubbub/structs"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/bubbles/v2/textinput"
+	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 type BoolModel struct {
@@ -29,8 +29,8 @@ type BoolFilterMessage struct {
 	Value bool
 }
 
-func (m BoolModel) Init() tea.Cmd {
-	return textinput.Blink
+func (m BoolModel) Init() (tea.Model, tea.Cmd) {
+	return m, textinput.Blink
 }
 
 func (m BoolModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -40,7 +40,7 @@ func (m BoolModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch msg.String() {
-		case tea.KeyEnter.String():
+		case "enter":
 			return m, m.SendFilterMsg
 		case "y", "Y":
 			m.input.SetValue("Yes")

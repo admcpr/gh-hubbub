@@ -5,9 +5,10 @@ import (
 	"gh-hubbub/structs"
 	"time"
 
-	"github.com/charmbracelet/bubbles/help"
-	"github.com/charmbracelet/bubbles/table"
-	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/bubbles/v2/help"
+	"github.com/charmbracelet/bubbles/v2/key"
+	"github.com/charmbracelet/bubbles/v2/table"
+	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 type AddFilterMsg structs.Filter
@@ -18,12 +19,9 @@ type FiltersModel struct {
 	filtersTable table.Model
 	repository   queries.Repository
 	help         help.Model
-	keymap       filtersearchkeymap
+	keymap       filterKeyMap
 	properties   map[string]property
-	filters      []structs.Filter
-	// dateRangeFilter filters.DateModel
-	// intRangeFilter  filters.IntModel
-	// boolFilter      filters.BoolModel
+	filters      map[string]structs.Filter
 }
 
 type property struct {
@@ -38,7 +36,7 @@ func NewFiltersModel() FiltersModel {
 	repository := queries.Repository{}
 
 	help := help.New()
-	keymap := filtersearchkeymap{}
+	keymap := filterKeyMap{}
 
 	return FiltersModel{
 		filterSearch: fsm,
@@ -47,13 +45,13 @@ func NewFiltersModel() FiltersModel {
 		help:         help,
 		keymap:       keymap,
 		properties:   make(map[string]property),
-		filters:      []structs.Filter{},
+		filters:      make(map[string]structs.Filter),
 	}
 }
 
-func (m FiltersModel) Init() tea.Cmd {
-	cmd := m.filterSearch.Init()
-	return cmd
+func (m FiltersModel) Init() (tea.Model, tea.Cmd) {
+	_, cmd := m.filterSearch.Init()
+	return m, cmd
 }
 
 func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -61,8 +59,8 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyEsc:
+		switch msg.String() {
+		case "esc":
 			if m.filtering() {
 				m.filterModel = nil
 				return m, nil
@@ -75,10 +73,10 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case AddFilterMsg:
-		m.filters = append(m.filters, structs.Filter(msg))
+		m.filters[msg.GetName()] = structs.Filter(msg)
 		m.filterModel = nil
 		m.filterSearch = NewFilterSearchModel()
-		return m, m.filterSearch.Init()
+		return m.filterSearch.Init()
 	}
 
 	if m.filtering() {
@@ -107,12 +105,56 @@ func (m FiltersModel) View() string {
 	if m.filtering() {
 		return m.filterModel.View()
 	} else {
-		return m.filterSearch.View()
+		filterTableView := ""
+		if len(m.filters) > 0 {
+			m.filtersTable = NewFilterTable(m.filters, 80)
+			filterTableView = m.filtersTable.View()
+		}
+		return m.filterSearch.View() + "\n\n" + filterTableView + "\n\n" + m.help.View(m.keymap)
 	}
 }
 
 type filtersListMsg structs.RepoProperties
 
+func NewFilterTable(filters map[string]structs.Filter, width int) table.Model {
+	halfWidth := half(width)
+
+	columns := []table.Column{
+		{Title: "Name", Width: halfWidth},
+		{Title: "Filter", Width: halfWidth}}
+
+	rows := make([]table.Row, 0, len(filters))
+	for _, filter := range filters {
+		rows = append(rows, table.Row{filter.GetName(), filter.String()})
+	}
+
+	// Make table cells not wrap
+	s := table.DefaultStyles()
+	s.Cell = s.Cell.MaxWidth(halfWidth).Inline(true)
+
+	table := table.New(
+		table.WithColumns(columns),
+		table.WithRows(rows),
+		table.WithStyles(s),
+	)
+
+	return table
+}
+
 func (m FiltersModel) filtering() bool {
 	return m.filterModel != nil
+}
+
+type filterKeyMap struct{}
+
+func (k filterKeyMap) ShortHelp() []key.Binding {
+	return []key.Binding{
+		key.NewBinding(key.WithKeys("tab"), key.WithHelp("tab", "complete")),
+		key.NewBinding(key.WithKeys("down"), key.WithHelp("↓", "next suggestion")),
+		key.NewBinding(key.WithKeys("up"), key.WithHelp("↑", "prev suggestion")),
+		key.NewBinding(key.WithKeys("esc"), key.WithHelp("esc", "back")),
+	}
+}
+func (k filterKeyMap) FullHelp() [][]key.Binding {
+	return [][]key.Binding{k.ShortHelp()}
 }

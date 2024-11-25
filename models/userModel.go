@@ -7,8 +7,8 @@ import (
 	"gh-hubbub/structs"
 	"gh-hubbub/style"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/bubbles/v2/list"
+	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/cli/go-gh/v2/pkg/api"
 )
 
@@ -45,8 +45,8 @@ func (m *UserModel) SetHeight(height int) {
 	}
 }
 
-func (m UserModel) Init() tea.Cmd {
-	return getOrganisations
+func (m UserModel) Init() (tea.Model, tea.Cmd) {
+	return m, getOrganisations
 }
 
 func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

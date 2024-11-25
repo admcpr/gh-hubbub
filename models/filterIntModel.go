@@ -5,8 +5,8 @@ import (
 	"gh-hubbub/structs"
 	"strconv"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/bubbles/v2/textinput"
+	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 type IntModel struct {
@@ -46,8 +46,8 @@ func NewIntModel(title string, from, to int) IntModel {
 	return m
 }
 
-func (m IntModel) Init() tea.Cmd {
-	return textinput.Blink
+func (m IntModel) Init() (tea.Model, tea.Cmd) {
+	return m, textinput.Blink
 }
 
 func (m IntModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -57,9 +57,9 @@ func (m IntModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch msg.String() {
-		case tea.KeyEnter.String():
+		case "enter":
 			return m, m.SendAddFilterMsg
-		case tea.KeyTab.String():
+		case "tab":
 			if m.fromInput.Focused() {
 				m.fromInput.Blur()
 				m.toInput.Focus()

@@ -5,18 +5,14 @@ import (
 	"gh-hubbub/queries"
 	"gh-hubbub/structs"
 
-	"github.com/charmbracelet/bubbles/help"
-	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/bubbles/v2/textinput"
+	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 type FilterSearchModel struct {
 	textinput  textinput.Model
 	repository queries.Repository
-	help       help.Model
-	keymap     filtersearchkeymap
 	properties map[string]property
 }
 
@@ -28,34 +24,29 @@ func NewFilterSearchModel() FilterSearchModel {
 	ti.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("63"))
 	ti.Focus()
 	ti.CharLimit = 50
-	ti.Width = 20
+	ti.SetWidth(20)
 	ti.ShowSuggestions = true
 
 	repository := queries.Repository{}
 
-	help := help.New()
-	keymap := filtersearchkeymap{}
-
 	return FilterSearchModel{
 		textinput:  ti,
 		repository: repository,
-		help:       help,
-		keymap:     keymap,
 		properties: make(map[string]property),
 	}
 }
 
 type PropertySelectedMsg property
 
-func (m FilterSearchModel) Init() tea.Cmd {
-	return tea.Batch(getFilters, textinput.Blink)
+func (m FilterSearchModel) Init() (tea.Model, tea.Cmd) {
+	return m, tea.Batch(getFilters, textinput.Blink)
 }
 
 func (m FilterSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyEnter:
+		switch msg.String() {
+		case "enter":
 			_, exists := m.CurrentPropertySuggestion()
 			if exists {
 				return m, m.SendPropertyMsg
@@ -78,18 +69,10 @@ func (m FilterSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m FilterSearchModel) View() string {
-	sugestedType := ""
-	prop, exists := m.CurrentPropertySuggestion()
-	if exists {
-		sugestedType = prop.Type
-	}
-
 	return fmt.Sprintf(
-		"Pick a Property :\n\n%s\n\n   %s\n\n%s\n\n%s\n",
+		"%s\n\n%s\n\n",
 		m.textinput.View(),
 		m.LookupDescription(),
-		m.help.View(m.keymap),
-		sugestedType,
 	)
 }
 
@@ -117,18 +100,4 @@ func getFilters() tea.Msg {
 	rp := structs.NewRepoProperties(rq)
 
 	return filtersListMsg(rp)
-}
-
-type filtersearchkeymap struct{}
-
-func (k filtersearchkeymap) ShortHelp() []key.Binding {
-	return []key.Binding{
-		key.NewBinding(key.WithKeys("tab"), key.WithHelp("tab", "complete")),
-		key.NewBinding(key.WithKeys("down"), key.WithHelp("↓", "next suggestion")),
-		key.NewBinding(key.WithKeys("up"), key.WithHelp("↑", "prev suggestion")),
-		key.NewBinding(key.WithKeys("esc"), key.WithHelp("esc", "back")),
-	}
-}
-func (k filtersearchkeymap) FullHelp() [][]key.Binding {
-	return [][]key.Binding{k.ShortHelp()}
 }

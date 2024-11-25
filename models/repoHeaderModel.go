@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/charmbracelet/bubbles/paginator"
-	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/bubbles/v2/paginator"
+	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 type TabSelectMessage struct{ Index int }
@@ -31,11 +31,11 @@ func (m *RepoHeaderModel) SetWidth(width int) {
 	m.width = width
 }
 
-func (m RepoHeaderModel) Init() tea.Cmd {
-	return nil
+func (m RepoHeaderModel) Init() (tea.Model, tea.Cmd) {
+	return m, nil
 }
 
-func (m RepoHeaderModel) Update(msg tea.Msg) (RepoHeaderModel, tea.Cmd) {
+func (m RepoHeaderModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 

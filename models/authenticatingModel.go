@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"gh-hubbub/structs"
 
-	"github.com/charmbracelet/bubbles/spinner"
-	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/bubbles/v2/spinner"
+	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/cli/go-gh/v2/pkg/api"
 )
 
@@ -26,10 +26,10 @@ func NewAuthenticatingModel() AuthenticatingModel {
 	}
 }
 
-func (m AuthenticatingModel) Init() tea.Cmd {
+func (m AuthenticatingModel) Init() (tea.Model, tea.Cmd) {
 	cmds := []tea.Cmd{m.spinner.Tick, getUser}
 
-	return tea.Batch(cmds...)
+	return m, tea.Batch(cmds...)
 }
 
 func (m AuthenticatingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

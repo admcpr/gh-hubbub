@@ -4,7 +4,7 @@ import (
 	"gh-hubbub/structs"
 	"reflect"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 type NextMessage struct{ ModelData interface{} }
@@ -36,9 +36,11 @@ func (m *MainModel) SetHeight(height int) {
 	// TODO: Set height of stack head
 }
 
-func (m MainModel) Init() tea.Cmd {
-	child, _ := m.stack.Peek()
-	return child.Init()
+func (m MainModel) Init() (tea.Model, tea.Cmd) {
+	// child, _ := m.stack.Peek()
+	// _, cmd := child.Init()
+	// return m, cmd
+	return m, nil
 }
 
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -50,33 +52,32 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	var cmd tea.Cmd
 
-	switch msg := msg.(type) {
+	// switch msg := msg.(type) {
+	// case tea.WindowSizeMsg:
+	// 	m.SetHeight(msg.Height)
+	// 	m.SetWidth(msg.Width)
+	// 	return m, nil
 
-	case tea.WindowSizeMsg:
-		m.SetHeight(msg.Height)
-		m.SetWidth(msg.Width)
-		return m, nil
-
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c":
-			return m, tea.Quit
-		default:
-			cmd = m.UpdateChild(msg)
-		}
-	case NextMessage:
-		nextModel := m.NextModel(msg)
-		m.stack.Push(nextModel)
-		return m, nextModel.Init()
-	case PreviousMessage:
-		_, err := m.stack.Pop()
-		if err != nil {
-			return m, tea.Quit
-		}
-		return m, nil
-	default:
-		cmd = m.UpdateChild(msg)
-	}
+	// case tea.KeyMsg:
+	// 	switch msg.String() {
+	// 	case "ctrl+c":
+	// 		return m, tea.Quit
+	// 	default:
+	// 		cmd = m.UpdateChild(msg)
+	// 	}
+	// case NextMessage:
+	// 	nextModel := m.NextModel(msg)
+	// 	m.stack.Push(nextModel)
+	// 	return nextModel.Init()
+	// case PreviousMessage:
+	// 	_, err := m.stack.Pop()
+	// 	if err != nil {
+	// 		return m, tea.Quit
+	// 	}
+	// 	return m, nil
+	// default:
+	// 	cmd = m.UpdateChild(msg)
+	// }
 
 	return m, cmd
 }
@@ -90,8 +91,9 @@ func (m *MainModel) UpdateChild(msg tea.Msg) tea.Cmd {
 }
 
 func (m MainModel) View() string {
-	child, _ := m.stack.Peek()
-	return child.View()
+	// child, _ := m.stack.Peek()
+	// return child.View()
+	return ""
 }
 
 func (m MainModel) NextModel(message NextMessage) tea.Model {
