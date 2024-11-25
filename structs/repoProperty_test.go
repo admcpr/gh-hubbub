@@ -17,14 +17,14 @@ func TestToProperties(t *testing.T) {
 
 	properties := ToProperties(repo)
 
-	if len(properties) != 50 {
-		t.Fatalf("expected 50 properties, got %d", len(properties))
+	if len(properties) != 49 {
+		t.Fatalf("expected 49 properties, got %d", len(properties))
 	}
 }
 
 func TestNewRepoProperties(t *testing.T) {
 	expectedPropertyCount := 49
-	expectedPropertyGroupCount := 5
+	expectedPropertyGroupCount := 7
 
 	repo := queries.Repository{
 		Id:            "123",

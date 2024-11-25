@@ -52,7 +52,7 @@ func TestStack_Peek(t *testing.T) {
 	stack.Push(element)
 	peekedElement, err := stack.Peek()
 	assert.NoError(t, err)
-	assert.Equal(t, 1, peekedElement)
+	assert.Equal(t, element, peekedElement)
 	assert.Equal(t, 1, stack.Len())
 
 	_, err = stack.Peek()
