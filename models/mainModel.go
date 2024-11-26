@@ -65,8 +65,9 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case NextMessage:
 		nextModel := m.NextModel(msg)
+		nextModel, cmd := nextModel.Init()
 		m.stack.Push(nextModel)
-		return nextModel.Init()
+		return m, cmd
 	case PreviousMessage:
 		_, err := m.stack.Pop()
 		if err != nil {
