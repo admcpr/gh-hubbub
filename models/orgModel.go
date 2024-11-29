@@ -25,6 +25,7 @@ const (
 
 type orgQueryMsg queries.OrganizationQuery
 type repoQueryMsg queries.RepositoryQuery
+type filtersMsg map[string]structs.Filter
 
 var (
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
@@ -63,6 +64,7 @@ type OrgModel struct {
 	Title     string
 	repoCount int
 	repos     []structs.RepoProperties
+	filters   map[string]structs.Filter
 
 	repoList  list.Model
 	repoModel RepoModel
@@ -140,8 +142,11 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		} else {
 			cmd = m.progress.IncrPercent(0.9 / float64(m.repoCount))
 		}
-
 		return m, cmd
+
+	case filtersMsg:
+		m.filters = msg
+		return m, nil
 
 	case progress.FrameMsg:
 		progressModel, cmd := m.progress.Update(msg)
@@ -154,6 +159,10 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, handleNext
 		}
 		switch msg.String() {
+		case "f":
+			return m, func() tea.Msg {
+				return NextMessage{ModelData: m.filters}
+			}
 		case "esc":
 			return m, handleEscape
 		case "tab", "shift+tab":
