@@ -76,7 +76,8 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.filters[msg.GetName()] = structs.Filter(msg)
 		m.filterModel = nil
 		m.filterSearch = NewFilterSearchModel()
-		return m.filterSearch.Init()
+		m.filterSearch, cmd = m.filterSearch.Init()
+		return m, cmd
 	}
 
 	if m.filtering() {
