@@ -64,16 +64,11 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmd = m.UpdateChild(msg)
 		}
 	case NextMessage:
-		nextModel := m.NextModel(msg)
-		nextModel, cmd := nextModel.Init()
-		m.stack.Push(nextModel)
+		cmd = m.Next(msg)
 		return m, cmd
 	case PreviousMessage:
-		_, err := m.stack.Pop()
-		if err != nil {
-			return m, tea.Quit
-		}
-		return m, nil
+		cmd = m.Previous()
+		return m, cmd
 	default:
 		cmd = m.UpdateChild(msg)
 	}
@@ -94,7 +89,7 @@ func (m MainModel) View() string {
 	return child.View()
 }
 
-func (m MainModel) NextModel(message NextMessage) tea.Model {
+func (m *MainModel) Next(message NextMessage) tea.Cmd {
 	var newModel tea.Model
 	switch m.stack.TypeOfHead() {
 	case reflect.TypeOf(AuthenticatingModel{}):
@@ -105,5 +100,16 @@ func (m MainModel) NextModel(message NextMessage) tea.Model {
 		newModel = NewFiltersModel()
 	}
 
-	return newModel
+	nextModel, cmd := newModel.Init()
+	m.stack.Push(nextModel)
+
+	return cmd
+}
+
+func (m *MainModel) Previous() tea.Cmd {
+	_, err := m.stack.Pop()
+	if err != nil {
+		return tea.Quit
+	}
+	return nil
 }
