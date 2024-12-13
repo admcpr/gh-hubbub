@@ -25,7 +25,7 @@ const (
 
 type orgQueryMsg queries.OrganizationQuery
 type repoQueryMsg queries.RepositoryQuery
-type filtersMsg map[string]structs.Filter
+type filtersMsg filterMap
 
 var (
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
@@ -64,7 +64,7 @@ type OrgModel struct {
 	Title     string
 	repoCount int
 	repos     []structs.RepoProperties
-	filters   map[string]structs.Filter
+	filters   filterMap
 
 	repoList  list.Model
 	repoModel RepoModel
@@ -145,7 +145,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case filtersMsg:
-		m.filters = msg
+		m.filters = filterMap(msg)
 		return m, nil
 
 	case progress.FrameMsg:

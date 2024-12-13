@@ -8,7 +8,7 @@ import (
 )
 
 type NextMessage struct{ ModelData interface{} }
-type PreviousMessage struct{}
+type PreviousMessage struct{ ModelData interface{} }
 
 type MainModel struct {
 	stack  Stack
@@ -67,7 +67,7 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = m.Next(msg)
 		return m, cmd
 	case PreviousMessage:
-		cmd = m.Previous()
+		cmd = m.Previous(msg)
 		return m, cmd
 	default:
 		cmd = m.UpdateChild(msg)
@@ -91,12 +91,14 @@ func (m MainModel) View() string {
 
 func (m *MainModel) Next(message NextMessage) tea.Cmd {
 	var newModel tea.Model
-	switch m.stack.TypeOfHead() {
-	case reflect.TypeOf(AuthenticatingModel{}):
+	head, _ := m.stack.Peek()
+
+	switch head.(type) {
+	case AuthenticatingModel:
 		newModel = NewUserModel(message.ModelData.(structs.User), m.width, m.height)
-	case reflect.TypeOf(UserModel{}):
+	case UserModel:
 		newModel = NewOrgModel(message.ModelData.(string), m.width, m.height)
-	case reflect.TypeOf(OrgModel{}):
+	case OrgModel:
 		newModel = NewFiltersModel()
 	}
 
@@ -106,10 +108,22 @@ func (m *MainModel) Next(message NextMessage) tea.Cmd {
 	return cmd
 }
 
-func (m *MainModel) Previous() tea.Cmd {
-	_, err := m.stack.Pop()
+func (m *MainModel) Previous(message PreviousMessage) tea.Cmd {
+	head, err := m.stack.Pop()
+
 	if err != nil {
 		return tea.Quit
 	}
+
+	switch head.(type) {
+	case FiltersModel:
+		if message.ModelData != nil && reflect.TypeOf(message.ModelData) == reflect.TypeOf(filterMap{}) {
+			msg := message.ModelData.(filterMap)
+			head, cmd := head.Update(msg)
+			m.stack.Push(head)
+			return cmd
+		}
+	}
+
 	return nil
 }

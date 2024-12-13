@@ -12,6 +12,7 @@ import (
 )
 
 type AddFilterMsg structs.Filter
+type filterMap map[string]structs.Filter
 
 type FiltersModel struct {
 	filterSearch tea.Model
@@ -21,7 +22,7 @@ type FiltersModel struct {
 	help         help.Model
 	keymap       filterKeyMap
 	properties   map[string]property
-	filters      map[string]structs.Filter
+	filters      filterMap
 }
 
 type property struct {
@@ -65,7 +66,13 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.filterModel = nil
 				return m, nil
 			} else {
-				return m, handleEscape
+				return m, func() tea.Msg {
+					return PreviousMessage{ModelData: m.filters}
+				}
+			}
+		case "ctrl+enter":
+			return m, func() tea.Msg {
+				return PreviousMessage{ModelData: m.filters}
 			}
 		}
 	case PropertySelectedMsg:
