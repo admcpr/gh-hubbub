@@ -27,6 +27,20 @@ type orgQueryMsg queries.OrganizationQuery
 type repoQueryMsg queries.RepositoryQuery
 type filtersMsg filterMap
 
+func (filterMap *filterMap) filterRepos(repos []structs.RepoProperties) []structs.RepoProperties {
+	if filterMap == nil {
+		return repos
+	}
+
+	filteredRepos := []structs.RepoProperties{}
+	for _, repo := range repos {
+		filteredRepos = append(filteredRepos, repo)
+		// TODO: we need to filter the repos based on the filters
+	}
+
+	return filteredRepos
+}
+
 var (
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
@@ -106,7 +120,7 @@ func (m *OrgModel) populateRepoList() {
 	})
 
 	list := list.New(items, itemDelegate{}, m.width/2, m.height-2)
-	list.Title = m.Title
+	list.Title = fmt.Sprintf("%s Filters: %d", m.Title, len(m.filters))
 	list.Styles.Title = style.Title
 	list.SetStatusBarItemName("Repository", "Repositories")
 	list.SetShowHelp(false)
@@ -146,6 +160,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case filtersMsg:
 		m.filters = filterMap(msg)
+		m.populateRepoList()
 		return m, nil
 
 	case progress.FrameMsg:

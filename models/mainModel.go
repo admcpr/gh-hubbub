@@ -117,11 +117,9 @@ func (m *MainModel) Previous(message PreviousMessage) tea.Cmd {
 
 	switch head.(type) {
 	case FiltersModel:
+		// This is all a big mess, need to refactor to something less stinky
 		if message.ModelData != nil && reflect.TypeOf(message.ModelData) == reflect.TypeOf(filterMap{}) {
-			msg := message.ModelData.(filterMap)
-			head, cmd := head.Update(msg)
-			m.stack.Push(head)
-			return cmd
+			return m.UpdateChild(filtersMsg(message.ModelData.(filterMap)))
 		}
 	}
 
