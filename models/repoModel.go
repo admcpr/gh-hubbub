@@ -21,7 +21,7 @@ type RepoModel struct {
 func NewRepoModel(width, height int) RepoModel {
 	return RepoModel{
 		repoHeader: NewRepoHeaderModel(width, []string{}, 0),
-		repository: structs.RepoProperties{Properties: []structs.RepoProperty{}, PropertyGroups: map[string][]structs.RepoProperty{}},
+		repository: structs.RepoProperties{Properties: map[string]structs.RepoProperty{}, PropertyGroups: map[string][]structs.RepoProperty{}},
 		width:      width,
 		height:     height,
 	}
@@ -42,14 +42,14 @@ func (m RepoModel) Init() (tea.Model, tea.Cmd) {
 
 func (m *RepoModel) SelectRepo(repository structs.RepoProperties) {
 	m.repository = repository
-	key := m.repository.Keys[m.activeTab]
-	m.repoHeader = NewRepoHeaderModel(m.width, m.repository.Keys, m.activeTab)
+	key := m.repository.GroupKeys[m.activeTab]
+	m.repoHeader = NewRepoHeaderModel(m.width, m.repository.GroupKeys, m.activeTab)
 	m.settingsTable = NewSettingsTable(m.repository.PropertyGroups[key], m.width)
 }
 
 func (m *RepoModel) SelectTab(index int) {
 	m.activeTab = index
-	key := m.repository.Keys[index]
+	key := m.repository.GroupKeys[index]
 	m.settingsTable = NewSettingsTable(m.repository.PropertyGroups[key], m.width)
 }
 

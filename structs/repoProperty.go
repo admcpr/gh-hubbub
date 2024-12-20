@@ -13,9 +13,9 @@ import (
 type RepoProperties struct {
 	Name           string
 	Url            string
-	Properties     []RepoProperty
+	Properties     map[string]RepoProperty
 	PropertyGroups map[string][]RepoProperty
-	Keys           []string
+	GroupKeys      []string
 }
 
 func NewRepoProperties(r queries.Repository) RepoProperties {
@@ -34,7 +34,7 @@ func NewRepoProperties(r queries.Repository) RepoProperties {
 		Url:            r.Url,
 		Properties:     properties,
 		PropertyGroups: propertyGroups,
-		Keys:           keys,
+		GroupKeys:      keys,
 	}
 }
 
@@ -84,7 +84,7 @@ func NewRepoProperty(name string, group string, value interface{}, typeStr strin
 // 	return properties
 // }
 
-func ToProperties(r queries.Repository) []RepoProperty {
+func ToProperties(r queries.Repository) map[string]RepoProperty {
 	var properties []RepoProperty
 	t := reflect.TypeOf(r)
 	v := reflect.ValueOf(r)
@@ -96,7 +96,12 @@ func ToProperties(r queries.Repository) []RepoProperty {
 		properties = append(properties, processField(field, value)...)
 	}
 
-	return properties
+	propertiesMap := make(map[string]RepoProperty)
+	for _, p := range properties {
+		propertiesMap[p.Name] = p
+	}
+
+	return propertiesMap
 }
 
 func processField(field reflect.StructField, value reflect.Value) []RepoProperty {

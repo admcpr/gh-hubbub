@@ -34,8 +34,16 @@ func (filterMap *filterMap) filterRepos(repos []structs.RepoProperties) []struct
 
 	filteredRepos := []structs.RepoProperties{}
 	for _, repo := range repos {
-		filteredRepos = append(filteredRepos, repo)
-		// TODO: we need to filter the repos based on the filters
+		matches := true
+		for _, filter := range *filterMap {
+			if !filter.Matches(repo.Properties[filter.GetName()]) {
+				matches = false
+				break
+			}
+		}
+		if matches {
+			filteredRepos = append(filteredRepos, repo)
+		}
 	}
 
 	return filteredRepos
@@ -109,9 +117,9 @@ func (m *OrgModel) SetHeight(height int) {
 }
 
 func (m *OrgModel) populateRepoList() {
-	filteredRepositories := m.repos
+	filteredRepositories := m.filters.filterRepos(m.repos)
 	items := make([]list.Item, len(filteredRepositories))
-	for i, repo := range m.repos {
+	for i, repo := range filteredRepositories {
 		items[i] = item(repo.Name)
 	}
 
