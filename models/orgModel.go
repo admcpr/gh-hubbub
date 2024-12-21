@@ -19,35 +19,8 @@ import (
 	graphql "github.com/cli/shurcooL-graphql"
 )
 
-const (
-	padding = 2
-)
-
 type orgQueryMsg queries.OrganizationQuery
 type repoQueryMsg queries.RepositoryQuery
-type filtersMsg filterMap
-
-func (filterMap *filterMap) filterRepos(repos []structs.RepoProperties) []structs.RepoProperties {
-	if filterMap == nil {
-		return repos
-	}
-
-	filteredRepos := []structs.RepoProperties{}
-	for _, repo := range repos {
-		matches := true
-		for _, filter := range *filterMap {
-			if !filter.Matches(repo.Properties[filter.GetName()]) {
-				matches = false
-				break
-			}
-		}
-		if matches {
-			filteredRepos = append(filteredRepos, repo)
-		}
-	}
-
-	return filteredRepos
-}
 
 var (
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
@@ -108,11 +81,8 @@ func NewOrgModel(title string, width, height int) OrgModel {
 	}
 }
 
-func (m *OrgModel) SetWidth(width int) {
+func (m *OrgModel) SetDimensions(width, height int) {
 	m.width = width
-}
-
-func (m *OrgModel) SetHeight(height int) {
 	m.height = height
 }
 
@@ -187,7 +157,9 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return NextMessage{ModelData: m.filters}
 			}
 		case "esc":
-			return m, handleEscape
+			return m, func() tea.Msg {
+				return PreviousMessage{}
+			}
 		case "tab", "shift+tab":
 			repoModel, cmd := m.repoModel.Update(msg)
 			m.repoModel = repoModel.(RepoModel)
@@ -219,7 +191,7 @@ func (m OrgModel) View() string {
 }
 
 func (m OrgModel) ProgressView() string {
-	pad := strings.Repeat(" ", padding)
+	pad := strings.Repeat(" ", 2)
 	progress := "\n" + pad + m.progress.View() + "\n\n" + pad + "Getting repositories ... "
 
 	if m.repoCount < 1 {
@@ -270,8 +242,4 @@ func getRepoList(login string) tea.Cmd {
 
 		return orgQueryMsg(organizationQuery)
 	}
-}
-
-func handleEscape() tea.Msg {
-	return PreviousMessage{}
 }

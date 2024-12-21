@@ -33,14 +33,9 @@ func NewUserModel(user structs.User, width, height int) UserModel {
 	return UserModel{User: user, list: userList}
 }
 
-func (m *UserModel) SetWidth(width int) {
+func (m *UserModel) SetDimensions(width, height int) {
 	if len(m.list.Items()) > 0 {
 		m.list.SetWidth(width)
-	}
-}
-
-func (m *UserModel) SetHeight(height int) {
-	if len(m.list.Items()) > 0 {
 		m.list.SetHeight(height)
 	}
 }

@@ -27,13 +27,10 @@ func NewRepoModel(width, height int) RepoModel {
 	}
 }
 
-func (m *RepoModel) SetWidth(width int) {
+func (m *RepoModel) SetDimensions(width, height int) {
 	m.width = width
-	m.repoHeader.SetWidth(width)
-}
-
-func (m *RepoModel) SetHeight(height int) {
 	m.height = height
+	m.repoHeader.SetDimensions(width, height)
 }
 
 func (m RepoModel) Init() (tea.Model, tea.Cmd) {

@@ -25,14 +25,10 @@ func NewMainModel() MainModel {
 	}
 }
 
-func (m *MainModel) SetWidth(width int) {
+func (m *MainModel) SetDimensions(width, height int) {
 	m.width = width
-	// TODO: Set width of stack head
-}
-
-func (m *MainModel) SetHeight(height int) {
 	m.height = height
-	// TODO: Set height of stack head
+	// TODO: Set width dimensions of stack head
 }
 
 func (m MainModel) Init() (tea.Model, tea.Cmd) {
@@ -52,8 +48,7 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		m.SetHeight(msg.Height)
-		m.SetWidth(msg.Width)
+		m.SetDimensions(msg.Width, msg.Height)
 		return m, nil
 
 	case tea.KeyMsg:
