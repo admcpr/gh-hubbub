@@ -54,7 +54,7 @@ func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyReleaseMsg:
 		switch msg.String() {
 		case "tab":
 			if m.activeTab < len(m.repository.PropertyGroups)-1 {

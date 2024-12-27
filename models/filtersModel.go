@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/v2/key"
 	"github.com/charmbracelet/bubbles/v2/table"
 	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 type AddFilterMsg structs.Filter
@@ -59,7 +60,7 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyReleaseMsg:
 		switch msg.String() {
 		case "esc":
 			if m.filtering() {
@@ -118,7 +119,9 @@ func (m FiltersModel) View() string {
 			m.filtersTable = NewFilterTable(m.filters, 80)
 			filterTableView = m.filtersTable.View()
 		}
-		return m.filterSearch.View() + "\n\n" + filterTableView + "\n\n" + m.help.View(m.keymap)
+		search := m.filterSearch.View()
+		help := m.help.View(m.keymap)
+		return lipgloss.JoinVertical(lipgloss.Left, search, filterTableView, help)
 	}
 }
 

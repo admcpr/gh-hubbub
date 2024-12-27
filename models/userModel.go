@@ -62,7 +62,7 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = m.list.SetItems(items)
 
 		return m, cmd
-	case tea.KeyMsg:
+	case tea.KeyReleaseMsg:
 		switch msg.String() {
 		case "enter":
 			selectedOrg := m.organisations[m.list.Index()].Login

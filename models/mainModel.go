@@ -51,7 +51,7 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.SetDimensions(msg.Width, msg.Height)
 		return m, nil
 
-	case tea.KeyMsg:
+	case tea.KeyReleaseMsg:
 		switch msg.String() {
 		case "ctrl+c":
 			return m, tea.Quit
