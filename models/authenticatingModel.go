@@ -15,6 +15,13 @@ type AuthenticatedMsg struct{ User structs.User }
 type AuthenticatingModel struct {
 	spinner spinner.Model
 	error   error
+	// width   int
+	// height  int
+}
+
+func (m AuthenticatingModel) SetDimensions(width, height int) {
+	// m.width = width
+	// m.height = height
 }
 
 func NewAuthenticatingModel() AuthenticatingModel {

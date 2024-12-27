@@ -7,13 +7,24 @@ import (
 	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
+type StackModel interface {
+	tea.Model
+	SetDimensions(width, height int)
+}
+
 // Stack represents a stack data structure
 type Stack struct {
-	elements []tea.Model
+	elements []StackModel
+}
+
+func (s Stack) SetDimensions(width, height int) {
+	for _, element := range s.elements {
+		element.SetDimensions(width, height)
+	}
 }
 
 // Push adds an element to the top of the stack
-func (s *Stack) Push(element tea.Model) {
+func (s *Stack) Push(element StackModel) {
 	s.elements = append(s.elements, element)
 }
 

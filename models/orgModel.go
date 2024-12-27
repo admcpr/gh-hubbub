@@ -52,7 +52,7 @@ func NewOrgModel(title string, width, height int) OrgModel {
 	}
 }
 
-func (m *OrgModel) SetDimensions(width, height int) {
+func (m OrgModel) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
 }

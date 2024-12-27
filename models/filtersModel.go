@@ -3,11 +3,13 @@ package models
 import (
 	"gh-hubbub/queries"
 	"gh-hubbub/structs"
+	"gh-hubbub/style"
+	"sort"
 	"time"
 
 	"github.com/charmbracelet/bubbles/v2/help"
 	"github.com/charmbracelet/bubbles/v2/key"
-	"github.com/charmbracelet/bubbles/v2/table"
+	"github.com/charmbracelet/bubbles/v2/list"
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
 )
@@ -18,12 +20,19 @@ type filterMap map[string]structs.Filter
 type FiltersModel struct {
 	filterSearch tea.Model
 	filterModel  tea.Model
-	filtersTable table.Model
+	filtersList  list.Model
 	repository   queries.Repository
 	help         help.Model
 	keymap       filterKeyMap
 	properties   map[string]property
 	filters      filterMap
+	width        int
+	height       int
+}
+
+func (m FiltersModel) SetDimensions(width, height int) {
+	m.width = width
+	m.height = height
 }
 
 type property struct {
@@ -32,9 +41,9 @@ type property struct {
 	Type        string
 }
 
-func NewFiltersModel() FiltersModel {
+func NewFiltersModel(width, height int) FiltersModel {
 	fsm := NewFilterSearchModel()
-	table := table.New()
+	list := list.New([]list.Item{}, simpleItemDelegate{}, width, height-4)
 	repository := queries.Repository{}
 
 	help := help.New()
@@ -42,12 +51,14 @@ func NewFiltersModel() FiltersModel {
 
 	return FiltersModel{
 		filterSearch: fsm,
-		filtersTable: table,
+		filtersList:  list,
 		repository:   repository,
 		help:         help,
 		keymap:       keymap,
 		properties:   make(map[string]property),
 		filters:      make(map[string]structs.Filter),
+		width:        width,
+		height:       height,
 	}
 }
 
@@ -114,42 +125,38 @@ func (m FiltersModel) View() string {
 	if m.filtering() {
 		return m.filterModel.View()
 	} else {
-		filterTableView := ""
+		filtersListView := ""
 		if len(m.filters) > 0 {
-			m.filtersTable = NewFilterTable(m.filters, 80)
-			filterTableView = m.filtersTable.View()
+			m.filtersList = NewFiltersList(m.filters, m.width, m.height)
+			filtersListView = m.filtersList.View()
 		}
 		search := m.filterSearch.View()
 		help := m.help.View(m.keymap)
-		return lipgloss.JoinVertical(lipgloss.Left, search, filterTableView, help)
+		return lipgloss.JoinVertical(lipgloss.Left, search, filtersListView, help)
 	}
 }
 
 type filtersListMsg structs.RepoProperties
 
-func NewFilterTable(filters map[string]structs.Filter, width int) table.Model {
-	halfWidth := half(width)
-
-	columns := []table.Column{
-		{Title: "Name", Width: halfWidth},
-		{Title: "Filter", Width: halfWidth}}
-
-	rows := make([]table.Row, 0, len(filters))
+func NewFiltersList(filters map[string]structs.Filter, width, height int) list.Model {
+	items := make([]list.Item, len(filters))
+	i := 0
 	for _, filter := range filters {
-		rows = append(rows, table.Row{filter.GetName(), filter.String()})
+		items[i] = simpleItem(filter.GetName())
+		i++
 	}
 
-	// Make table cells not wrap
-	s := table.DefaultStyles()
-	s.Cell = s.Cell.MaxWidth(halfWidth).Inline(true)
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].(simpleItem) < items[j].(simpleItem)
+	})
 
-	table := table.New(
-		table.WithColumns(columns),
-		table.WithRows(rows),
-		table.WithStyles(s),
-	)
+	list := list.New(items, simpleItemDelegate{}, width, height-4)
+	list.Styles.Title = style.Title
+	list.Title = "Filters"
+	list.SetShowHelp(false)
+	list.SetShowTitle(true)
 
-	return table
+	return list
 }
 
 func (m FiltersModel) filtering() bool {

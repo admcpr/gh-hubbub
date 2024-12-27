@@ -23,6 +23,9 @@ func (m mockModel) View() string {
 	return ""
 }
 
+func (m mockModel) SetDimensions(width, height int) {
+}
+
 func TestStack_Push(t *testing.T) {
 	stack := &Stack{}
 	element := mockModel{}

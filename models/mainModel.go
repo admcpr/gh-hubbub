@@ -28,6 +28,7 @@ func NewMainModel() MainModel {
 func (m *MainModel) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
+	m.stack.SetDimensions(width, height)
 	// TODO: Set width dimensions of stack head
 }
 
@@ -75,7 +76,8 @@ func (m *MainModel) UpdateChild(msg tea.Msg) tea.Cmd {
 	var cmd tea.Cmd
 	currentModel, _ := m.stack.Pop()
 	currentModel, cmd = currentModel.Update(msg)
-	m.stack.Push(currentModel)
+	stackModel := currentModel.(StackModel)
+	m.stack.Push(stackModel)
 	return cmd
 }
 
@@ -85,7 +87,7 @@ func (m MainModel) View() string {
 }
 
 func (m *MainModel) Next(message NextMessage) tea.Cmd {
-	var newModel tea.Model
+	var newModel StackModel
 	head, _ := m.stack.Peek()
 
 	switch head.(type) {
@@ -94,11 +96,12 @@ func (m *MainModel) Next(message NextMessage) tea.Cmd {
 	case UserModel:
 		newModel = NewOrgModel(message.ModelData.(string), m.width, m.height)
 	case OrgModel:
-		newModel = NewFiltersModel()
+		newModel = NewFiltersModel(m.width, m.height)
 	}
 
-	nextModel, cmd := newModel.Init()
-	m.stack.Push(nextModel)
+	model, cmd := newModel.Init()
+	newModel = model.(StackModel)
+	m.stack.Push(newModel)
 
 	return cmd
 }

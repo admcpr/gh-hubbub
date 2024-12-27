@@ -20,6 +20,8 @@ type UserModel struct {
 	User           structs.User
 	SelectedOrgUrl string
 	list           list.Model
+	width          int
+	height         int
 }
 
 func NewUserModel(user structs.User, width, height int) UserModel {
@@ -33,7 +35,7 @@ func NewUserModel(user structs.User, width, height int) UserModel {
 	return UserModel{User: user, list: userList}
 }
 
-func (m *UserModel) SetDimensions(width, height int) {
+func (m UserModel) SetDimensions(width, height int) {
 	if len(m.list.Items()) > 0 {
 		m.list.SetWidth(width)
 		m.list.SetHeight(height)
