@@ -27,7 +27,7 @@ func (m mockModel) SetDimensions(width, height int) {
 }
 
 func TestStack_Push(t *testing.T) {
-	stack := &Stack{}
+	stack := &ModelStack{}
 	element := mockModel{}
 
 	stack.Push(element)
@@ -35,7 +35,7 @@ func TestStack_Push(t *testing.T) {
 }
 
 func TestStack_Pop(t *testing.T) {
-	stack := &Stack{}
+	stack := &ModelStack{}
 	element := mockModel{}
 
 	stack.Push(element)
@@ -49,7 +49,7 @@ func TestStack_Pop(t *testing.T) {
 }
 
 func TestStack_Peek(t *testing.T) {
-	stack := &Stack{}
+	stack := &ModelStack{}
 	element := mockModel{state: "initial"}
 
 	stack.Push(element)

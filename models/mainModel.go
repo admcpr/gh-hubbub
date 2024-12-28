@@ -11,13 +11,13 @@ type NextMessage struct{ ModelData interface{} }
 type PreviousMessage struct{ ModelData interface{} }
 
 type MainModel struct {
-	stack  Stack
+	stack  ModelStack
 	width  int
 	height int
 }
 
 func NewMainModel() MainModel {
-	stack := Stack{}
+	stack := ModelStack{}
 	stack.Push(NewAuthenticatingModel())
 
 	return MainModel{
