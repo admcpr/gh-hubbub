@@ -52,7 +52,7 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.SetDimensions(msg.Width, msg.Height)
 		return m, nil
 
-	case tea.KeyReleaseMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c":
 			return m, tea.Quit
@@ -76,8 +76,7 @@ func (m *MainModel) UpdateChild(msg tea.Msg) tea.Cmd {
 	var cmd tea.Cmd
 	currentModel, _ := m.stack.Pop()
 	currentModel, cmd = currentModel.Update(msg)
-	stackModel := currentModel.(StackModel)
-	m.stack.Push(stackModel)
+	m.stack.Push(currentModel)
 	return cmd
 }
 
@@ -87,7 +86,7 @@ func (m MainModel) View() string {
 }
 
 func (m *MainModel) Next(message NextMessage) tea.Cmd {
-	var newModel StackModel
+	var newModel tea.Model
 	head, _ := m.stack.Peek()
 
 	switch head.(type) {
@@ -99,8 +98,7 @@ func (m *MainModel) Next(message NextMessage) tea.Cmd {
 		newModel = NewFiltersModel(m.width, m.height)
 	}
 
-	model, cmd := newModel.Init()
-	newModel = model.(StackModel)
+	newModel, cmd := newModel.Init()
 	m.stack.Push(newModel)
 
 	return cmd

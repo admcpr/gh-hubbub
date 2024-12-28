@@ -20,8 +20,6 @@ type UserModel struct {
 	User           structs.User
 	SelectedOrgUrl string
 	list           list.Model
-	width          int
-	height         int
 }
 
 func NewUserModel(user structs.User, width, height int) UserModel {
@@ -35,7 +33,7 @@ func NewUserModel(user structs.User, width, height int) UserModel {
 	return UserModel{User: user, list: userList}
 }
 
-func (m UserModel) SetDimensions(width, height int) {
+func (m *UserModel) SetDimensions(width, height int) {
 	if len(m.list.Items()) > 0 {
 		m.list.SetWidth(width)
 		m.list.SetHeight(height)
@@ -64,7 +62,7 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd = m.list.SetItems(items)
 
 		return m, cmd
-	case tea.KeyReleaseMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "enter":
 			selectedOrg := m.organisations[m.list.Index()].Login

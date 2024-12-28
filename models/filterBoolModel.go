@@ -38,7 +38,7 @@ func (m BoolModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 
-	case tea.KeyReleaseMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "enter":
 			return m, m.SendFilterMsg

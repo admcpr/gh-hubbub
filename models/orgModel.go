@@ -41,8 +41,8 @@ type OrgModel struct {
 	progress progress.Model
 }
 
-func NewOrgModel(title string, width, height int) OrgModel {
-	return OrgModel{
+func NewOrgModel(title string, width, height int) *OrgModel {
+	return &OrgModel{
 		Title:     title,
 		width:     width,
 		height:    height,
@@ -52,7 +52,7 @@ func NewOrgModel(title string, width, height int) OrgModel {
 	}
 }
 
-func (m OrgModel) SetDimensions(width, height int) {
+func (m *OrgModel) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
 }
@@ -117,7 +117,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.progress = progressModel.(progress.Model)
 		return m, cmd
 
-	case tea.KeyReleaseMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "F", "f":
 			return m, handleNext

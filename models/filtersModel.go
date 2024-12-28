@@ -30,7 +30,7 @@ type FiltersModel struct {
 	height       int
 }
 
-func (m FiltersModel) SetDimensions(width, height int) {
+func (m *FiltersModel) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
 }
@@ -41,7 +41,7 @@ type property struct {
 	Type        string
 }
 
-func NewFiltersModel(width, height int) FiltersModel {
+func NewFiltersModel(width, height int) *FiltersModel {
 	fsm := NewFilterSearchModel()
 	list := list.New([]list.Item{}, simpleItemDelegate{}, width, height-4)
 	repository := queries.Repository{}
@@ -49,7 +49,7 @@ func NewFiltersModel(width, height int) FiltersModel {
 	help := help.New()
 	keymap := filterKeyMap{}
 
-	return FiltersModel{
+	return &FiltersModel{
 		filterSearch: fsm,
 		filtersList:  list,
 		repository:   repository,
@@ -71,7 +71,7 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
-	case tea.KeyReleaseMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "esc":
 			if m.filtering() {

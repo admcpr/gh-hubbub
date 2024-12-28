@@ -19,7 +19,7 @@ type AuthenticatingModel struct {
 	// height  int
 }
 
-func (m AuthenticatingModel) SetDimensions(width, height int) {
+func (m *AuthenticatingModel) SetDimensions(width, height int) {
 	// m.width = width
 	// m.height = height
 }

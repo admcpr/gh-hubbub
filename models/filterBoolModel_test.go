@@ -52,7 +52,7 @@ func TestFilterBoolModel_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			keyReleaseMsg := tea.KeyReleaseMsg{Code: tt._rune}
+			keyReleaseMsg := tea.KeyPressMsg{Code: tt._rune}
 			m, _ := tt.model.Update(keyReleaseMsg)
 
 			filterBooleanModel, _ := m.(BoolModel)

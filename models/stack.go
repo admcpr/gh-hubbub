@@ -2,29 +2,57 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
-type StackModel interface {
-	tea.Model
-	SetDimensions(width, height int)
-}
-
 // Stack represents a stack data structure
 type Stack struct {
-	elements []StackModel
+	elements []tea.Model
+}
+
+func callPointerMethod(i interface{}, methodName string, args ...interface{}) (interface{}, error) {
+	val := reflect.ValueOf(i)
+
+	// Get to the underlying value and create pointer if needed
+	if val.Kind() != reflect.Ptr {
+		// Make a new pointer to a new struct value
+		ptr := reflect.New(val.Type())
+		// Set the value at the pointer to our original value
+		ptr.Elem().Set(val)
+		// Use the pointer for method calling
+		val = ptr
+	}
+
+	// Find the method
+	method := val.MethodByName(methodName)
+	if !method.IsValid() {
+		return nil, fmt.Errorf("method %s not found", methodName)
+	}
+
+	// Convert args to reflect.Value slice
+	reflectArgs := make([]reflect.Value, len(args))
+	for i, arg := range args {
+		reflectArgs[i] = reflect.ValueOf(arg)
+	}
+
+	// Call the method
+	method.Call(reflectArgs)
+
+	// Return the modified object
+	return val.Interface(), nil
 }
 
 func (s Stack) SetDimensions(width, height int) {
-	for _, element := range s.elements {
-		element.SetDimensions(width, height)
+	for idx := range s.elements {
+		callPointerMethod(s.elements[idx], "SetDimensions", width, height)
 	}
 }
 
 // Push adds an element to the top of the stack
-func (s *Stack) Push(element StackModel) {
+func (s *Stack) Push(element tea.Model) {
 	s.elements = append(s.elements, element)
 }
 
