@@ -3,10 +3,12 @@ package models
 import (
 	"fmt"
 	"gh-hubbub/structs"
+	"gh-hubbub/style"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 type IntModel struct {
@@ -59,7 +61,7 @@ func (m IntModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "enter":
 			return m, m.SendAddFilterMsg
-		case "tab":
+		case "tab", "shift+tab":
 			if m.fromInput.Focused() {
 				m.fromInput.Blur()
 				m.toInput.Focus()
@@ -80,7 +82,11 @@ func (m IntModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m IntModel) View() string {
-	return m.Name + " " + m.fromInput.View() + " " + m.toInput.View()
+	// return m.Name + " " + m.fromInput.View() + " " + m.toInput.View()
+
+	inputs := lipgloss.JoinVertical(lipgloss.Left, m.fromInput.View(), m.toInput.View())
+	return lipgloss.JoinVertical(lipgloss.Center, style.Title.Render(m.Name), inputs)
+
 }
 
 func (m *IntModel) GetValue() (int, int) {

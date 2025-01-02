@@ -152,8 +152,9 @@ func NewFiltersList(filters map[string]structs.Filter, width, height int) list.M
 
 	list := list.New(items, simpleItemDelegate{}, width, height-4)
 	list.Styles.Title = style.Title
-	list.Title = "Filters"
+	list.Title = "Selected Filters"
 	list.SetShowHelp(false)
+	list.SetShowStatusBar(false)
 	list.SetShowTitle(true)
 
 	return list

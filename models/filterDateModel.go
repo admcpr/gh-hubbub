@@ -12,6 +12,16 @@ import (
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
+)
+
+var (
+	promptStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#FFF7DB")).
+			Background(lipgloss.Color("#888B7E")).
+			PaddingRight(3).
+			MarginTop(1)
+	textStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFF7DB")).PaddingLeft(1)
 )
 
 type DateModel struct {
@@ -60,11 +70,15 @@ func NewDateModel(name string, from, to time.Time) DateModel {
 	m.fromInput.Prompt = "From:"
 	m.fromInput.CharLimit = 10
 	m.fromInput.Validate = func(s string) error { return dateValidator(s, m.fromInput.Prompt) }
+	m.fromInput.PromptStyle = promptStyle
+	m.fromInput.TextStyle = textStyle
 
 	m.toInput.Placeholder = to.Format("2006-01-02")
 	m.toInput.Prompt = "To:"
 	m.toInput.CharLimit = 10
 	m.toInput.Validate = func(s string) error { return dateValidator(s, m.toInput.Prompt) }
+	m.toInput.PromptStyle = promptStyle
+	m.toInput.TextStyle = textStyle
 
 	m.fromInput.Focus()
 
@@ -113,7 +127,8 @@ func (m DateModel) View() string {
 	if m.toInput.Err != nil {
 		errorText = "\n" + style.Error.Render(m.toInput.Err.Error())
 	}
-	return m.Name + " " + m.fromInput.View() + " " + m.toInput.View() + errorText
+	inputs := lipgloss.JoinVertical(lipgloss.Left, m.fromInput.View(), m.toInput.View(), errorText)
+	return lipgloss.JoinVertical(lipgloss.Center, style.Title.Render(m.Name), inputs)
 }
 
 func (m *DateModel) Focus() tea.Cmd {

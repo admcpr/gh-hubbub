@@ -1,7 +1,6 @@
 package models
 
 import (
-	"gh-hubbub/structs"
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -26,8 +25,8 @@ func TestNewFilterBoolModel(t *testing.T) {
 				t.Errorf("got %q, want %q", m.Name, tt.name)
 			}
 
-			if m.input.Value() != structs.YesNo(tt.value) {
-				t.Errorf("got %q, want %q", m.input.Value(), structs.YesNo(tt.value))
+			if m.Value != tt.value {
+				t.Errorf("got %t, want %t", m.Value, tt.value)
 			}
 		})
 	}

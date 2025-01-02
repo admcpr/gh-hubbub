@@ -18,7 +18,10 @@ type MainModel struct {
 
 func NewMainModel() MainModel {
 	stack := ModelStack{}
-	stack.Push(NewAuthenticatingModel())
+	// stack.Push(NewAuthenticatingModel())
+	// stack.Push(NewBoolModel("Is something true", false))
+	// stack.Push(NewDateModel("Date between", time.Now(), time.Now().Add(time.Hour*24*7)))
+	stack.Push(NewIntModel("Number between", 0, 100))
 
 	return MainModel{
 		stack: stack,
