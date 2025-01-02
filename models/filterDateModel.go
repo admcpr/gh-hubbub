@@ -126,7 +126,9 @@ func (m DateModel) View() string {
 		errorText = "\n" + errorStyle.Render(m.toInput.Err.Error())
 	}
 	inputs := lipgloss.JoinVertical(lipgloss.Left, m.fromInput.View(), m.toInput.View(), errorText)
-	return lipgloss.JoinVertical(lipgloss.Center, titleStyle.Render(m.Name), inputs)
+	contents := lipgloss.JoinVertical(lipgloss.Center, modalTitleStyle.Render(m.Name), inputs)
+
+	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, modalStyle.Render(contents))
 }
 
 func (m *DateModel) Focus() tea.Cmd {

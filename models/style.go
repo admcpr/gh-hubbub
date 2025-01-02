@@ -25,6 +25,8 @@ type colors struct {
 	brightPurple color.Color
 	brightCyan   color.Color
 	brightWhite  color.Color
+	background   color.Color
+	foreground   color.Color
 }
 
 func NewColors(darkmode bool) colors {
@@ -46,9 +48,13 @@ func NewColors(darkmode bool) colors {
 		brightPurple: lipgloss.Color("#d6d5d4"),
 		brightCyan:   lipgloss.Color("#cdab53"),
 		brightWhite:  lipgloss.Color("#f7f7f7"),
+		background:   lipgloss.Color("#f7f7f7"),
+		foreground:   lipgloss.Color("#4a4543"),
 	}
 	if darkmode {
 		colors.name = "3024 Night"
+		colors.background = lipgloss.Color("#090300")
+		colors.foreground = lipgloss.Color("#a5a2a2")
 	}
 	return colors
 }
@@ -56,12 +62,16 @@ func NewColors(darkmode bool) colors {
 var (
 	AppColors = NewColors(true)
 
-	appStyle = lipgloss.NewStyle().Padding(0, 0).Foreground(AppColors.white).BorderForeground(AppColors.blue)
+	appStyle = lipgloss.NewStyle().Padding(0, 0).
+			Foreground(AppColors.white).
+			BorderForeground(AppColors.blue)
 
 	tabStyle = lipgloss.NewStyle().BorderForeground(AppColors.brightBlue).
 			Border(lipgloss.NormalBorder(), true, false, false, false).
 			Align(lipgloss.Center)
-	activeTabStyle = tabStyle.Foreground(AppColors.cyan).BorderForeground(AppColors.cyan)
+
+	activeTabStyle = tabStyle.Foreground(AppColors.cyan).
+			BorderForeground(AppColors.cyan)
 
 	titleStyle = lipgloss.NewStyle().
 			Foreground(AppColors.blue).
@@ -72,35 +82,49 @@ var (
 	errorStyle = lipgloss.NewStyle().Foreground(AppColors.purple)
 
 	promptStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#FFF7DB")).
-			Background(lipgloss.Color("#888B7E")).
+			Foreground(AppColors.foreground).
 			Width(7).
 			Align(lipgloss.Right).
 			PaddingRight(1).
 			MarginTop(1)
-	textStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFF7DB")).PaddingLeft(1)
 
-	cursorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("63"))
+	textStyle = lipgloss.NewStyle().
+			Foreground(AppColors.foreground).
+			PaddingLeft(1)
+
+	cursorStyle = lipgloss.NewStyle().
+			Foreground(AppColors.foreground)
 
 	buttonStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#FFF7DB")).
-			Background(lipgloss.Color("#888B7E")).
+			Foreground(AppColors.foreground).
+			BorderForeground(AppColors.purple).
 			Padding(0, 3).
 			Margin(2)
 
 	activeButtonStyle = buttonStyle.
-				Foreground(lipgloss.Color("#FFF7DB")).
-				Background(lipgloss.Color("#F25D94")).
+				Foreground(AppColors.foreground).
+				Background(AppColors.cyan).
 				Underline(true)
 
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).
+				Foreground(AppColors.cyan)
 
-	headerStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Background(lipgloss.Color("236"))
+	headerStyle = lipgloss.NewStyle().
+			Foreground(AppColors.foreground).
+			Background(AppColors.background)
+
+	modalTitleStyle = lipgloss.NewStyle().
+			Align(lipgloss.Center).
+			Foreground(AppColors.blue).
+			BorderForeground(AppColors.brightBlue).
+			Border(lipgloss.DoubleBorder(), false, false, true, false).
+			Width(60)
 
 	modalStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			Padding(1, 7)
+			BorderForeground(AppColors.blue).
+			Padding(0)
 
 	DefaultDelegate = BuildDefaultDelegate()
 )

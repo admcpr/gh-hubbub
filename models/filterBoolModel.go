@@ -71,7 +71,9 @@ func (m BoolModel) View() string {
 		noButtonStyle = activeButtonStyle
 	}
 	buttons := lipgloss.JoinHorizontal(lipgloss.Left, yesButtonStyle.Render("Yes"), noButtonStyle.Render("No"))
-	return lipgloss.JoinVertical(lipgloss.Center, titleStyle.Render(m.Name), buttons)
+	contents := lipgloss.JoinVertical(lipgloss.Center, modalTitleStyle.Render(m.Name), buttons)
+
+	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, modalStyle.Render(contents))
 }
 
 func (m *BoolModel) GetValue() bool {
