@@ -3,10 +3,7 @@ package models
 import (
 	"github.com/charmbracelet/bubbles/v2/paginator"
 	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/charmbracelet/lipgloss/v2"
 )
-
-var headerStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Background(lipgloss.Color("236"))
 
 type TabSelectMessage struct{ Index int }
 

@@ -21,7 +21,7 @@ func TestNewFilterIntModel(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewIntModel(tt.name, tt.from, tt.to)
+			m := NewIntModel(tt.name, tt.from, tt.to, 60, 40)
 
 			assert.Equal(t, m.Name, tt.name)
 			assert.Equal(t, m.fromInput.Placeholder, fmt.Sprint(tt.from))

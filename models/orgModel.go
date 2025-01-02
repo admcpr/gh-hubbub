@@ -8,7 +8,6 @@ import (
 
 	"gh-hubbub/queries"
 	"gh-hubbub/structs"
-	"gh-hubbub/style"
 
 	"github.com/charmbracelet/bubbles/v2/list"
 	"github.com/charmbracelet/bubbles/v2/progress"
@@ -20,11 +19,6 @@ import (
 
 type orgQueryMsg queries.OrganizationQuery
 type repoQueryMsg queries.RepositoryQuery
-
-var (
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
-)
 
 type OrgModel struct {
 	Title     string
@@ -70,7 +64,7 @@ func (m *OrgModel) populateRepoList() {
 
 	list := list.New(items, simpleItemDelegate{}, m.width/2, m.height-2)
 	list.Title = fmt.Sprintf("%s Filters: %d", m.Title, len(m.filters))
-	list.Styles.Title = style.Title
+	list.Styles.Title = titleStyle
 	list.SetStatusBarItemName("Repository", "Repositories")
 	list.SetShowHelp(false)
 	list.SetShowTitle(true)
@@ -152,8 +146,8 @@ func (m OrgModel) View() string {
 	}
 	m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
 
-	var repoList = style.App.Width(half(m.width)).Render(m.repoList.View())
-	var settings = style.App.Width(half(m.width)).Render(m.repoModel.View())
+	var repoList = appStyle.Width(half(m.width)).Render(m.repoList.View())
+	var settings = appStyle.Width(half(m.width)).Render(m.repoModel.View())
 	var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings)
 
 	var views = []string{repoList, rightPanel}

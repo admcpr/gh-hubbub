@@ -41,7 +41,11 @@ func CallSetDimensions(model tea.Model, width, height int) (tea.Model, error) {
 
 func (s ModelStack) SetDimensions(width, height int) {
 	for idx := range s.elements {
-		CallSetDimensions(s.elements[idx], width, height)
+		model, err := CallSetDimensions(s.elements[idx], width, height)
+		if err != nil {
+			// TODO: Log error
+		}
+		s.elements[idx] = model
 	}
 }
 

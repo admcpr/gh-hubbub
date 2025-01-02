@@ -16,7 +16,7 @@ func TestNewFilterDateModel(t *testing.T) {
 	to, _ := time.Parse("2006-01-02", toString)
 
 	t.Run("NewFilterDateModel", func(t *testing.T) {
-		m := NewDateModel(name, from, to)
+		m := NewDateModel(name, from, to, 60, 40)
 		assert.Equal(t, m.Name, name)
 		assert.Equal(t, m.fromInput.Placeholder, fromString)
 		assert.Equal(t, m.toInput.Placeholder, toString)
@@ -89,7 +89,7 @@ func TestFilterDateModel_GetValue(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			m := NewDateModel(tt.name, time.Time{}, time.Time{})
+			m := NewDateModel(tt.name, time.Time{}, time.Time{}, 60, 40)
 
 			m.fromInput.SetValue(tt.fromValue)
 			m.toInput.SetValue(tt.toValue)

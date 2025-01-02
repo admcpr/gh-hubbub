@@ -2,7 +2,6 @@ package models
 
 import (
 	"gh-hubbub/structs"
-	"gh-hubbub/style"
 
 	"github.com/charmbracelet/bubbles/v2/table"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -79,7 +78,7 @@ func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m RepoModel) View() string {
 	// frameWidth, frameHeight := style.Settings.GetFrameSize()
-	settings := style.App.
+	settings := appStyle.
 		Width(m.width).
 		// Height(5).
 		Render(m.settingsTable.View())

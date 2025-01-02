@@ -5,7 +5,6 @@ import (
 	"sort"
 
 	"gh-hubbub/structs"
-	"gh-hubbub/style"
 
 	"github.com/charmbracelet/bubbles/v2/list"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -27,7 +26,7 @@ func NewUserModel(user structs.User, width, height int) UserModel {
 
 	userList.Title = "User: " + user.Name
 	userList.SetStatusBarItemName("Organisation", "Organisations")
-	userList.Styles.Title = style.Title
+	userList.Styles.Title = titleStyle
 	userList.SetShowTitle(true)
 
 	return UserModel{User: user, list: userList}
@@ -82,7 +81,7 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m UserModel) View() string {
-	return style.App.Render(m.list.View())
+	return appStyle.Render(m.list.View())
 }
 
 func (m UserModel) SelectedOrg() structs.Organisation {

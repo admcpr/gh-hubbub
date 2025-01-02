@@ -2,36 +2,27 @@ package models
 
 import (
 	"gh-hubbub/structs"
-	"gh-hubbub/style"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
 )
 
-var (
-	buttonStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#FFF7DB")).
-			Background(lipgloss.Color("#888B7E")).
-			Padding(0, 3).
-			Margin(2)
-
-	activeButtonStyle = buttonStyle.
-				Foreground(lipgloss.Color("#FFF7DB")).
-				Background(lipgloss.Color("#F25D94")).
-				Underline(true)
-)
-
 type BoolModel struct {
-	Name  string
-	Value bool
+	Name   string
+	Value  bool
+	width  int
+	height int
 }
 
-func NewBoolModel(name string, value bool) BoolModel {
+func NewBoolModel(name string, value bool, width, height int) BoolModel {
 	m := BoolModel{
 		Name:  name,
 		Value: value,
 	}
+
+	m.width = width
+	m.height = height
 
 	return m
 }
@@ -39,6 +30,11 @@ func NewBoolModel(name string, value bool) BoolModel {
 type BoolFilterMessage struct {
 	Name  string
 	Value bool
+}
+
+func (m *BoolModel) SetDimensions(width, height int) {
+	m.width = width
+	m.height = height
 }
 
 func (m BoolModel) Init() (tea.Model, tea.Cmd) {
@@ -75,7 +71,7 @@ func (m BoolModel) View() string {
 		noButtonStyle = activeButtonStyle
 	}
 	buttons := lipgloss.JoinHorizontal(lipgloss.Left, yesButtonStyle.Render("Yes"), noButtonStyle.Render("No"))
-	return lipgloss.JoinVertical(lipgloss.Center, style.Title.Render(m.Name), buttons)
+	return lipgloss.JoinVertical(lipgloss.Center, titleStyle.Render(m.Name), buttons)
 }
 
 func (m *BoolModel) GetValue() bool {

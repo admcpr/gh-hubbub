@@ -21,7 +21,7 @@ func NewMainModel() MainModel {
 	// stack.Push(NewAuthenticatingModel())
 	// stack.Push(NewBoolModel("Is something true", false))
 	// stack.Push(NewDateModel("Date between", time.Now(), time.Now().Add(time.Hour*24*7)))
-	stack.Push(NewIntModel("Number between", 0, 100))
+	stack.Push(NewIntModel("Number between", 0, 100, 0, 0))
 
 	return MainModel{
 		stack: stack,
@@ -32,7 +32,6 @@ func (m *MainModel) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
 	m.stack.SetDimensions(width, height)
-	// TODO: Set width dimensions of stack head
 }
 
 func (m MainModel) Init() (tea.Model, tea.Cmd) {

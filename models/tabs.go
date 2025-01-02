@@ -1,8 +1,6 @@
 package models
 
 import (
-	"gh-hubbub/style"
-
 	"github.com/charmbracelet/lipgloss/v2"
 )
 
@@ -12,11 +10,11 @@ func RenderTabs(tabs []string, width, activeTab int) string {
 	var renderedTabs []string
 
 	for i, t := range tabs {
-		tabStyle := style.Tab
+		tabStyle := tabStyle
 		isFirst, isLast, isActive := i == 0, i == len(tabs)-1, i == activeTab
 
 		if isActive {
-			tabStyle = style.TabActive
+			tabStyle = activeTabStyle
 		}
 
 		if isLast {

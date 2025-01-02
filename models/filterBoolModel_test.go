@@ -19,7 +19,7 @@ func TestNewFilterBoolModel(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := NewBoolModel(tt.name, tt.value)
+			m := NewBoolModel(tt.name, tt.value, 60, 40)
 
 			if m.Name != tt.name {
 				t.Errorf("got %q, want %q", m.Name, tt.name)
@@ -33,8 +33,8 @@ func TestNewFilterBoolModel(t *testing.T) {
 }
 
 func TestFilterBoolModel_Update(t *testing.T) {
-	trueModel := NewBoolModel("True", true)
-	falseModel := NewBoolModel("False", false)
+	trueModel := NewBoolModel("True", true, 60, 40)
+	falseModel := NewBoolModel("False", false, 60, 40)
 
 	tests := []struct {
 		model BoolModel

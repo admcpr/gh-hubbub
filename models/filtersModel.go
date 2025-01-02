@@ -3,7 +3,6 @@ package models
 import (
 	"gh-hubbub/queries"
 	"gh-hubbub/structs"
-	"gh-hubbub/style"
 	"sort"
 	"time"
 
@@ -88,7 +87,7 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case PropertySelectedMsg:
-		m.filterModel = NewFilter(property(msg))
+		m.filterModel = NewFilter(property(msg), m.width, m.height)
 		return m, nil
 
 	case AddFilterMsg:
@@ -108,14 +107,14 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func NewFilter(property property) tea.Model {
+func NewFilter(property property, width, height int) tea.Model {
 	switch property.Type {
 	case "bool":
-		return NewBoolModel(property.Name, false)
+		return NewBoolModel(property.Name, false, width, height)
 	case "int":
-		return NewIntModel(property.Name, 0, 100000)
+		return NewIntModel(property.Name, 0, 100000, width, height)
 	case "time.Time":
-		return NewDateModel(property.Name, time.Time{}, time.Now())
+		return NewDateModel(property.Name, time.Time{}, time.Now(), width, height)
 	default:
 		return nil
 	}
@@ -151,7 +150,7 @@ func NewFiltersList(filters map[string]structs.Filter, width, height int) list.M
 	})
 
 	list := list.New(items, simpleItemDelegate{}, width, height-4)
-	list.Styles.Title = style.Title
+	list.Styles.Title = titleStyle
 	list.Title = "Selected Filters"
 	list.SetShowHelp(false)
 	list.SetShowStatusBar(false)

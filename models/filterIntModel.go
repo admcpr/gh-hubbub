@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"gh-hubbub/structs"
-	"gh-hubbub/style"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
@@ -15,6 +14,13 @@ type IntModel struct {
 	Name      string
 	fromInput textinput.Model
 	toInput   textinput.Model
+	width     int
+	height    int
+}
+
+func (m *IntModel) SetDimensions(width, height int) {
+	m.width = width
+	m.height = height
 }
 
 func intValidator(s, prompt string) error {
@@ -26,24 +32,29 @@ func intValidator(s, prompt string) error {
 	return nil
 }
 
-func NewIntModel(title string, from, to int) IntModel {
+func NewIntInputModel(prompt string, value int) textinput.Model {
+	m := textinput.New()
+	m.Placeholder = fmt.Sprint(value)
+	m.Prompt = prompt
+	m.CharLimit = 5
+	m.Validate = func(s string) error { return intValidator(s, prompt) }
+	m.PromptStyle = promptStyle
+	m.TextStyle = textStyle
+
+	return m
+}
+
+func NewIntModel(title string, from, to, width, height int) IntModel {
 	m := IntModel{
 		Name:      title,
-		fromInput: textinput.New(),
-		toInput:   textinput.New(),
+		fromInput: NewIntInputModel("From", from),
+		toInput:   NewIntInputModel("To", to),
 	}
 
-	m.fromInput.Placeholder = fmt.Sprint(from)
-	m.fromInput.Prompt = "From: "
-	m.fromInput.CharLimit = 4
-	m.fromInput.Validate = func(s string) error { return intValidator(s, m.fromInput.Prompt) }
-
-	m.toInput.Placeholder = fmt.Sprint(to)
-	m.toInput.Prompt = "To: "
-	m.toInput.CharLimit = 4
-	m.toInput.Validate = func(s string) error { return intValidator(s, m.toInput.Prompt) }
-
 	m.fromInput.Focus()
+
+	m.width = width
+	m.height = height
 
 	return m
 }
@@ -82,11 +93,11 @@ func (m IntModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m IntModel) View() string {
-	// return m.Name + " " + m.fromInput.View() + " " + m.toInput.View()
 
+	title := fmt.Sprintf("%s - w: %d h: %d", m.Name, m.width, m.height)
 	inputs := lipgloss.JoinVertical(lipgloss.Left, m.fromInput.View(), m.toInput.View())
-	return lipgloss.JoinVertical(lipgloss.Center, style.Title.Render(m.Name), inputs)
-
+	contents := lipgloss.JoinVertical(lipgloss.Center, titleStyle.Render(title), inputs)
+	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, modalStyle.Render(contents))
 }
 
 func (m *IntModel) GetValue() (int, int) {

@@ -7,7 +7,6 @@ import (
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/charmbracelet/lipgloss/v2"
 )
 
 type FilterSearchModel struct {
@@ -20,8 +19,8 @@ func NewFilterSearchModel() FilterSearchModel {
 	ti := textinput.New()
 	ti.Placeholder = "Type to search"
 	ti.Prompt = "Property Name: "
-	ti.PromptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("63"))
-	ti.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("63"))
+	ti.PromptStyle = promptStyle
+	ti.Cursor.Style = cursorStyle
 	ti.Focus()
 	ti.CharLimit = 50
 	ti.SetWidth(20)
