@@ -31,25 +31,25 @@ type colors struct {
 
 func NewColors(darkmode bool) colors {
 	colors := colors{
-		name:         "3024 Day",
-		black:        lipgloss.Color("#090300"),
-		red:          lipgloss.Color("#db2d20"),
-		green:        lipgloss.Color("#01a252"),
-		yellow:       lipgloss.Color("#fded02"),
-		blue:         lipgloss.Color("#01a0e4"),
-		purple:       lipgloss.Color("#a16a94"),
-		cyan:         lipgloss.Color("#b5e4f4"),
-		white:        lipgloss.Color("#a5a2a2"),
-		brightBlack:  lipgloss.Color("#5c5855"),
-		brightRed:    lipgloss.Color("#e8bbd0"),
-		brightGreen:  lipgloss.Color("#3a3432"),
-		brightYellow: lipgloss.Color("#4a4543"),
-		brightBlue:   lipgloss.Color("#807d7c"),
-		brightPurple: lipgloss.Color("#d6d5d4"),
-		brightCyan:   lipgloss.Color("#cdab53"),
-		brightWhite:  lipgloss.Color("#f7f7f7"),
-		background:   lipgloss.Color("#f7f7f7"),
-		foreground:   lipgloss.Color("#4a4543"),
+		name:         "PencilDark",
+		black:        lipgloss.Color("#212121"),
+		red:          lipgloss.Color("#c30771"),
+		green:        lipgloss.Color("#10a778"),
+		yellow:       lipgloss.Color("#a89c14"),
+		blue:         lipgloss.Color("#008ec4"),
+		purple:       lipgloss.Color("#523c79"),
+		cyan:         lipgloss.Color("#20a5ba"),
+		white:        lipgloss.Color("#d9d9d9"),
+		brightBlack:  lipgloss.Color("#424242"),
+		brightRed:    lipgloss.Color("#fb007a"),
+		brightGreen:  lipgloss.Color("#5fd7af"),
+		brightYellow: lipgloss.Color("#f3e430"),
+		brightBlue:   lipgloss.Color("#20bbfc"),
+		brightPurple: lipgloss.Color("#6855de"),
+		brightCyan:   lipgloss.Color("#4fb8cc"),
+		brightWhite:  lipgloss.Color("#f1f1f1"),
+		background:   lipgloss.Color("#212121"),
+		foreground:   lipgloss.Color("#f1f1f1"),
 	}
 	if darkmode {
 		colors.name = "3024 Night"
@@ -79,10 +79,10 @@ var (
 			Border(lipgloss.NormalBorder(), false, false, true, false).
 			Padding(1, 1, 0, 1)
 
-	errorStyle = lipgloss.NewStyle().Foreground(AppColors.purple)
+	errorStyle = lipgloss.NewStyle().Foreground(AppColors.red)
 
 	promptStyle = lipgloss.NewStyle().
-			Foreground(AppColors.foreground).
+			Foreground(AppColors.blue).
 			Width(7).
 			Align(lipgloss.Right).
 			PaddingRight(1).
@@ -117,13 +117,13 @@ var (
 	modalTitleStyle = lipgloss.NewStyle().
 			Align(lipgloss.Center).
 			Foreground(AppColors.blue).
-			BorderForeground(AppColors.brightBlue).
+			BorderForeground(AppColors.brightGreen).
 			Border(lipgloss.DoubleBorder(), false, false, true, false).
 			Width(60)
 
 	modalStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(AppColors.blue).
+			BorderForeground(AppColors.green).
 			Padding(0)
 
 	DefaultDelegate = BuildDefaultDelegate()

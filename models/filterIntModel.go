@@ -93,10 +93,16 @@ func (m IntModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m IntModel) View() string {
-
+	errorText := ""
+	if m.fromInput.Err != nil {
+		errorText = "\n" + errorStyle.Render(m.fromInput.Err.Error())
+	}
+	if m.toInput.Err != nil {
+		errorText = "\n" + errorStyle.Render(m.toInput.Err.Error())
+	}
 	title := fmt.Sprintf("%s - w: %d h: %d", m.Name, m.width, m.height)
 	inputs := lipgloss.JoinVertical(lipgloss.Left, m.fromInput.View(), m.toInput.View())
-	contents := lipgloss.JoinVertical(lipgloss.Center, titleStyle.Render(title), inputs)
+	contents := lipgloss.JoinVertical(lipgloss.Center, modalTitleStyle.Render(title), inputs, errorText)
 	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, modalStyle.Render(contents))
 }
 
