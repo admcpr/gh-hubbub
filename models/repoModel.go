@@ -80,7 +80,6 @@ func (m RepoModel) View() string {
 	// frameWidth, frameHeight := style.Settings.GetFrameSize()
 	settings := appStyle.
 		Width(m.width).
-		// Height(5).
 		Render(m.settingsTable.View())
 
 	return lipgloss.JoinVertical(lipgloss.Left, m.repoHeader.View(), settings)

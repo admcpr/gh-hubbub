@@ -19,24 +19,24 @@ type UserModel struct {
 	User           structs.User
 	SelectedOrgUrl string
 	list           list.Model
+	width          int
+	height         int
 }
 
 func NewUserModel(user structs.User, width, height int) UserModel {
-	userList := list.New([]list.Item{}, list.NewDefaultDelegate(), width, height)
+	userList := list.New([]list.Item{}, DefaultDelegate, width, height)
 
 	userList.Title = "User: " + user.Name
 	userList.SetStatusBarItemName("Organisation", "Organisations")
 	userList.Styles.Title = titleStyle
 	userList.SetShowTitle(true)
 
-	return UserModel{User: user, list: userList}
+	return UserModel{User: user, list: userList, width: width, height: height}
 }
 
 func (m *UserModel) SetDimensions(width, height int) {
-	if len(m.list.Items()) > 0 {
-		m.list.SetWidth(width)
-		m.list.SetHeight(height)
-	}
+	m.width = width
+	m.height = height
 }
 
 func (m UserModel) Init() (tea.Model, tea.Cmd) {
@@ -81,6 +81,8 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m UserModel) View() string {
+	m.list.SetWidth(m.width)
+	m.list.SetHeight(m.height)
 	return appStyle.Render(m.list.View())
 }
 

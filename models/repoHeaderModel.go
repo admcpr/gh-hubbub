@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/charmbracelet/bubbles/v2/paginator"
 	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 type TabSelectMessage struct{ Index int }
@@ -42,6 +43,6 @@ func (m RepoHeaderModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m RepoHeaderModel) View() string {
-	heading := headerStyle.Render(m.titles[m.paginator.Page])
-	return heading + "\n" + m.paginator.View()
+	heading := titleStyle.Render(m.titles[m.paginator.Page])
+	return lipgloss.JoinVertical(lipgloss.Left, heading+"\n"+m.paginator.View())
 }

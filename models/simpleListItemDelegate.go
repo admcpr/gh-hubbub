@@ -27,12 +27,12 @@ func (d simpleItemDelegate) Render(w io.Writer, m list.Model, index int, listIte
 
 	str := string(i)
 
-	fn := itemStyle.Render
+	renderFunction := itemStyle.Render
 	if index == m.Index() {
-		fn = func(s ...string) string {
+		renderFunction = func(s ...string) string {
 			return selectedItemStyle.Render("> " + strings.Join(s, " "))
 		}
 	}
 
-	fmt.Fprint(w, fn(str))
+	fmt.Fprint(w, renderFunction(str))
 }

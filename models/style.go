@@ -63,40 +63,34 @@ var (
 	AppColors = NewColors(true)
 
 	appStyle = lipgloss.NewStyle().Padding(0, 0).
-			Foreground(AppColors.white).
-			BorderForeground(AppColors.blue)
+			Foreground(AppColors.foreground).
+			BorderForeground(AppColors.blue).
+			Border(lipgloss.RoundedBorder(), false)
 
-	tabStyle = lipgloss.NewStyle().BorderForeground(AppColors.brightBlue).
-			Border(lipgloss.NormalBorder(), true, false, false, false).
+	tabStyle = appStyle.Border(lipgloss.NormalBorder(), true, false, false, false).
 			Align(lipgloss.Center)
 
-	activeTabStyle = tabStyle.Foreground(AppColors.cyan).
-			BorderForeground(AppColors.cyan)
+	activeTabStyle = tabStyle.BorderForeground(AppColors.brightBlue).
+			Foreground(AppColors.cyan)
 
-	titleStyle = lipgloss.NewStyle().
-			Foreground(AppColors.blue).
+	titleStyle = appStyle.Foreground(AppColors.blue).
 			BorderForeground(AppColors.brightBlue).
 			Border(lipgloss.NormalBorder(), false, false, true, false).
 			Padding(1, 1, 0, 1)
 
 	errorStyle = lipgloss.NewStyle().Foreground(AppColors.red)
 
-	promptStyle = lipgloss.NewStyle().
-			Foreground(AppColors.blue).
-			Width(7).
+	promptStyle = appStyle.Width(7).
 			Align(lipgloss.Right).
 			PaddingRight(1).
 			MarginTop(1)
 
-	textStyle = lipgloss.NewStyle().
-			Foreground(AppColors.foreground).
+	textStyle = appStyle.Foreground(AppColors.foreground).
 			PaddingLeft(1)
 
-	cursorStyle = lipgloss.NewStyle().
-			Foreground(AppColors.foreground)
+	cursorStyle = appStyle
 
-	buttonStyle = lipgloss.NewStyle().
-			Foreground(AppColors.foreground).
+	buttonStyle = appStyle.
 			BorderForeground(AppColors.purple).
 			Padding(0, 3).
 			Margin(2)
@@ -110,19 +104,14 @@ var (
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).
 				Foreground(AppColors.cyan)
 
-	headerStyle = lipgloss.NewStyle().
-			Foreground(AppColors.foreground).
-			Background(AppColors.background)
-
-	modalTitleStyle = lipgloss.NewStyle().
+	modalTitleStyle = titleStyle.
 			Align(lipgloss.Center).
 			Foreground(AppColors.blue).
 			BorderForeground(AppColors.brightGreen).
 			Border(lipgloss.DoubleBorder(), false, false, true, false).
 			Width(60)
 
-	modalStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
+	modalStyle = appStyle.
 			BorderForeground(AppColors.green).
 			Padding(0)
 
@@ -130,11 +119,11 @@ var (
 )
 
 func BuildDefaultDelegate() list.DefaultDelegate {
-	defaultDelegate := list.NewDefaultDelegate()
-	defaultDelegate.Styles.SelectedTitle.Foreground(AppColors.cyan)
-	defaultDelegate.Styles.SelectedTitle.BorderForeground(AppColors.cyan)
-	defaultDelegate.Styles.SelectedDesc.Foreground(AppColors.purple)
-	defaultDelegate.Styles.SelectedDesc.BorderForeground(AppColors.cyan)
+	d := list.NewDefaultDelegate()
+	d.Styles.SelectedTitle = d.Styles.SelectedTitle.
+		Foreground(AppColors.cyan).
+		BorderForeground(AppColors.cyan)
+	d.Styles.SelectedDesc = d.Styles.SelectedTitle
 
-	return defaultDelegate
+	return d
 }
