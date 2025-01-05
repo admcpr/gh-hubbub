@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 type NextMessage struct{ ModelData interface{} }
@@ -31,7 +32,8 @@ func NewMainModel() MainModel {
 func (m *MainModel) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
-	m.stack.SetDimensions(width, height)
+	// 2 is subtracted from the width and height to account for the border
+	m.stack.SetDimensions(width-2, height-2)
 }
 
 func (m MainModel) Init() (tea.Model, tea.Cmd) {
@@ -84,7 +86,8 @@ func (m *MainModel) UpdateChild(msg tea.Msg) tea.Cmd {
 
 func (m MainModel) View() string {
 	child, _ := m.stack.Peek()
-	return child.View()
+	borderStyle := lipgloss.NewStyle().Border(lipgloss.OuterHalfBlockBorder())
+	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, borderStyle.Render(child.View()))
 }
 
 func (m *MainModel) Next(message NextMessage) tea.Cmd {
