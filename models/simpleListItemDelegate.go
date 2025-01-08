@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/charmbracelet/bubbles/v2/list"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -29,9 +28,7 @@ func (d simpleItemDelegate) Render(w io.Writer, m list.Model, index int, listIte
 
 	renderFunction := itemStyle.Render
 	if index == m.Index() {
-		renderFunction = func(s ...string) string {
-			return selectedItemStyle.Render("> " + strings.Join(s, " "))
-		}
+		renderFunction = selectedItemStyle.Render
 	}
 
 	fmt.Fprint(w, renderFunction(str))

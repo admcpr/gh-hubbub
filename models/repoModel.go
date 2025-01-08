@@ -2,19 +2,20 @@ package models
 
 import (
 	"gh-hubbub/structs"
+	"sort"
 
-	"github.com/charmbracelet/bubbles/v2/table"
+	"github.com/charmbracelet/bubbles/v2/list"
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
 )
 
 type RepoModel struct {
-	repoHeader    RepoHeaderModel
-	repository    structs.RepoProperties
-	settingsTable table.Model
-	activeTab     int
-	width         int
-	height        int
+	repoHeader   RepoHeaderModel
+	repository   structs.RepoProperties
+	settingsList list.Model
+	activeTab    int
+	width        int
+	height       int
 }
 
 func NewRepoModel(width, height int) RepoModel {
@@ -40,13 +41,13 @@ func (m *RepoModel) SelectRepo(repository structs.RepoProperties) {
 	m.repository = repository
 	key := m.repository.GroupKeys[m.activeTab]
 	m.repoHeader = NewRepoHeaderModel(m.width, m.repository.GroupKeys, m.activeTab)
-	m.settingsTable = NewSettingsTable(m.repository.PropertyGroups[key], m.width)
+	m.settingsList = NewSettingsList(m.repository.PropertyGroups[key], m.width, m.height)
 }
 
 func (m *RepoModel) SelectTab(index int) {
 	m.activeTab = index
 	key := m.repository.GroupKeys[index]
-	m.settingsTable = NewSettingsTable(m.repository.PropertyGroups[key], m.width)
+	m.settingsList = NewSettingsList(m.repository.PropertyGroups[key], m.width, m.height)
 }
 
 func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -78,36 +79,40 @@ func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m RepoModel) View() string {
 	// frameWidth, frameHeight := style.Settings.GetFrameSize()
-	settings := appStyle.
-		Width(m.width).
-		Render(m.settingsTable.View())
+	// settings := appStyle.
+	// 	Width(m.width).
+	// 	Render(m.settingsTable.View())
 
-	return lipgloss.JoinVertical(lipgloss.Left, m.repoHeader.View(), settings)
+	settings := m.settingsList.View()
+
+	return lipgloss.JoinVertical(lipgloss.Left, settings)
 }
 
-func NewSettingsTable(activeSettings []structs.RepoProperty, width int) table.Model {
-	halfWidth := half(width)
+func NewSettingsList(activeSettings []structs.RepoProperty, width, height int) list.Model {
+	sort.Slice(activeSettings, func(i, j int) bool {
+		return activeSettings[i].Name < activeSettings[j].Name
+	})
 
-	columns := []table.Column{
-		{Title: "", Width: halfWidth},
-		{Title: "", Width: halfWidth}}
+	items := make([]list.Item, len(activeSettings))
 
-	rows := make([]table.Row, len(activeSettings))
 	for i, setting := range activeSettings {
-		rows[i] = table.Row{setting.Name, setting.String()}
+		items[i] = structs.NewListItem(setting.Name, setting.String())
 	}
 
-	// Make table cells not wrap
-	s := table.DefaultStyles()
-	s.Cell = s.Cell.MaxWidth(halfWidth).Inline(true)
+	delegate := DefaultDelegate
+	delegate.Styles.SelectedDesc = delegate.Styles.NormalDesc
+	delegate.Styles.SelectedTitle = delegate.Styles.NormalTitle
+	delegate.SetSpacing(0)
 
-	table := table.New(
-		table.WithColumns(columns),
-		table.WithRows(rows),
-		table.WithStyles(s),
-	)
+	list := list.New(items, delegate, width, height)
+	list.SetShowFilter(false)
+	list.SetShowHelp(false)
+	list.SetShowPagination(false)
+	list.SetShowStatusBar(false)
+	list.Styles.Title = titleStyle
+	list.SetHeight(height)
 
-	return table
+	return list
 }
 
 func handleNext() tea.Msg {

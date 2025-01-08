@@ -87,7 +87,8 @@ func (m *MainModel) UpdateChild(msg tea.Msg) tea.Cmd {
 func (m MainModel) View() string {
 	child, _ := m.stack.Peek()
 	borderStyle := lipgloss.NewStyle().Border(lipgloss.OuterHalfBlockBorder())
-	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, borderStyle.Render(child.View()))
+
+	return borderStyle.Render(lipgloss.PlaceHorizontal(m.width-2, lipgloss.Left, child.View()))
 }
 
 func (m *MainModel) Next(message NextMessage) tea.Cmd {
@@ -96,11 +97,11 @@ func (m *MainModel) Next(message NextMessage) tea.Cmd {
 
 	switch head.(type) {
 	case AuthenticatingModel:
-		newModel = NewUserModel(message.ModelData.(structs.User), m.width, m.height)
+		newModel = NewUserModel(message.ModelData.(structs.User), m.width-2, m.height-2)
 	case UserModel:
-		newModel = NewOrgModel(message.ModelData.(string), m.width, m.height)
+		newModel = NewOrgModel(message.ModelData.(string), m.width-2, m.height-2)
 	case OrgModel:
-		newModel = NewFiltersModel(m.width, m.height)
+		newModel = NewFiltersModel(m.width-2, m.height-2)
 	}
 
 	newModel, cmd := newModel.Init()

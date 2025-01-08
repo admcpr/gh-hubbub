@@ -36,13 +36,16 @@ type OrgModel struct {
 }
 
 func NewOrgModel(title string, width, height int) *OrgModel {
+	progress := progress.New()
+	progress.SetWidth(width)
+
 	return &OrgModel{
 		Title:     title,
 		width:     width,
 		height:    height,
 		repoModel: NewRepoModel(width/2, height),
 		repoList:  list.New([]list.Item{}, simpleItemDelegate{}, width/2, height),
-		progress:  progress.New(progress.WithDefaultGradient()),
+		progress:  progress,
 	}
 }
 
@@ -63,7 +66,7 @@ func (m *OrgModel) populateRepoList() {
 	})
 
 	list := list.New(items, simpleItemDelegate{}, m.width/2, m.height-2)
-	list.Title = fmt.Sprintf("%s Filters: %d", m.Title, len(m.filters))
+	list.Title = fmt.Sprintf("Organization: %s ", m.Title)
 	list.Styles.Title = titleStyle
 	list.SetStatusBarItemName("Repository", "Repositories")
 	list.SetShowHelp(false)

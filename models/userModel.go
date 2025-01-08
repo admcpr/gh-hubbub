@@ -27,7 +27,7 @@ func NewUserModel(user structs.User, width, height int) UserModel {
 	userList := list.New([]list.Item{}, DefaultDelegate, width, height)
 
 	userList.Title = "User: " + user.Name
-	userList.SetStatusBarItemName("Organisation", "Organisations")
+	userList.SetStatusBarItemName("Organization", "Organizations")
 	userList.Styles.Title = titleStyle
 	userList.SetShowTitle(true)
 

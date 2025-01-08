@@ -75,8 +75,8 @@ var (
 
 	titleStyle = appStyle.Foreground(AppColors.blue).
 			BorderForeground(AppColors.brightBlue).
-			Border(lipgloss.NormalBorder(), false, false, true, false).
-			Padding(1, 1, 0, 1)
+			Border(lipgloss.NormalBorder(), false, false, true, true).
+			Padding(0, 1, 0, 1)
 
 	errorStyle = lipgloss.NewStyle().Foreground(AppColors.red)
 
@@ -100,9 +100,12 @@ var (
 				Background(AppColors.cyan).
 				Underline(true)
 
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).
-				Foreground(AppColors.cyan)
+	itemStyle         = lipgloss.NewStyle().PaddingLeft(2)
+	selectedItemStyle = itemStyle.
+				PaddingLeft(1).
+				Foreground(AppColors.cyan).
+				BorderForeground(AppColors.cyan).
+				Border(lipgloss.NormalBorder(), false, false, false, true)
 
 	modalTitleStyle = titleStyle.
 			Align(lipgloss.Center).
