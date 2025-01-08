@@ -41,13 +41,13 @@ func (m *RepoModel) SelectRepo(repository structs.RepoProperties) {
 	m.repository = repository
 	key := m.repository.GroupKeys[m.activeTab]
 	m.repoHeader = NewRepoHeaderModel(m.width, m.repository.GroupKeys, m.activeTab)
-	m.settingsList = NewSettingsList(m.repository.PropertyGroups[key], m.width, m.height)
+	m.settingsList = NewSettingsList(m.repository.PropertyGroups[key], key, m.width, m.height)
 }
 
 func (m *RepoModel) SelectTab(index int) {
 	m.activeTab = index
 	key := m.repository.GroupKeys[index]
-	m.settingsList = NewSettingsList(m.repository.PropertyGroups[key], m.width, m.height)
+	m.settingsList = NewSettingsList(m.repository.PropertyGroups[key], key, m.width, m.height)
 }
 
 func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -88,7 +88,7 @@ func (m RepoModel) View() string {
 	return lipgloss.JoinVertical(lipgloss.Left, settings)
 }
 
-func NewSettingsList(activeSettings []structs.RepoProperty, width, height int) list.Model {
+func NewSettingsList(activeSettings []structs.RepoProperty, title string, width, height int) list.Model {
 	sort.Slice(activeSettings, func(i, j int) bool {
 		return activeSettings[i].Name < activeSettings[j].Name
 	})
@@ -105,6 +105,7 @@ func NewSettingsList(activeSettings []structs.RepoProperty, width, height int) l
 	delegate.SetSpacing(0)
 
 	list := list.New(items, delegate, width, height)
+	list.Title = title
 	list.SetShowFilter(false)
 	list.SetShowHelp(false)
 	list.SetShowPagination(false)
