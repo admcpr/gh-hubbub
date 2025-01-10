@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"sort"
-	"strings"
 
 	"gh-hubbub/queries"
 	"gh-hubbub/structs"
@@ -36,16 +35,13 @@ type OrgModel struct {
 }
 
 func NewOrgModel(title string, width, height int) *OrgModel {
-	progress := progress.New()
-	progress.SetWidth(width)
-
 	return &OrgModel{
 		Title:     title,
 		width:     width,
 		height:    height,
 		repoModel: NewRepoModel(width/2, height),
 		repoList:  list.New([]list.Item{}, simpleItemDelegate{}, width/2, height),
-		progress:  progress,
+		progress:  progress.New(progress.WithoutPercentage()),
 	}
 }
 
@@ -158,13 +154,9 @@ func (m OrgModel) View() string {
 }
 
 func (m OrgModel) ProgressView() string {
-	pad := strings.Repeat(" ", 2)
-	progress := "\n" + pad + m.progress.View() + "\n\n" + pad + "Getting repositories ... "
-
-	if m.repoCount < 1 {
-		return progress
-	}
-	return progress + fmt.Sprintf("%d of %d", len(m.repos), m.repoCount)
+	m.progress.SetWidth(m.width)
+	text := fmt.Sprintf("Getting repositories ... %d of %d\n", len(m.repos), m.repoCount)
+	return lipgloss.JoinVertical(lipgloss.Center, text, m.progress.View())
 }
 
 func getRepoDetails(owner string, name string) tea.Cmd {
