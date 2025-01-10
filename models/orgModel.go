@@ -61,10 +61,6 @@ func (m *OrgModel) populateRepoList() {
 		items[i] = simpleItem(repo.Name)
 	}
 
-	sort.Slice(items, func(i, j int) bool {
-		return items[i].(simpleItem) < items[j].(simpleItem)
-	})
-
 	list := list.New(items, simpleItemDelegate{}, m.width/2, m.height-2)
 	list.Title = fmt.Sprintf("Organization: %s ", m.Title)
 	list.Styles.Title = titleStyle
@@ -97,6 +93,9 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.repos = append(m.repos, structs.NewRepoProperties(msg.Repository))
 
 		if m.repoCount == len(m.repos) {
+			sort.Slice(m.repos, func(i, j int) bool {
+				return m.repos[i].Name < m.repos[j].Name
+			})
 			m.populateRepoList()
 			cmd = m.progress.SetPercent(1.0)
 		} else {
