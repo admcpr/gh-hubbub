@@ -1,12 +1,12 @@
 package models
 
 import (
-	"fmt"
 	"gh-hubbub/queries"
 	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 type FilterSearchModel struct {
@@ -18,8 +18,8 @@ type FilterSearchModel struct {
 func NewFilterSearchModel() FilterSearchModel {
 	ti := textinput.New()
 	ti.Placeholder = "Type to search"
-	ti.Prompt = "Property Name: "
-	ti.PromptStyle = promptStyle
+	ti.Prompt = "Add filter: "
+	ti.PromptStyle = promptStyle.Width(len(ti.Prompt))
 	ti.Cursor.Style = cursorStyle
 	ti.Focus()
 	ti.CharLimit = 50
@@ -68,11 +68,7 @@ func (m FilterSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m FilterSearchModel) View() string {
-	return fmt.Sprintf(
-		"%s\n\n%s\n\n",
-		m.textinput.View(),
-		m.LookupDescription(),
-	)
+	return lipgloss.JoinVertical(lipgloss.Left, m.textinput.View(), "\n", m.LookupDescription())
 }
 
 func (m FilterSearchModel) LookupDescription() string {

@@ -124,14 +124,12 @@ func (m FiltersModel) View() string {
 	if m.filtering() {
 		return m.filterModel.View()
 	} else {
-		filtersListView := ""
-		if len(m.filters) > 0 {
-			m.filtersList = NewFiltersList(m.filters, m.width, m.height)
-			filtersListView = m.filtersList.View()
-		}
+		m.filtersList = NewFiltersList(m.filters, m.width, m.height)
+		filtersListView := m.filtersList.View()
+
 		search := m.filterSearch.View()
 		help := m.help.View(m.keymap)
-		return lipgloss.JoinVertical(lipgloss.Left, search, filtersListView, help)
+		return lipgloss.JoinVertical(lipgloss.Left, filtersListView, search, help)
 	}
 }
 
@@ -149,9 +147,9 @@ func NewFiltersList(filters map[string]structs.Filter, width, height int) list.M
 		return items[i].(simpleItem) < items[j].(simpleItem)
 	})
 
-	list := list.New(items, simpleItemDelegate{}, width, height-4)
+	list := list.New(items, simpleItemDelegate{}, width, height-8)
 	list.Styles.Title = titleStyle
-	list.Title = "Selected Filters"
+	list.Title = "Filters"
 	list.SetShowHelp(false)
 	list.SetShowStatusBar(false)
 	list.SetShowTitle(true)
