@@ -87,7 +87,7 @@ func (m *MainModel) UpdateChild(msg tea.Msg) tea.Cmd {
 
 func (m MainModel) View() string {
 	child, _ := m.stack.Peek()
-	borderStyle := lipgloss.NewStyle().Border(lipgloss.OuterHalfBlockBorder())
+	borderStyle := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(AppColors.green)
 
 	return borderStyle.Render(lipgloss.PlaceHorizontal(m.width-2, lipgloss.Left, child.View()))
 }
