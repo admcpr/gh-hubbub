@@ -103,6 +103,8 @@ func (m *MainModel) Next(message NextMessage) tea.Cmd {
 		newModel = NewOrgModel(message.ModelData.(string), m.width-2, m.height-2)
 	case OrgModel:
 		newModel = NewFiltersModel(m.width-2, m.height-2)
+	case FiltersModel:
+		newModel = NewFilter(message.ModelData.(property), m.width-2, m.height-2)
 	}
 
 	newModel, cmd := newModel.Init()
@@ -123,6 +125,10 @@ func (m *MainModel) Previous(message PreviousMessage) tea.Cmd {
 		// This is all a big mess, need to refactor to something less stinky
 		if message.ModelData != nil && reflect.TypeOf(message.ModelData) == reflect.TypeOf(filterMap{}) {
 			return m.UpdateChild(filtersMsg(message.ModelData.(filterMap)))
+		}
+	case IntModel, DateModel, BoolModel:
+		if message.ModelData != nil {
+			return m.UpdateChild(AddFilterMsg(message.ModelData.(structs.Filter)))
 		}
 	}
 

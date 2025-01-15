@@ -72,6 +72,10 @@ func (m IntModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "enter":
 			return m, m.SendAddFilterMsg
+		case "esc":
+			return m, func() tea.Msg {
+				return PreviousMessage{}
+			}
 		case "tab", "shift+tab":
 			if m.fromInput.Focused() {
 				m.fromInput.Blur()
@@ -114,5 +118,5 @@ func (m *IntModel) GetValue() (int, int) {
 
 func (m IntModel) SendAddFilterMsg() tea.Msg {
 	from, to := m.GetValue()
-	return structs.NewFilterInt(m.Name, from, to)
+	return PreviousMessage{ModelData: structs.NewFilterInt(m.Name, from, to)}
 }

@@ -50,6 +50,10 @@ func (m BoolModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "enter":
 			return m, m.SendFilterMsg
+		case "esc":
+			return m, func() tea.Msg {
+				return PreviousMessage{}
+			}
 		case "y", "Y":
 			m.Value = true
 		case "n", "N":
@@ -81,5 +85,5 @@ func (m *BoolModel) GetValue() bool {
 }
 
 func (m BoolModel) SendFilterMsg() tea.Msg {
-	return structs.NewFilterBool(m.Name, m.GetValue())
+	return PreviousMessage{ModelData: structs.NewFilterBool(m.Name, m.GetValue())}
 }

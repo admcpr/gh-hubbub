@@ -97,6 +97,10 @@ func (m DateModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			// TODO: validate
 			return m, m.SendAddFilterMsg
+		case "esc":
+			return m, func() tea.Msg {
+				return PreviousMessage{}
+			}
 		case "tab":
 			if m.fromInput.Focused() {
 				m.fromInput.Blur()
@@ -162,5 +166,5 @@ func (m *DateModel) GetValue() (time.Time, time.Time, error) {
 func (m DateModel) SendAddFilterMsg() tea.Msg {
 	from, to, _ := m.GetValue()
 
-	return structs.NewFilterDate(m.Name, from, to)
+	return PreviousMessage{ModelData: structs.NewFilterDate(m.Name, from, to)}
 }
