@@ -18,7 +18,6 @@ type filterMap map[string]structs.Filter
 
 type FiltersModel struct {
 	filterSearch tea.Model
-	filterModel  tea.Model
 	filtersList  list.Model
 	repository   queries.Repository
 	help         help.Model
@@ -73,36 +72,23 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "esc":
-			if m.filtering() {
-				m.filterModel = nil
-				return m, nil
-			} else {
-				return m, func() tea.Msg {
-					return PreviousMessage{ModelData: m.filters}
-				}
+			return m, func() tea.Msg {
+				return PreviousMessage{ModelData: m.filters}
 			}
 		case "ctrl+enter":
 			return m, func() tea.Msg {
 				return PreviousMessage{ModelData: m.filters}
 			}
 		}
-	case PropertySelectedMsg:
-		m.filterModel = NewFilter(property(msg), m.width, m.height)
-		return m, nil
 
 	case AddFilterMsg:
 		m.filters[msg.GetName()] = structs.Filter(msg)
-		m.filterModel = nil
 		m.filterSearch = NewFilterSearchModel()
 		m.filterSearch, cmd = m.filterSearch.Init()
 		return m, cmd
 	}
 
-	if m.filtering() {
-		m.filterModel, cmd = m.filterModel.Update(msg)
-	} else {
-		m.filterSearch, cmd = m.filterSearch.Update(msg)
-	}
+	m.filterSearch, cmd = m.filterSearch.Update(msg)
 
 	return m, cmd
 }
@@ -121,16 +107,13 @@ func NewFilter(property property, width, height int) tea.Model {
 }
 
 func (m FiltersModel) View() string {
-	if m.filtering() {
-		return m.filterModel.View()
-	} else {
-		m.filtersList = NewFiltersList(m.filters, m.width, m.height)
-		filtersListView := m.filtersList.View()
+	m.filtersList = NewFiltersList(m.filters, m.width, m.height)
+	filtersListView := m.filtersList.View()
 
-		search := m.filterSearch.View()
-		help := m.help.View(m.keymap)
-		return lipgloss.JoinVertical(lipgloss.Left, filtersListView, search, help)
-	}
+	search := m.filterSearch.View()
+	help := m.help.View(m.keymap)
+	return lipgloss.JoinVertical(lipgloss.Left, filtersListView, search, help)
+	// }
 }
 
 type filtersListMsg structs.RepoProperties
@@ -155,10 +138,6 @@ func NewFiltersList(filters map[string]structs.Filter, width, height int) list.M
 	list.SetShowTitle(true)
 
 	return list
-}
-
-func (m FiltersModel) filtering() bool {
-	return m.filterModel != nil
 }
 
 type filterKeyMap struct{}

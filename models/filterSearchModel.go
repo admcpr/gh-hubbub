@@ -48,7 +48,7 @@ func (m FilterSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			_, exists := m.CurrentPropertySuggestion()
 			if exists {
-				return m, m.SendPropertyMsg
+				return m, m.SendNextMsg
 			}
 			return m, nil
 		}
@@ -85,9 +85,9 @@ func (m FilterSearchModel) CurrentPropertySuggestion() (property, bool) {
 	return prop, exists
 }
 
-func (m FilterSearchModel) SendPropertyMsg() tea.Msg {
+func (m FilterSearchModel) SendNextMsg() tea.Msg {
 	property, _ := m.CurrentPropertySuggestion()
-	return PropertySelectedMsg(property)
+	return NextMessage{ModelData: property}
 }
 
 func getFilters() tea.Msg {
