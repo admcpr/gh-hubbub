@@ -23,7 +23,7 @@ func NewMainModel() MainModel {
 	// stack.Push(NewBoolModel("Is something true", false, 0, 0))
 	// stack.Push(NewDateModel("Date between", time.Now(), time.Now().Add(time.Hour*24*7), 0, 0))
 	// stack.Push(NewIntModel("Number between", 0, 100, 0, 0))
-	stack.Push(filters.NewFiltersModel(0, 0))
+	stack.Push(filters.NewModel(0, 0))
 
 	return MainModel{
 		stack: stack,
@@ -102,9 +102,9 @@ func (m *MainModel) Next(message shared.NextMessage) tea.Cmd {
 	case models.UserModel:
 		newModel = models.NewOrgModel(message.ModelData.(string), m.width-2, m.height-2)
 	case models.OrgModel:
-		newModel = filters.NewFiltersModel(m.width-2, m.height-2)
-	case filters.FiltersModel:
-		newModel = filters.NewFilter(message.ModelData.(filters.Property), m.width-2, m.height-2)
+		newModel = filters.NewModel(m.width-2, m.height-2)
+	case filters.Model:
+		newModel = filters.NewFilterModel(message.ModelData.(filters.Property), m.width-2, m.height-2)
 	}
 
 	newModel, cmd := newModel.Init()
@@ -121,7 +121,7 @@ func (m *MainModel) Previous(message shared.PreviousMessage) tea.Cmd {
 	}
 
 	switch head.(type) {
-	case filters.FiltersModel:
+	case filters.Model:
 		// This is all a big mess, need to refactor to something less stinky
 		if message.ModelData != nil && reflect.TypeOf(message.ModelData) == reflect.TypeOf(filters.FilterMap{}) {
 			return m.UpdateChild(filters.FiltersMsg(message.ModelData.(filters.FilterMap)))

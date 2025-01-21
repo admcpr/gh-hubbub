@@ -17,7 +17,7 @@ import (
 type AddFilterMsg Filter
 type FilterMap map[string]Filter
 
-type FiltersModel struct {
+type Model struct {
 	filterSearch tea.Model
 	filtersList  list.Model
 	repository   queries.Repository
@@ -29,7 +29,7 @@ type FiltersModel struct {
 	height       int
 }
 
-func (m *FiltersModel) SetDimensions(width, height int) {
+func (m *Model) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
 }
@@ -40,7 +40,7 @@ type Property struct {
 	Type        string
 }
 
-func NewFiltersModel(width, height int) *FiltersModel {
+func NewModel(width, height int) *Model {
 	fsm := NewFilterSearchModel()
 	list := list.New([]list.Item{}, shared.SimpleItemDelegate{}, width, height-4)
 	repository := queries.Repository{}
@@ -48,7 +48,7 @@ func NewFiltersModel(width, height int) *FiltersModel {
 	help := help.New()
 	keymap := filterKeyMap{}
 
-	return &FiltersModel{
+	return &Model{
 		filterSearch: fsm,
 		filtersList:  list,
 		repository:   repository,
@@ -61,12 +61,12 @@ func NewFiltersModel(width, height int) *FiltersModel {
 	}
 }
 
-func (m FiltersModel) Init() (tea.Model, tea.Cmd) {
+func (m Model) Init() (tea.Model, tea.Cmd) {
 	_, cmd := m.filterSearch.Init()
 	return m, cmd
 }
 
-func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -94,7 +94,7 @@ func (m FiltersModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func NewFilter(property Property, width, height int) tea.Model {
+func NewFilterModel(property Property, width, height int) tea.Model {
 	switch property.Type {
 	case "bool":
 		return NewBoolModel(property.Name, false, width, height)
@@ -107,7 +107,7 @@ func NewFilter(property Property, width, height int) tea.Model {
 	}
 }
 
-func (m FiltersModel) View() string {
+func (m Model) View() string {
 	m.filtersList = NewFiltersList(m.filters, m.width, m.height)
 	filtersListView := m.filtersList.View()
 

@@ -6,21 +6,21 @@ import (
 	"time"
 )
 
-type FilterDate struct {
+type DateFilter struct {
 	Name string
 	From time.Time
 	To   time.Time
 }
 
-func NewFilterDate(name string, from, to time.Time) FilterDate {
-	return FilterDate{Name: name, From: from, To: to}
+func NewDateFilter(name string, from, to time.Time) DateFilter {
+	return DateFilter{Name: name, From: from, To: to}
 }
 
-func (f FilterDate) GetName() string {
+func (f DateFilter) GetName() string {
 	return f.Name
 }
 
-func (f FilterDate) Matches(property structs.RepoProperty) bool {
+func (f DateFilter) Matches(property structs.RepoProperty) bool {
 	if property.Type != "time.Time" {
 		return false
 	}
@@ -30,6 +30,6 @@ func (f FilterDate) Matches(property structs.RepoProperty) bool {
 	return (date.After(f.From) || date.Equal(f.From)) && (date.Before(f.To) || date.Equal(f.To))
 }
 
-func (f FilterDate) String() string {
+func (f DateFilter) String() string {
 	return fmt.Sprintf("%s between %s and %s", f.Name, f.From.Format("2006-01-02"), f.To.Format("2006-01-02"))
 }

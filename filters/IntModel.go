@@ -32,7 +32,7 @@ func intValidator(s, prompt string) error {
 	return nil
 }
 
-func NewIntInputModel(prompt string, value int) textinput.Model {
+func newIntInputModel(prompt string, value int) textinput.Model {
 	m := textinput.New()
 	m.Placeholder = fmt.Sprint(value)
 	m.Prompt = prompt
@@ -47,8 +47,8 @@ func NewIntInputModel(prompt string, value int) textinput.Model {
 func NewIntModel(title string, from, to, width, height int) IntModel {
 	m := IntModel{
 		Name:      title,
-		fromInput: NewIntInputModel("From", from),
-		toInput:   NewIntInputModel("To", to),
+		fromInput: newIntInputModel("From", from),
+		toInput:   newIntInputModel("To", to),
 	}
 
 	m.fromInput.Focus()
@@ -118,5 +118,5 @@ func (m *IntModel) GetValue() (int, int) {
 
 func (m IntModel) SendAddFilterMsg() tea.Msg {
 	from, to := m.GetValue()
-	return shared.PreviousMessage{ModelData: NewFilterInt(m.Name, from, to)}
+	return shared.PreviousMessage{ModelData: NewIntFilter(m.Name, from, to)}
 }

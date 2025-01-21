@@ -166,5 +166,5 @@ func (m *DateModel) GetValue() (time.Time, time.Time, error) {
 func (m DateModel) SendAddFilterMsg() tea.Msg {
 	from, to, _ := m.GetValue()
 
-	return shared.PreviousMessage{ModelData: NewFilterDate(m.Name, from, to)}
+	return shared.PreviousMessage{ModelData: NewDateFilter(m.Name, from, to)}
 }

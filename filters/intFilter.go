@@ -5,21 +5,21 @@ import (
 	"gh-hubbub/structs"
 )
 
-type FilterInt struct {
+type IntFilter struct {
 	Name string
 	From int
 	To   int
 }
 
-func NewFilterInt(name string, from, to int) FilterInt {
-	return FilterInt{Name: name, From: from, To: to}
+func NewIntFilter(name string, from, to int) IntFilter {
+	return IntFilter{Name: name, From: from, To: to}
 }
 
-func (f FilterInt) GetName() string {
+func (f IntFilter) GetName() string {
 	return f.Name
 }
 
-func (f FilterInt) Matches(property structs.RepoProperty) bool {
+func (f IntFilter) Matches(property structs.RepoProperty) bool {
 	if property.Type != "int" {
 		return false
 	}
@@ -29,6 +29,6 @@ func (f FilterInt) Matches(property structs.RepoProperty) bool {
 	return value >= f.From && value <= f.To
 }
 
-func (f FilterInt) String() string {
+func (f IntFilter) String() string {
 	return fmt.Sprintf("%s between %d and %d", f.Name, f.From, f.To)
 }
