@@ -14,7 +14,7 @@ import (
 )
 
 type AddFilterMsg Filter
-type FilterMap map[string]Filter
+type FiltersMsg FilterMap
 
 type Model struct {
 	filterSearch tea.Model
@@ -116,7 +116,7 @@ func (m Model) View() string {
 	// }
 }
 
-type filtersListMsg repos.RepoProperties
+type filtersListMsg repos.RepoConfig
 
 func NewFiltersList(filters map[string]Filter, width, height int) list.Model {
 	items := make([]list.Item, len(filters))

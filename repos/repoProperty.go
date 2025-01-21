@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type RepoProperties struct {
+type RepoConfig struct {
 	Name           string
 	Url            string
 	Properties     map[string]RepoProperty
@@ -18,7 +18,7 @@ type RepoProperties struct {
 	GroupKeys      []string
 }
 
-func NewRepoProperties(r Repository) RepoProperties {
+func NewRepoConfig(r Repository) RepoConfig {
 	propertyGroups := make(map[string][]RepoProperty)
 	properties := ToProperties(r)
 	for _, p := range properties {
@@ -29,7 +29,7 @@ func NewRepoProperties(r Repository) RepoProperties {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	return RepoProperties{
+	return RepoConfig{
 		Name:           r.Name,
 		Url:            r.Url,
 		Properties:     properties,

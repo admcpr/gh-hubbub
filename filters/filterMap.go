@@ -4,15 +4,16 @@ import (
 	"gh-hubbub/repos"
 )
 
-type FiltersMsg FilterMap
+type FilterMap map[string]Filter
 
-func (FilterMap *FilterMap) FilterRepos(repos []repos.RepoProperties) []repos.RepoProperties {
+func (FilterMap *FilterMap) FilterRepos(repoConfigs []repos.RepoConfig) []repos.RepoConfig {
 	if FilterMap == nil {
-		return repos
+		return repoConfigs
 	}
 
-	filteredRepos := []repos.RepoProperties{}
-	for _, repo := range repos {
+	filteredConfigs := []repos.RepoConfig{}
+
+	for _, repo := range repoConfigs {
 		matches := true
 		for _, filter := range *FilterMap {
 			if !filter.Matches(repo.Properties[filter.GetName()]) {
@@ -21,9 +22,9 @@ func (FilterMap *FilterMap) FilterRepos(repos []repos.RepoProperties) []repos.Re
 			}
 		}
 		if matches {
-			filteredRepos = append(filteredRepos, repo)
+			filteredConfigs = append(filteredConfigs, repo)
 		}
 	}
 
-	return filteredRepos
+	return filteredConfigs
 }

@@ -92,7 +92,7 @@ func (m FilterSearchModel) SendNextMsg() tea.Msg {
 
 func getFilters() tea.Msg {
 	rq := repos.Repository{}
-	rp := repos.NewRepoProperties(rq)
+	rp := repos.NewRepoConfig(rq)
 
 	return filtersListMsg(rp)
 }

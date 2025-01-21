@@ -21,7 +21,7 @@ func TestToProperties(t *testing.T) {
 	}
 }
 
-func TestNewRepoProperties(t *testing.T) {
+func TestNewRepoConfig(t *testing.T) {
 	expectedPropertyCount := 49
 	expectedPropertyGroupCount := 7
 
@@ -32,8 +32,8 @@ func TestNewRepoProperties(t *testing.T) {
 		NameWithOwner: "test-repo-owner/test-repo",
 	}
 
-	repoProperties := NewRepoProperties(repo)
+	repoConfig := NewRepoConfig(repo)
 
-	assert.Equal(t, expectedPropertyCount, len(repoProperties.Properties))
-	assert.Equal(t, expectedPropertyGroupCount, len(repoProperties.PropertyGroups))
+	assert.Equal(t, expectedPropertyCount, len(repoConfig.Properties))
+	assert.Equal(t, expectedPropertyGroupCount, len(repoConfig.PropertyGroups))
 }

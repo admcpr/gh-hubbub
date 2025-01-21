@@ -24,7 +24,7 @@ type repoQueryMsg repos.Query
 type Model struct {
 	Title     string
 	repoCount int
-	repos     []repos.RepoProperties
+	repos     []repos.RepoConfig
 	filters   filters.FilterMap
 
 	repoList  list.Model
@@ -88,7 +88,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case repoQueryMsg:
-		m.repos = append(m.repos, repos.NewRepoProperties(msg.Repository))
+		m.repos = append(m.repos, repos.NewRepoConfig(msg.Repository))
 
 		if m.repoCount == len(m.repos) {
 			sort.Slice(m.repos, func(i, j int) bool {

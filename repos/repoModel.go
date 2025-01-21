@@ -12,7 +12,7 @@ import (
 
 type Model struct {
 	repoHeader   HeaderModel
-	repository   RepoProperties
+	repository   RepoConfig
 	settingsList list.Model
 	activeTab    int
 	width        int
@@ -22,7 +22,7 @@ type Model struct {
 func NewModel(width, height int) Model {
 	return Model{
 		repoHeader: NewHeaderModel(width, []string{}, 0),
-		repository: RepoProperties{Properties: map[string]RepoProperty{}, PropertyGroups: map[string][]RepoProperty{}},
+		repository: RepoConfig{Properties: map[string]RepoProperty{}, PropertyGroups: map[string][]RepoProperty{}},
 		width:      width,
 		height:     height,
 	}
@@ -38,7 +38,7 @@ func (m Model) Init() (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *Model) SelectRepo(repository RepoProperties) {
+func (m *Model) SelectRepo(repository RepoConfig) {
 	m.repository = repository
 	key := m.repository.GroupKeys[m.activeTab]
 	m.repoHeader = NewHeaderModel(m.width, m.repository.GroupKeys, m.activeTab)
