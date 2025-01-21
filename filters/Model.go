@@ -1,9 +1,8 @@
 package filters
 
 import (
-	"gh-hubbub/queries"
+	"gh-hubbub/repos"
 	"gh-hubbub/shared"
-	"gh-hubbub/structs"
 	"sort"
 	"time"
 
@@ -20,7 +19,7 @@ type FilterMap map[string]Filter
 type Model struct {
 	filterSearch tea.Model
 	filtersList  list.Model
-	repository   queries.Repository
+	repository   repos.Repository
 	help         help.Model
 	keymap       filterKeyMap
 	properties   map[string]Property
@@ -43,7 +42,7 @@ type Property struct {
 func NewModel(width, height int) *Model {
 	fsm := NewFilterSearchModel()
 	list := list.New([]list.Item{}, shared.SimpleItemDelegate{}, width, height-4)
-	repository := queries.Repository{}
+	repository := repos.Repository{}
 
 	help := help.New()
 	keymap := filterKeyMap{}
@@ -117,7 +116,7 @@ func (m Model) View() string {
 	// }
 }
 
-type filtersListMsg structs.RepoProperties
+type filtersListMsg repos.RepoProperties
 
 func NewFiltersList(filters map[string]Filter, width, height int) list.Model {
 	items := make([]list.Item, len(filters))

@@ -1,14 +1,13 @@
-package structs
+package repos
 
 import (
-	"gh-hubbub/queries"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestToProperties(t *testing.T) {
-	repo := queries.Repository{
+	repo := Repository{
 		Id:            "123",
 		Name:          "test-repo",
 		Description:   "A test repository",
@@ -26,7 +25,7 @@ func TestNewRepoProperties(t *testing.T) {
 	expectedPropertyCount := 49
 	expectedPropertyGroupCount := 7
 
-	repo := queries.Repository{
+	repo := Repository{
 		Id:            "123",
 		Name:          "test-repo",
 		Description:   "A test repository",

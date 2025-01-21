@@ -1,4 +1,4 @@
-package models
+package orgs
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 	"sort"
 
 	"gh-hubbub/filters"
-	"gh-hubbub/queries"
+	"gh-hubbub/models"
+	"gh-hubbub/repos"
 	"gh-hubbub/shared"
-	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/v2/list"
 	"github.com/charmbracelet/bubbles/v2/progress"
@@ -18,17 +18,17 @@ import (
 	graphql "github.com/cli/shurcooL-graphql"
 )
 
-type orgQueryMsg queries.OrganizationQuery
-type repoQueryMsg queries.RepositoryQuery
+type orgQueryMsg OrganizationQuery
+type repoQueryMsg repos.Query
 
-type OrgModel struct {
+type Model struct {
 	Title     string
 	repoCount int
-	repos     []structs.RepoProperties
+	repos     []repos.RepoProperties
 	filters   filters.FilterMap
 
 	repoList  list.Model
-	repoModel RepoModel
+	repoModel repos.RepoModel
 
 	width  int
 	height int
@@ -36,23 +36,23 @@ type OrgModel struct {
 	progress progress.Model
 }
 
-func NewOrgModel(title string, width, height int) *OrgModel {
-	return &OrgModel{
+func NewModel(title string, width, height int) *Model {
+	return &Model{
 		Title:     title,
 		width:     width,
 		height:    height,
-		repoModel: NewRepoModel(width/2, height),
+		repoModel: repos.NewRepoModel(width/2, height),
 		repoList:  list.New([]list.Item{}, shared.SimpleItemDelegate{}, width/2, height),
 		progress:  progress.New(progress.WithoutPercentage()),
 	}
 }
 
-func (m *OrgModel) SetDimensions(width, height int) {
+func (m *Model) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
 }
 
-func (m *OrgModel) populateRepoList() {
+func (m *Model) populateRepoList() {
 	filteredRepositories := m.filters.FilterRepos(m.repos)
 	items := make([]list.Item, len(filteredRepositories))
 	for i, repo := range filteredRepositories {
@@ -70,11 +70,11 @@ func (m *OrgModel) populateRepoList() {
 	m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
 }
 
-func (m OrgModel) Init() (tea.Model, tea.Cmd) {
+func (m Model) Init() (tea.Model, tea.Cmd) {
 	return m, getRepoList(m.Title)
 }
 
-func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -88,7 +88,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case repoQueryMsg:
-		m.repos = append(m.repos, structs.NewRepoProperties(msg.Repository))
+		m.repos = append(m.repos, repos.NewRepoProperties(msg.Repository))
 
 		if m.repoCount == len(m.repos) {
 			sort.Slice(m.repos, func(i, j int) bool {
@@ -127,7 +127,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "tab", "shift+tab":
 			repoModel, cmd := m.repoModel.Update(msg)
-			m.repoModel = repoModel.(RepoModel)
+			m.repoModel = repoModel.(repos.RepoModel)
 			return m, cmd
 		default:
 			m.repoList, cmd = m.repoList.Update(msg)
@@ -140,7 +140,7 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m OrgModel) View() string {
+func (m Model) View() string {
 	if m.progress.Percent() < 1 {
 		return m.ProgressView()
 	}
@@ -155,7 +155,7 @@ func (m OrgModel) View() string {
 	return lipgloss.JoinHorizontal(lipgloss.Top, views...)
 }
 
-func (m OrgModel) ProgressView() string {
+func (m Model) ProgressView() string {
 	m.progress.SetWidth(m.width)
 	text := fmt.Sprintf("Getting repositories ... %d of %d\n", len(m.repos), m.repoCount)
 	return lipgloss.JoinVertical(lipgloss.Center, text, m.progress.View())
@@ -167,7 +167,7 @@ func getRepoDetails(owner string, name string) tea.Cmd {
 		if err != nil {
 			log.Fatal(err)
 		}
-		repoQuery := queries.RepositoryQuery{}
+		repoQuery := repos.Query{}
 
 		variables := map[string]interface{}{
 			"owner": graphql.String(owner),
@@ -187,10 +187,10 @@ func getRepoList(login string) tea.Cmd {
 	return func() tea.Msg {
 		client, err := api.DefaultGraphQLClient()
 		if err != nil {
-			return AuthenticationErrorMsg{Err: err}
+			return models.AuthenticationErrorMsg{Err: err}
 		}
 
-		var organizationQuery = queries.OrganizationQuery{}
+		var organizationQuery = OrganizationQuery{}
 
 		variables := map[string]interface{}{
 			"login": graphql.String(login),
@@ -203,4 +203,8 @@ func getRepoList(login string) tea.Cmd {
 
 		return orgQueryMsg(organizationQuery)
 	}
+}
+
+func handleNext() tea.Msg {
+	return shared.NextMessage{}
 }

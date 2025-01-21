@@ -1,9 +1,8 @@
 package filters
 
 import (
-	"gh-hubbub/queries"
+	"gh-hubbub/repos"
 	"gh-hubbub/shared"
-	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -12,7 +11,7 @@ import (
 
 type FilterSearchModel struct {
 	textinput  textinput.Model
-	repository queries.Repository
+	repository repos.Repository
 	properties map[string]Property
 }
 
@@ -27,7 +26,7 @@ func NewFilterSearchModel() FilterSearchModel {
 	ti.SetWidth(20)
 	ti.ShowSuggestions = true
 
-	repository := queries.Repository{}
+	repository := repos.Repository{}
 
 	return FilterSearchModel{
 		textinput:  ti,
@@ -92,8 +91,8 @@ func (m FilterSearchModel) SendNextMsg() tea.Msg {
 }
 
 func getFilters() tea.Msg {
-	rq := queries.Repository{}
-	rp := structs.NewRepoProperties(rq)
+	rq := repos.Repository{}
+	rp := repos.NewRepoProperties(rq)
 
 	return filtersListMsg(rp)
 }

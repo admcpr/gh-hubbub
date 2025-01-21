@@ -1,9 +1,11 @@
 package filters
 
-import "gh-hubbub/structs"
+import (
+	"gh-hubbub/repos"
+)
 
 type Filter interface {
 	GetName() string
-	Matches(property structs.RepoProperty) bool
+	Matches(property repos.RepoProperty) bool
 	String() string
 }

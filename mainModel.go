@@ -3,6 +3,7 @@ package main
 import (
 	"gh-hubbub/filters"
 	"gh-hubbub/models"
+	"gh-hubbub/orgs"
 	"gh-hubbub/shared"
 	"gh-hubbub/structs"
 	"reflect"
@@ -100,8 +101,8 @@ func (m *MainModel) Next(message shared.NextMessage) tea.Cmd {
 	case models.AuthenticatingModel:
 		newModel = models.NewUserModel(message.ModelData.(structs.User), m.width-2, m.height-2)
 	case models.UserModel:
-		newModel = models.NewOrgModel(message.ModelData.(string), m.width-2, m.height-2)
-	case models.OrgModel:
+		newModel = orgs.NewModel(message.ModelData.(string), m.width-2, m.height-2)
+	case orgs.Model:
 		newModel = filters.NewModel(m.width-2, m.height-2)
 	case filters.Model:
 		newModel = filters.NewFilterModel(message.ModelData.(filters.Property), m.width-2, m.height-2)

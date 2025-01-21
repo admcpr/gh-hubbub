@@ -1,8 +1,8 @@
-package queries
+package repos
 
 import "time"
 
-type RepositoryQuery struct {
+type Query struct {
 	Repository Repository `graphql:"repository(owner: $owner, name: $name)"`
 }
 

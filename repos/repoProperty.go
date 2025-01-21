@@ -1,8 +1,8 @@
-package structs
+package repos
 
 import (
 	"fmt"
-	"gh-hubbub/queries"
+	"gh-hubbub/structs"
 	"reflect"
 	"regexp"
 	"sort"
@@ -18,7 +18,7 @@ type RepoProperties struct {
 	GroupKeys      []string
 }
 
-func NewRepoProperties(r queries.Repository) RepoProperties {
+func NewRepoProperties(r Repository) RepoProperties {
 	propertyGroups := make(map[string][]RepoProperty)
 	properties := ToProperties(r)
 	for _, p := range properties {
@@ -49,7 +49,7 @@ type RepoProperty struct {
 func (s RepoProperty) String() string {
 	switch value := s.Value.(type) {
 	case bool:
-		return YesNo(value)
+		return structs.YesNo(value)
 	case string:
 		return value
 	case time.Time:
@@ -84,7 +84,7 @@ func NewRepoProperty(name string, group string, value interface{}, typeStr strin
 // 	return properties
 // }
 
-func ToProperties(r queries.Repository) map[string]RepoProperty {
+func ToProperties(r Repository) map[string]RepoProperty {
 	var properties []RepoProperty
 	t := reflect.TypeOf(r)
 	v := reflect.ValueOf(r)

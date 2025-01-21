@@ -2,7 +2,7 @@ package filters
 
 import (
 	"fmt"
-	"gh-hubbub/structs"
+	"gh-hubbub/repos"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -30,22 +30,22 @@ func (s *BoolFilterSuite) TestGetName() {
 func (s *BoolFilterSuite) TestMatches() {
 	tests := []struct {
 		name     string
-		property structs.RepoProperty
+		property repos.RepoProperty
 		want     bool
 	}{
 		{
 			name:     "matching bool value",
-			property: structs.RepoProperty{Type: "bool", Value: true},
+			property: repos.RepoProperty{Type: "bool", Value: true},
 			want:     true,
 		},
 		{
 			name:     "non-matching bool value",
-			property: structs.RepoProperty{Type: "bool", Value: false},
+			property: repos.RepoProperty{Type: "bool", Value: false},
 			want:     false,
 		},
 		{
 			name:     "non-bool property type",
-			property: structs.RepoProperty{Type: "string", Value: "true"},
+			property: repos.RepoProperty{Type: "string", Value: "true"},
 			want:     false,
 		},
 	}

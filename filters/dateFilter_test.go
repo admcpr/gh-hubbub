@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"gh-hubbub/structs"
+	"gh-hubbub/repos"
 	"testing"
 	"time"
 
@@ -37,12 +37,12 @@ func (s *DateFilterSuite) TestGetName() {
 func (s *DateFilterSuite) TestMatches() {
 	tests := []struct {
 		name     string
-		property structs.RepoProperty
+		property repos.RepoProperty
 		want     bool
 	}{
 		{
 			name: "date within range",
-			property: structs.RepoProperty{
+			property: repos.RepoProperty{
 				Type:  "time.Time",
 				Value: s.baseTime.AddDate(0, 0, 15),
 			},
@@ -50,7 +50,7 @@ func (s *DateFilterSuite) TestMatches() {
 		},
 		{
 			name: "date before range",
-			property: structs.RepoProperty{
+			property: repos.RepoProperty{
 				Type:  "time.Time",
 				Value: s.baseTime.AddDate(0, 0, -1),
 			},
@@ -58,7 +58,7 @@ func (s *DateFilterSuite) TestMatches() {
 		},
 		{
 			name: "date after range",
-			property: structs.RepoProperty{
+			property: repos.RepoProperty{
 				Type:  "time.Time",
 				Value: s.baseTime.AddDate(0, 2, 0),
 			},
@@ -66,7 +66,7 @@ func (s *DateFilterSuite) TestMatches() {
 		},
 		{
 			name: "date on start boundary",
-			property: structs.RepoProperty{
+			property: repos.RepoProperty{
 				Type:  "time.Time",
 				Value: s.from,
 			},
@@ -74,7 +74,7 @@ func (s *DateFilterSuite) TestMatches() {
 		},
 		{
 			name: "date on end boundary",
-			property: structs.RepoProperty{
+			property: repos.RepoProperty{
 				Type:  "time.Time",
 				Value: s.to,
 			},
@@ -82,7 +82,7 @@ func (s *DateFilterSuite) TestMatches() {
 		},
 		{
 			name: "invalid property type",
-			property: structs.RepoProperty{
+			property: repos.RepoProperty{
 				Type:  "string",
 				Value: "2024-01-01",
 			},
@@ -90,7 +90,7 @@ func (s *DateFilterSuite) TestMatches() {
 		},
 		{
 			name: "zero time",
-			property: structs.RepoProperty{
+			property: repos.RepoProperty{
 				Type:  "time.Time",
 				Value: time.Time{},
 			},

@@ -2,6 +2,7 @@ package filters
 
 import (
 	"fmt"
+	"gh-hubbub/repos"
 	"gh-hubbub/structs"
 )
 
@@ -18,7 +19,7 @@ func (f BoolFilter) GetName() string {
 	return f.Name
 }
 
-func (f BoolFilter) Matches(property structs.RepoProperty) bool {
+func (f BoolFilter) Matches(property repos.RepoProperty) bool {
 	if property.Type != "bool" {
 		return false
 	}

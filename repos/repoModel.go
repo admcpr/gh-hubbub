@@ -1,4 +1,4 @@
-package models
+package repos
 
 import (
 	"gh-hubbub/shared"
@@ -12,7 +12,7 @@ import (
 
 type RepoModel struct {
 	repoHeader   RepoHeaderModel
-	repository   structs.RepoProperties
+	repository   RepoProperties
 	settingsList list.Model
 	activeTab    int
 	width        int
@@ -22,7 +22,7 @@ type RepoModel struct {
 func NewRepoModel(width, height int) RepoModel {
 	return RepoModel{
 		repoHeader: NewRepoHeaderModel(width, []string{}, 0),
-		repository: structs.RepoProperties{Properties: map[string]structs.RepoProperty{}, PropertyGroups: map[string][]structs.RepoProperty{}},
+		repository: RepoProperties{Properties: map[string]RepoProperty{}, PropertyGroups: map[string][]RepoProperty{}},
 		width:      width,
 		height:     height,
 	}
@@ -38,7 +38,7 @@ func (m RepoModel) Init() (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *RepoModel) SelectRepo(repository structs.RepoProperties) {
+func (m *RepoModel) SelectRepo(repository RepoProperties) {
 	m.repository = repository
 	key := m.repository.GroupKeys[m.activeTab]
 	m.repoHeader = NewRepoHeaderModel(m.width, m.repository.GroupKeys, m.activeTab)
@@ -89,7 +89,7 @@ func (m RepoModel) View() string {
 	return lipgloss.JoinVertical(lipgloss.Left, settings)
 }
 
-func NewSettingsList(activeSettings []structs.RepoProperty, title string, width, height int) list.Model {
+func NewSettingsList(activeSettings []RepoProperty, title string, width, height int) list.Model {
 	sort.Slice(activeSettings, func(i, j int) bool {
 		return activeSettings[i].Name < activeSettings[j].Name
 	})
