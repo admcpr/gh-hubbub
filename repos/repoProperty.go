@@ -65,25 +65,6 @@ func NewRepoProperty(name string, group string, value interface{}, typeStr strin
 	return RepoProperty{Name: name, Group: group, Value: value, Type: typeStr, Description: description}
 }
 
-// func ToProperties(r queries.Repository) []RepoProperty {
-// 	var properties []RepoProperty
-// 	t := reflect.TypeOf(r)
-// 	v := reflect.ValueOf(r)
-
-// 	for i := 0; i < t.NumField(); i++ {
-// 		field := t.Field(i)
-
-// 		name := splitCamelCase(field.Name)
-// 		desc := field.Tag.Get("desc")
-// 		group := field.Tag.Get("group")
-// 		typeStr := field.Type.String()
-
-// 		properties = append(properties, NewRepoProperty(name, group, v.Field(i).Interface(), typeStr, desc))
-// 	}
-
-// 	return properties
-// }
-
 func ToProperties(r Repository) map[string]RepoProperty {
 	var properties []RepoProperty
 	t := reflect.TypeOf(r)

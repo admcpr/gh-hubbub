@@ -10,8 +10,8 @@ import (
 	"github.com/charmbracelet/lipgloss/v2"
 )
 
-type RepoModel struct {
-	repoHeader   RepoHeaderModel
+type Model struct {
+	repoHeader   HeaderModel
 	repository   RepoProperties
 	settingsList list.Model
 	activeTab    int
@@ -19,39 +19,39 @@ type RepoModel struct {
 	height       int
 }
 
-func NewRepoModel(width, height int) RepoModel {
-	return RepoModel{
-		repoHeader: NewRepoHeaderModel(width, []string{}, 0),
+func NewModel(width, height int) Model {
+	return Model{
+		repoHeader: NewHeaderModel(width, []string{}, 0),
 		repository: RepoProperties{Properties: map[string]RepoProperty{}, PropertyGroups: map[string][]RepoProperty{}},
 		width:      width,
 		height:     height,
 	}
 }
 
-func (m *RepoModel) SetDimensions(width, height int) {
+func (m *Model) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
 	m.repoHeader.SetDimensions(width, height)
 }
 
-func (m RepoModel) Init() (tea.Model, tea.Cmd) {
+func (m Model) Init() (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *RepoModel) SelectRepo(repository RepoProperties) {
+func (m *Model) SelectRepo(repository RepoProperties) {
 	m.repository = repository
 	key := m.repository.GroupKeys[m.activeTab]
-	m.repoHeader = NewRepoHeaderModel(m.width, m.repository.GroupKeys, m.activeTab)
+	m.repoHeader = NewHeaderModel(m.width, m.repository.GroupKeys, m.activeTab)
 	m.settingsList = NewSettingsList(m.repository.PropertyGroups[key], key, m.width, m.height)
 }
 
-func (m *RepoModel) SelectTab(index int) {
+func (m *Model) SelectTab(index int) {
 	m.activeTab = index
 	key := m.repository.GroupKeys[index]
 	m.settingsList = NewSettingsList(m.repository.PropertyGroups[key], key, m.width, m.height)
 }
 
-func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -64,7 +64,7 @@ func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.SelectTab(0)
 			}
 			repoHeader, _ := m.repoHeader.Update(TabSelectMessage{Index: m.activeTab})
-			m.repoHeader = repoHeader.(RepoHeaderModel)
+			m.repoHeader = repoHeader.(HeaderModel)
 		case "shift+tab":
 			if m.activeTab > 0 {
 				m.SelectTab(m.activeTab - 1)
@@ -72,13 +72,13 @@ func (m RepoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.SelectTab(len(m.repository.PropertyGroups) - 1)
 			}
 			repoHeader, _ := m.repoHeader.Update(TabSelectMessage{Index: m.activeTab})
-			m.repoHeader = repoHeader.(RepoHeaderModel)
+			m.repoHeader = repoHeader.(HeaderModel)
 		}
 	}
 	return m, cmd
 }
 
-func (m RepoModel) View() string {
+func (m Model) View() string {
 	// frameWidth, frameHeight := style.Settings.GetFrameSize()
 	// settings := appStyle.
 	// 	Width(m.width).
@@ -115,8 +115,4 @@ func NewSettingsList(activeSettings []RepoProperty, title string, width, height 
 	list.SetHeight(height)
 
 	return list
-}
-
-func handleNext() tea.Msg {
-	return shared.NextMessage{}
 }

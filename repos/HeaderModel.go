@@ -10,41 +10,41 @@ import (
 
 type TabSelectMessage struct{ Index int }
 
-type RepoHeaderModel struct {
+type HeaderModel struct {
 	titles    []string
 	paginator paginator.Model
 	width     int
 	height    int
 }
 
-func NewRepoHeaderModel(width int, titles []string, index int) RepoHeaderModel {
+func NewHeaderModel(width int, titles []string, index int) HeaderModel {
 	p := paginator.New()
 	p.Type = paginator.Dots
 	p.PerPage = 1
 	p.SetTotalPages(len(titles))
 	p.Page = index
 
-	return RepoHeaderModel{
+	return HeaderModel{
 		titles:    titles,
 		paginator: p,
 		width:     width,
 	}
 }
 
-func (m *RepoHeaderModel) SetDimensions(width, height int) {
+func (m *HeaderModel) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
 }
 
-func (m RepoHeaderModel) Init() (tea.Model, tea.Cmd) {
+func (m HeaderModel) Init() (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m RepoHeaderModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m HeaderModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m RepoHeaderModel) View() string {
+func (m HeaderModel) View() string {
 	heading := shared.TitleStyle.Render(m.titles[m.paginator.Page])
 	return lipgloss.JoinVertical(lipgloss.Left, heading+"\n"+m.paginator.View())
 }

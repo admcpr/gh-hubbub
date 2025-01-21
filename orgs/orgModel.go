@@ -28,7 +28,7 @@ type Model struct {
 	filters   filters.FilterMap
 
 	repoList  list.Model
-	repoModel repos.RepoModel
+	repoModel repos.Model
 
 	width  int
 	height int
@@ -41,7 +41,7 @@ func NewModel(title string, width, height int) *Model {
 		Title:     title,
 		width:     width,
 		height:    height,
-		repoModel: repos.NewRepoModel(width/2, height),
+		repoModel: repos.NewModel(width/2, height),
 		repoList:  list.New([]list.Item{}, shared.SimpleItemDelegate{}, width/2, height),
 		progress:  progress.New(progress.WithoutPercentage()),
 	}
@@ -127,7 +127,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "tab", "shift+tab":
 			repoModel, cmd := m.repoModel.Update(msg)
-			m.repoModel = repoModel.(repos.RepoModel)
+			m.repoModel = repoModel.(repos.Model)
 			return m, cmd
 		default:
 			m.repoList, cmd = m.repoList.Update(msg)
