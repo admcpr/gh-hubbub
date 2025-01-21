@@ -1,7 +1,8 @@
-package structs
+package filters
 
 import (
 	"fmt"
+	"gh-hubbub/structs"
 )
 
 type FilterBool struct {
@@ -17,7 +18,7 @@ func (f FilterBool) GetName() string {
 	return f.Name
 }
 
-func (f FilterBool) Matches(property RepoProperty) bool {
+func (f FilterBool) Matches(property structs.RepoProperty) bool {
 	if property.Type != "bool" {
 		return false
 	}
@@ -26,5 +27,5 @@ func (f FilterBool) Matches(property RepoProperty) bool {
 }
 
 func (f FilterBool) String() string {
-	return fmt.Sprintf("%s = %s", f.Name, YesNo(f.Value))
+	return fmt.Sprintf("%s = %s", f.Name, structs.YesNo(f.Value))
 }

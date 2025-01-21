@@ -1,7 +1,8 @@
-package structs
+package filters
 
 import (
 	"fmt"
+	"gh-hubbub/structs"
 	"time"
 )
 
@@ -19,7 +20,7 @@ func (f FilterDate) GetName() string {
 	return f.Name
 }
 
-func (f FilterDate) Matches(property RepoProperty) bool {
+func (f FilterDate) Matches(property structs.RepoProperty) bool {
 	if property.Type != "time.Time" {
 		return false
 	}

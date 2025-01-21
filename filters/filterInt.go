@@ -1,7 +1,8 @@
-package structs
+package filters
 
 import (
 	"fmt"
+	"gh-hubbub/structs"
 )
 
 type FilterInt struct {
@@ -18,7 +19,7 @@ func (f FilterInt) GetName() string {
 	return f.Name
 }
 
-func (f FilterInt) Matches(property RepoProperty) bool {
+func (f FilterInt) Matches(property structs.RepoProperty) bool {
 	if property.Type != "int" {
 		return false
 	}

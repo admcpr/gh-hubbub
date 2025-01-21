@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 
+	"gh-hubbub/shared"
 	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/v2/list"
@@ -24,11 +25,11 @@ type UserModel struct {
 }
 
 func NewUserModel(user structs.User, width, height int) UserModel {
-	userList := list.New([]list.Item{}, DefaultDelegate, width, height)
+	userList := list.New([]list.Item{}, shared.DefaultDelegate, width, height)
 
 	userList.Title = "User: " + user.Name
 	userList.SetStatusBarItemName("Organization", "Organizations")
-	userList.Styles.Title = titleStyle
+	userList.Styles.Title = shared.TitleStyle
 	userList.SetShowTitle(true)
 
 	return UserModel{User: user, list: userList, width: width, height: height}
@@ -66,7 +67,7 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			selectedOrg := m.organisations[m.list.Index()].Login
 			cmd = func() tea.Msg {
-				return NextMessage{ModelData: selectedOrg}
+				return shared.NextMessage{ModelData: selectedOrg}
 			}
 			return m, cmd
 		default:
@@ -83,7 +84,7 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m UserModel) View() string {
 	m.list.SetWidth(m.width)
 	m.list.SetHeight(m.height)
-	return appStyle.Render(m.list.View())
+	return shared.AppStyle.Render(m.list.View())
 }
 
 func (m UserModel) SelectedOrg() structs.Organisation {

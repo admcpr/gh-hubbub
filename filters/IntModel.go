@@ -1,8 +1,8 @@
-package models
+package filters
 
 import (
 	"fmt"
-	"gh-hubbub/structs"
+	"gh-hubbub/shared"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
@@ -38,8 +38,8 @@ func NewIntInputModel(prompt string, value int) textinput.Model {
 	m.Prompt = prompt
 	m.CharLimit = 5
 	m.Validate = func(s string) error { return intValidator(s, prompt) }
-	m.PromptStyle = promptStyle
-	m.TextStyle = textStyle
+	m.PromptStyle = shared.PromptStyle
+	m.TextStyle = shared.TextStyle
 
 	return m
 }
@@ -74,7 +74,7 @@ func (m IntModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.SendAddFilterMsg
 		case "esc":
 			return m, func() tea.Msg {
-				return PreviousMessage{}
+				return shared.PreviousMessage{}
 			}
 		case "tab", "shift+tab":
 			if m.fromInput.Focused() {
@@ -99,15 +99,15 @@ func (m IntModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m IntModel) View() string {
 	errorText := ""
 	if m.fromInput.Err != nil {
-		errorText = "\n" + errorStyle.Render(m.fromInput.Err.Error())
+		errorText = "\n" + shared.ErrorStyle.Render(m.fromInput.Err.Error())
 	}
 	if m.toInput.Err != nil {
-		errorText = "\n" + errorStyle.Render(m.toInput.Err.Error())
+		errorText = "\n" + shared.ErrorStyle.Render(m.toInput.Err.Error())
 	}
 	title := fmt.Sprintf("%s - w: %d h: %d", m.Name, m.width, m.height)
 	inputs := lipgloss.JoinVertical(lipgloss.Left, m.fromInput.View(), m.toInput.View())
-	contents := lipgloss.JoinVertical(lipgloss.Center, modalTitleStyle.Render(title), inputs, errorText)
-	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, modalStyle.Render(contents))
+	contents := lipgloss.JoinVertical(lipgloss.Center, shared.ModalTitleStyle.Render(title), inputs, errorText)
+	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, shared.ModalStyle.Render(contents))
 }
 
 func (m *IntModel) GetValue() (int, int) {
@@ -118,5 +118,5 @@ func (m *IntModel) GetValue() (int, int) {
 
 func (m IntModel) SendAddFilterMsg() tea.Msg {
 	from, to := m.GetValue()
-	return PreviousMessage{ModelData: structs.NewFilterInt(m.Name, from, to)}
+	return shared.PreviousMessage{ModelData: NewFilterInt(m.Name, from, to)}
 }

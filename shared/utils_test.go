@@ -1,4 +1,4 @@
-package models
+package shared
 
 import (
 	"testing"
@@ -21,7 +21,7 @@ func TestHalf(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run("TestHalf", func(t *testing.T) {
-			got := half(tt.width)
+			got := Half(tt.width)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -41,7 +41,7 @@ func TestQuarter(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run("TestQuarter", func(t *testing.T) {
-			got := quarter(tt.width)
+			got := Quarter(tt.width)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -62,7 +62,7 @@ func TestMax(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run("TestMax", func(t *testing.T) {
-			got := max(tt.a, tt.b)
+			got := Max(tt.a, tt.b)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -82,7 +82,7 @@ func TestMin(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run("TestMin", func(t *testing.T) {
-			got := min(tt.a, tt.b)
+			got := Min(tt.a, tt.b)
 			assert.Equal(t, tt.expected, got)
 		})
 	}

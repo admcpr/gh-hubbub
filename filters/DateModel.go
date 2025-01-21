@@ -1,4 +1,4 @@
-package models
+package filters
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"gh-hubbub/structs"
+	"gh-hubbub/shared"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -62,8 +62,8 @@ func NewDateInputModel(prompt string, value time.Time) textinput.Model {
 	m.Prompt = prompt
 	m.CharLimit = 10
 	m.Validate = func(s string) error { return dateValidator(s, prompt) }
-	m.PromptStyle = promptStyle
-	m.TextStyle = textStyle
+	m.PromptStyle = shared.PromptStyle
+	m.TextStyle = shared.TextStyle
 
 	return m
 }
@@ -99,7 +99,7 @@ func (m DateModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.SendAddFilterMsg
 		case "esc":
 			return m, func() tea.Msg {
-				return PreviousMessage{}
+				return shared.PreviousMessage{}
 			}
 		case "tab":
 			if m.fromInput.Focused() {
@@ -124,15 +124,15 @@ func (m DateModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m DateModel) View() string {
 	errorText := ""
 	if m.fromInput.Err != nil {
-		errorText = "\n" + errorStyle.Render(m.fromInput.Err.Error())
+		errorText = "\n" + shared.ErrorStyle.Render(m.fromInput.Err.Error())
 	}
 	if m.toInput.Err != nil {
-		errorText = "\n" + errorStyle.Render(m.toInput.Err.Error())
+		errorText = "\n" + shared.ErrorStyle.Render(m.toInput.Err.Error())
 	}
 	inputs := lipgloss.JoinVertical(lipgloss.Left, m.fromInput.View(), m.toInput.View(), errorText)
-	contents := lipgloss.JoinVertical(lipgloss.Center, modalTitleStyle.Render(m.Name), inputs)
+	contents := lipgloss.JoinVertical(lipgloss.Center, shared.ModalTitleStyle.Render(m.Name), inputs)
 
-	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, modalStyle.Render(contents))
+	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, shared.ModalStyle.Render(contents))
 }
 
 func (m *DateModel) Focus() tea.Cmd {
@@ -166,5 +166,5 @@ func (m *DateModel) GetValue() (time.Time, time.Time, error) {
 func (m DateModel) SendAddFilterMsg() tea.Msg {
 	from, to, _ := m.GetValue()
 
-	return PreviousMessage{ModelData: structs.NewFilterDate(m.Name, from, to)}
+	return shared.PreviousMessage{ModelData: NewFilterDate(m.Name, from, to)}
 }

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"gh-hubbub/shared"
+
 	"github.com/charmbracelet/bubbles/v2/paginator"
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
@@ -43,6 +45,6 @@ func (m RepoHeaderModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m RepoHeaderModel) View() string {
-	heading := titleStyle.Render(m.titles[m.paginator.Page])
+	heading := shared.TitleStyle.Render(m.titles[m.paginator.Page])
 	return lipgloss.JoinVertical(lipgloss.Left, heading+"\n"+m.paginator.View())
 }

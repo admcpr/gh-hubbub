@@ -1,6 +1,8 @@
 package models
 
 import (
+	"gh-hubbub/shared"
+
 	"github.com/charmbracelet/lipgloss/v2"
 )
 
@@ -10,11 +12,11 @@ func RenderTabs(tabs []string, width, activeTab int) string {
 	var renderedTabs []string
 
 	for i, t := range tabs {
-		tabStyle := tabStyle
+		tabStyle := shared.TabStyle
 		isFirst, isLast, isActive := i == 0, i == len(tabs)-1, i == activeTab
 
 		if isActive {
-			tabStyle = activeTabStyle
+			tabStyle = shared.ActiveTabStyle
 		}
 
 		if isLast {

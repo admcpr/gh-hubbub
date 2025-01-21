@@ -1,7 +1,7 @@
-package models
+package filters
 
 import (
-	"gh-hubbub/structs"
+	"gh-hubbub/shared"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -52,7 +52,7 @@ func (m BoolModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.SendFilterMsg
 		case "esc":
 			return m, func() tea.Msg {
-				return PreviousMessage{}
+				return shared.PreviousMessage{}
 			}
 		case "y", "Y":
 			m.Value = true
@@ -67,17 +67,17 @@ func (m BoolModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m BoolModel) View() string {
-	yesButtonStyle := buttonStyle
-	noButtonStyle := buttonStyle
+	yesButtonStyle := shared.ButtonStyle
+	noButtonStyle := shared.ButtonStyle
 	if m.Value {
-		yesButtonStyle = activeButtonStyle
+		yesButtonStyle = shared.ActiveButtonStyle
 	} else {
-		noButtonStyle = activeButtonStyle
+		noButtonStyle = shared.ActiveButtonStyle
 	}
 	buttons := lipgloss.JoinHorizontal(lipgloss.Left, yesButtonStyle.Render("Yes"), noButtonStyle.Render("No"))
-	contents := lipgloss.JoinVertical(lipgloss.Center, modalTitleStyle.Render(m.Name), buttons)
+	contents := lipgloss.JoinVertical(lipgloss.Center, shared.ModalTitleStyle.Render(m.Name), buttons)
 
-	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, modalStyle.Render(contents))
+	return lipgloss.PlaceHorizontal(m.width, lipgloss.Center, shared.ModalStyle.Render(contents))
 }
 
 func (m *BoolModel) GetValue() bool {
@@ -85,5 +85,5 @@ func (m *BoolModel) GetValue() bool {
 }
 
 func (m BoolModel) SendFilterMsg() tea.Msg {
-	return PreviousMessage{ModelData: structs.NewFilterBool(m.Name, m.GetValue())}
+	return shared.PreviousMessage{ModelData: NewFilterBool(m.Name, m.GetValue())}
 }

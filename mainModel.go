@@ -1,6 +1,9 @@
 package main
 
 import (
+	"gh-hubbub/filters"
+	"gh-hubbub/models"
+	"gh-hubbub/shared"
 	"gh-hubbub/structs"
 	"reflect"
 
@@ -8,22 +11,19 @@ import (
 	"github.com/charmbracelet/lipgloss/v2"
 )
 
-type NextMessage struct{ ModelData interface{} }
-type PreviousMessage struct{ ModelData interface{} }
-
 type MainModel struct {
-	stack  ModelStack
+	stack  shared.ModelStack
 	width  int
 	height int
 }
 
 func NewMainModel() MainModel {
-	stack := ModelStack{}
+	stack := shared.ModelStack{}
 	// stack.Push(NewAuthenticatingModel())
 	// stack.Push(NewBoolModel("Is something true", false, 0, 0))
 	// stack.Push(NewDateModel("Date between", time.Now(), time.Now().Add(time.Hour*24*7), 0, 0))
 	// stack.Push(NewIntModel("Number between", 0, 100, 0, 0))
-	stack.Push(NewFiltersModel(0, 0))
+	stack.Push(filters.NewFiltersModel(0, 0))
 
 	return MainModel{
 		stack: stack,
@@ -64,10 +64,10 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			cmd = m.UpdateChild(msg)
 		}
-	case NextMessage:
+	case shared.NextMessage:
 		cmd = m.Next(msg)
 		return m, cmd
-	case PreviousMessage:
+	case shared.PreviousMessage:
 		cmd = m.Previous(msg)
 		return m, cmd
 	default:
@@ -87,24 +87,24 @@ func (m *MainModel) UpdateChild(msg tea.Msg) tea.Cmd {
 
 func (m MainModel) View() string {
 	child, _ := m.stack.Peek()
-	borderStyle := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(AppColors.green)
+	borderStyle := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(shared.AppColors.Green)
 
 	return borderStyle.Render(lipgloss.PlaceHorizontal(m.width-2, lipgloss.Left, child.View()))
 }
 
-func (m *MainModel) Next(message NextMessage) tea.Cmd {
+func (m *MainModel) Next(message shared.NextMessage) tea.Cmd {
 	var newModel tea.Model
 	head, _ := m.stack.Peek()
 
 	switch head.(type) {
-	case AuthenticatingModel:
-		newModel = NewUserModel(message.ModelData.(structs.User), m.width-2, m.height-2)
-	case UserModel:
-		newModel = NewOrgModel(message.ModelData.(string), m.width-2, m.height-2)
-	case OrgModel:
-		newModel = NewFiltersModel(m.width-2, m.height-2)
-	case FiltersModel:
-		newModel = NewFilter(message.ModelData.(property), m.width-2, m.height-2)
+	case models.AuthenticatingModel:
+		newModel = models.NewUserModel(message.ModelData.(structs.User), m.width-2, m.height-2)
+	case models.UserModel:
+		newModel = models.NewOrgModel(message.ModelData.(string), m.width-2, m.height-2)
+	case models.OrgModel:
+		newModel = filters.NewFiltersModel(m.width-2, m.height-2)
+	case filters.FiltersModel:
+		newModel = filters.NewFilter(message.ModelData.(filters.Property), m.width-2, m.height-2)
 	}
 
 	newModel, cmd := newModel.Init()
@@ -113,7 +113,7 @@ func (m *MainModel) Next(message NextMessage) tea.Cmd {
 	return cmd
 }
 
-func (m *MainModel) Previous(message PreviousMessage) tea.Cmd {
+func (m *MainModel) Previous(message shared.PreviousMessage) tea.Cmd {
 	head, err := m.stack.Pop()
 
 	if err != nil {
@@ -121,14 +121,14 @@ func (m *MainModel) Previous(message PreviousMessage) tea.Cmd {
 	}
 
 	switch head.(type) {
-	case FiltersModel:
+	case filters.FiltersModel:
 		// This is all a big mess, need to refactor to something less stinky
-		if message.ModelData != nil && reflect.TypeOf(message.ModelData) == reflect.TypeOf(filterMap{}) {
-			return m.UpdateChild(filtersMsg(message.ModelData.(filterMap)))
+		if message.ModelData != nil && reflect.TypeOf(message.ModelData) == reflect.TypeOf(filters.FilterMap{}) {
+			return m.UpdateChild(filters.FiltersMsg(message.ModelData.(filters.FilterMap)))
 		}
-	case IntModel, DateModel, BoolModel:
+	case filters.IntModel, filters.DateModel, filters.BoolModel:
 		if message.ModelData != nil {
-			return m.UpdateChild(AddFilterMsg(message.ModelData.(structs.Filter)))
+			return m.UpdateChild(filters.AddFilterMsg(message.ModelData.(filters.Filter)))
 		}
 	}
 

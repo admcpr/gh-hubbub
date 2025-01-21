@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"gh-hubbub/shared"
 	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/v2/spinner"
@@ -71,5 +72,5 @@ func getUser() tea.Msg {
 		return AuthenticationErrorMsg{Err: err}
 	}
 
-	return NextMessage{ModelData: response}
+	return shared.NextMessage{ModelData: response}
 }

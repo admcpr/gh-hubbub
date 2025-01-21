@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	"gh-hubbub/models"
-
 	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 func main() {
-	mainModel := models.NewMainModel()
+	mainModel := NewMainModel()
 	// p := tea.NewProgram(mainModel, tea.WithKeyboardEnhancements(), tea.WithAltScreen())
 	p := tea.NewProgram(mainModel, tea.WithAltScreen())
 

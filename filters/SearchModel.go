@@ -1,7 +1,8 @@
-package models
+package filters
 
 import (
 	"gh-hubbub/queries"
+	"gh-hubbub/shared"
 	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
@@ -12,15 +13,15 @@ import (
 type FilterSearchModel struct {
 	textinput  textinput.Model
 	repository queries.Repository
-	properties map[string]property
+	properties map[string]Property
 }
 
 func NewFilterSearchModel() FilterSearchModel {
 	ti := textinput.New()
 	ti.Placeholder = "Type to search"
 	ti.Prompt = "Add filter: "
-	ti.PromptStyle = promptStyle.Width(len(ti.Prompt))
-	ti.Cursor.Style = cursorStyle
+	ti.PromptStyle = shared.PromptStyle.Width(len(ti.Prompt))
+	ti.Cursor.Style = shared.CursorStyle
 	ti.Focus()
 	ti.CharLimit = 50
 	ti.SetWidth(20)
@@ -31,11 +32,11 @@ func NewFilterSearchModel() FilterSearchModel {
 	return FilterSearchModel{
 		textinput:  ti,
 		repository: repository,
-		properties: make(map[string]property),
+		properties: make(map[string]Property),
 	}
 }
 
-type PropertySelectedMsg property
+type PropertySelectedMsg Property
 
 func (m FilterSearchModel) Init() (tea.Model, tea.Cmd) {
 	return m, tea.Batch(getFilters, textinput.Blink)
@@ -56,7 +57,7 @@ func (m FilterSearchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var suggestions []string
 		for _, r := range msg.Properties {
 			suggestions = append(suggestions, r.Name)
-			m.properties[r.Name] = property{r.Name, r.Description, r.Type}
+			m.properties[r.Name] = Property{r.Name, r.Description, r.Type}
 		}
 		m.textinput.SetSuggestions(suggestions)
 	}
@@ -80,14 +81,14 @@ func (m FilterSearchModel) LookupDescription() string {
 	}
 }
 
-func (m FilterSearchModel) CurrentPropertySuggestion() (property, bool) {
+func (m FilterSearchModel) CurrentPropertySuggestion() (Property, bool) {
 	prop, exists := m.properties[m.textinput.CurrentSuggestion()]
 	return prop, exists
 }
 
 func (m FilterSearchModel) SendNextMsg() tea.Msg {
 	property, _ := m.CurrentPropertySuggestion()
-	return NextMessage{ModelData: property}
+	return shared.NextMessage{ModelData: property}
 }
 
 func getFilters() tea.Msg {

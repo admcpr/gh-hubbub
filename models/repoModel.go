@@ -1,6 +1,7 @@
 package models
 
 import (
+	"gh-hubbub/shared"
 	"gh-hubbub/structs"
 	"sort"
 
@@ -99,7 +100,7 @@ func NewSettingsList(activeSettings []structs.RepoProperty, title string, width,
 		items[i] = structs.NewListItem(setting.Name, setting.String())
 	}
 
-	delegate := DefaultDelegate
+	delegate := shared.DefaultDelegate
 	delegate.Styles.SelectedDesc = delegate.Styles.NormalDesc
 	delegate.Styles.SelectedTitle = delegate.Styles.NormalTitle
 	delegate.SetSpacing(0)
@@ -110,12 +111,12 @@ func NewSettingsList(activeSettings []structs.RepoProperty, title string, width,
 	list.SetShowHelp(false)
 	list.SetShowPagination(false)
 	list.SetShowStatusBar(false)
-	list.Styles.Title = titleStyle
+	list.Styles.Title = shared.TitleStyle
 	list.SetHeight(height)
 
 	return list
 }
 
 func handleNext() tea.Msg {
-	return NextMessage{}
+	return shared.NextMessage{}
 }

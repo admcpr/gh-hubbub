@@ -5,7 +5,9 @@ import (
 	"log"
 	"sort"
 
+	"gh-hubbub/filters"
 	"gh-hubbub/queries"
+	"gh-hubbub/shared"
 	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/v2/list"
@@ -23,7 +25,7 @@ type OrgModel struct {
 	Title     string
 	repoCount int
 	repos     []structs.RepoProperties
-	filters   filterMap
+	filters   filters.FilterMap
 
 	repoList  list.Model
 	repoModel RepoModel
@@ -40,7 +42,7 @@ func NewOrgModel(title string, width, height int) *OrgModel {
 		width:     width,
 		height:    height,
 		repoModel: NewRepoModel(width/2, height),
-		repoList:  list.New([]list.Item{}, simpleItemDelegate{}, width/2, height),
+		repoList:  list.New([]list.Item{}, shared.SimpleItemDelegate{}, width/2, height),
 		progress:  progress.New(progress.WithoutPercentage()),
 	}
 }
@@ -51,15 +53,15 @@ func (m *OrgModel) SetDimensions(width, height int) {
 }
 
 func (m *OrgModel) populateRepoList() {
-	filteredRepositories := m.filters.filterRepos(m.repos)
+	filteredRepositories := m.filters.FilterRepos(m.repos)
 	items := make([]list.Item, len(filteredRepositories))
 	for i, repo := range filteredRepositories {
-		items[i] = simpleItem(repo.Name)
+		items[i] = shared.SimpleItem(repo.Name)
 	}
 
-	list := list.New(items, simpleItemDelegate{}, m.width/2, m.height-2)
+	list := list.New(items, shared.SimpleItemDelegate{}, m.width/2, m.height-2)
 	list.Title = fmt.Sprintf("Organization: %s ", m.Title)
-	list.Styles.Title = titleStyle
+	list.Styles.Title = shared.TitleStyle
 	list.SetStatusBarItemName("Repository", "Repositories")
 	list.SetShowHelp(false)
 	list.SetShowTitle(true)
@@ -99,8 +101,8 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, cmd
 
-	case filtersMsg:
-		m.filters = filterMap(msg)
+	case filters.FiltersMsg:
+		m.filters = filters.FilterMap(msg)
 		m.populateRepoList()
 		return m, nil
 
@@ -117,11 +119,11 @@ func (m OrgModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "f":
 			return m, func() tea.Msg {
-				return NextMessage{ModelData: m.filters}
+				return shared.NextMessage{ModelData: m.filters}
 			}
 		case "esc":
 			return m, func() tea.Msg {
-				return PreviousMessage{}
+				return shared.PreviousMessage{}
 			}
 		case "tab", "shift+tab":
 			repoModel, cmd := m.repoModel.Update(msg)
@@ -144,8 +146,8 @@ func (m OrgModel) View() string {
 	}
 	m.repoModel.SelectRepo(m.repos[m.repoList.Index()])
 
-	var repoList = appStyle.Width(half(m.width)).Render(m.repoList.View())
-	var settings = appStyle.Width(half(m.width)).Render(m.repoModel.View())
+	var repoList = shared.AppStyle.Width(shared.Half(m.width)).Render(m.repoList.View())
+	var settings = shared.AppStyle.Width(shared.Half(m.width)).Render(m.repoModel.View())
 	var rightPanel = lipgloss.JoinVertical(lipgloss.Center, settings)
 
 	var views = []string{repoList, rightPanel}
