@@ -1,9 +1,9 @@
-package models
+package user
 
 import (
 	"fmt"
 	"gh-hubbub/shared"
-	"gh-hubbub/structs"
+	"os/user"
 
 	"github.com/charmbracelet/bubbles/v2/spinner"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -11,7 +11,7 @@ import (
 )
 
 type AuthenticationErrorMsg struct{ Err error }
-type AuthenticatedMsg struct{ User structs.User }
+type AuthenticatedMsg struct{ User user.User }
 
 type AuthenticatingModel struct {
 	spinner spinner.Model
@@ -64,7 +64,7 @@ func getUser() tea.Msg {
 	if err != nil {
 		return AuthenticationErrorMsg{Err: err}
 	}
-	response := structs.User{}
+	response := User{}
 
 	err = client.Get("user", &response)
 	if err != nil {

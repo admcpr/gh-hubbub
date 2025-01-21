@@ -6,9 +6,9 @@ import (
 	"sort"
 
 	"gh-hubbub/filters"
-	"gh-hubbub/models"
 	"gh-hubbub/repos"
 	"gh-hubbub/shared"
+	"gh-hubbub/user"
 
 	"github.com/charmbracelet/bubbles/v2/list"
 	"github.com/charmbracelet/bubbles/v2/progress"
@@ -187,7 +187,7 @@ func getRepoList(login string) tea.Cmd {
 	return func() tea.Msg {
 		client, err := api.DefaultGraphQLClient()
 		if err != nil {
-			return models.AuthenticationErrorMsg{Err: err}
+			return user.AuthenticationErrorMsg{Err: err}
 		}
 
 		var organizationQuery = OrganizationQuery{}

@@ -1,4 +1,4 @@
-package models
+package user
 
 import (
 	"fmt"
@@ -17,14 +17,14 @@ type OrgListMsg struct{ Organisations []structs.Organisation }
 
 type UserModel struct {
 	organisations  []structs.Organisation
-	User           structs.User
+	User           User
 	SelectedOrgUrl string
 	list           list.Model
 	width          int
 	height         int
 }
 
-func NewUserModel(user structs.User, width, height int) UserModel {
+func NewUserModel(user User, width, height int) UserModel {
 	userList := list.New([]list.Item{}, shared.DefaultDelegate, width, height)
 
 	userList.Title = "User: " + user.Name

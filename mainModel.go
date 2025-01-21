@@ -2,10 +2,9 @@ package main
 
 import (
 	"gh-hubbub/filters"
-	"gh-hubbub/models"
 	"gh-hubbub/orgs"
 	"gh-hubbub/shared"
-	"gh-hubbub/structs"
+	"gh-hubbub/user"
 	"reflect"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -98,9 +97,9 @@ func (m *MainModel) Next(message shared.NextMessage) tea.Cmd {
 	head, _ := m.stack.Peek()
 
 	switch head.(type) {
-	case models.AuthenticatingModel:
-		newModel = models.NewUserModel(message.ModelData.(structs.User), m.width-2, m.height-2)
-	case models.UserModel:
+	case user.AuthenticatingModel:
+		newModel = user.NewUserModel(message.ModelData.(user.User), m.width-2, m.height-2)
+	case user.UserModel:
 		newModel = orgs.NewModel(message.ModelData.(string), m.width-2, m.height-2)
 	case orgs.Model:
 		newModel = filters.NewModel(m.width-2, m.height-2)
