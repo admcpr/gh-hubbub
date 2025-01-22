@@ -9,7 +9,6 @@ jobs:
     - uses: actions/checkout@v1
       with:
         fetch-depth: 1
-    # - uses: dominikh/staticcheck-action@v1
-    #   with:
-    #     version: "latest"
-    # TODO: let's make this work again once the refactor is complete
+    - uses: dominikh/staticcheck-action@v1
+      with:
+        version: "latest"
