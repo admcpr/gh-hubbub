@@ -1,4 +1,4 @@
-package structs
+package shared
 
 type ListItem struct {
 	title, desc string

@@ -1,7 +1,6 @@
 package filters
 
 import (
-	"fmt"
 	"gh-hubbub/repos"
 	"testing"
 
@@ -58,7 +57,7 @@ func (s *BoolFilterSuite) TestMatches() {
 }
 
 func (s *BoolFilterSuite) TestString() {
-	expected := fmt.Sprintf("%s: %v", s.filter.Name, s.filter.Value)
+	expected := "test = Yes"
 	s.Equal(expected, s.filter.String())
 }
 

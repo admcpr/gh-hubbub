@@ -8,7 +8,6 @@ import (
 	"gh-hubbub/filters"
 	"gh-hubbub/repos"
 	"gh-hubbub/shared"
-	"gh-hubbub/user"
 
 	"github.com/charmbracelet/bubbles/v2/list"
 	"github.com/charmbracelet/bubbles/v2/progress"
@@ -18,6 +17,7 @@ import (
 	graphql "github.com/cli/shurcooL-graphql"
 )
 
+type ApiErrorMsg struct{ Err error }
 type orgQueryMsg OrganizationQuery
 type repoQueryMsg repos.Query
 
@@ -187,7 +187,7 @@ func getRepoList(login string) tea.Cmd {
 	return func() tea.Msg {
 		client, err := api.DefaultGraphQLClient()
 		if err != nil {
-			return user.AuthenticationErrorMsg{Err: err}
+			return ApiErrorMsg{Err: err}
 		}
 
 		var organizationQuery = OrganizationQuery{}

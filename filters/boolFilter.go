@@ -3,7 +3,7 @@ package filters
 import (
 	"fmt"
 	"gh-hubbub/repos"
-	"gh-hubbub/structs"
+	"gh-hubbub/shared"
 )
 
 type BoolFilter struct {
@@ -28,5 +28,5 @@ func (f BoolFilter) Matches(property repos.RepoProperty) bool {
 }
 
 func (f BoolFilter) String() string {
-	return fmt.Sprintf("%s = %s", f.Name, structs.YesNo(f.Value))
+	return fmt.Sprintf("%s = %s", f.Name, shared.YesNo(f.Value))
 }

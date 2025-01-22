@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sort"
 
+	"gh-hubbub/orgs"
 	"gh-hubbub/shared"
-	"gh-hubbub/structs"
 
 	"github.com/charmbracelet/bubbles/v2/list"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -13,10 +13,10 @@ import (
 )
 
 type ErrMsg struct{ Err error }
-type OrgListMsg struct{ Organisations []structs.Organisation }
+type OrgListMsg struct{ Organisations []orgs.Organisation }
 
 type UserModel struct {
-	organisations  []structs.Organisation
+	organisations  []orgs.Organisation
 	User           User
 	SelectedOrgUrl string
 	list           list.Model
@@ -56,7 +56,7 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		items := make([]list.Item, len(m.organisations))
 		for i, org := range m.organisations {
-			items[i] = structs.NewListItem(org.Login, org.Url)
+			items[i] = shared.NewListItem(org.Login, org.Url)
 		}
 
 		cmd = m.list.SetItems(items)
@@ -87,7 +87,7 @@ func (m UserModel) View() string {
 	return shared.AppStyle.Render(m.list.View())
 }
 
-func (m UserModel) SelectedOrg() structs.Organisation {
+func (m UserModel) SelectedOrg() orgs.Organisation {
 	return m.organisations[m.list.Index()]
 }
 
@@ -96,7 +96,7 @@ func getOrganisations() tea.Msg {
 	if err != nil {
 		return AuthenticationErrorMsg{Err: err}
 	}
-	response := []structs.Organisation{}
+	response := []orgs.Organisation{}
 
 	err = client.Get("user/orgs", &response)
 	if err != nil {

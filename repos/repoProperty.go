@@ -2,7 +2,7 @@ package repos
 
 import (
 	"fmt"
-	"gh-hubbub/structs"
+	"gh-hubbub/shared"
 	"reflect"
 	"regexp"
 	"sort"
@@ -49,7 +49,7 @@ type RepoProperty struct {
 func (s RepoProperty) String() string {
 	switch value := s.Value.(type) {
 	case bool:
-		return structs.YesNo(value)
+		return shared.YesNo(value)
 	case string:
 		return value
 	case time.Time:

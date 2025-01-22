@@ -2,7 +2,6 @@ package repos
 
 import (
 	"gh-hubbub/shared"
-	"gh-hubbub/structs"
 	"sort"
 
 	"github.com/charmbracelet/bubbles/v2/list"
@@ -97,7 +96,7 @@ func NewSettingsList(activeSettings []RepoProperty, title string, width, height 
 	items := make([]list.Item, len(activeSettings))
 
 	for i, setting := range activeSettings {
-		items[i] = structs.NewListItem(setting.Name, setting.String())
+		items[i] = shared.NewListItem(setting.Name, setting.String())
 	}
 
 	delegate := shared.DefaultDelegate

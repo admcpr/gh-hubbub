@@ -70,19 +70,19 @@ func TestFilterDateModel_GetValue(t *testing.T) {
 			name:      "Invalid from input",
 			fromValue: "01-01-2022",
 			toValue:   "2022-12-31",
-			wantErr:   fmt.Errorf("please enter a YYYY-MM-DD date for `From:`"),
+			wantErr:   fmt.Errorf("please enter a YYYY-MM-DD date for `From`"),
 		},
 		{
 			name:      "Invalid to input",
 			fromValue: "2022-01-01",
 			toValue:   "31-12-2022",
-			wantErr:   fmt.Errorf("please enter a YYYY-MM-DD date for `To:`"),
+			wantErr:   fmt.Errorf("please enter a YYYY-MM-DD date for `To`"),
 		},
 		{
 			name:      "Invalid from and to input",
 			fromValue: "01-01-2022",
 			toValue:   "31-12-2022",
-			wantErr:   fmt.Errorf("please enter a YYYY-MM-DD date for `From:`"),
+			wantErr:   fmt.Errorf("please enter a YYYY-MM-DD date for `From`"),
 		},
 	}
 

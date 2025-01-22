@@ -1,4 +1,4 @@
-package structs
+package shared
 
 import (
 	"testing"

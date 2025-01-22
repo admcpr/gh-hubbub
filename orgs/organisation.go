@@ -1,4 +1,4 @@
-package structs
+package orgs
 
 type Organisation struct {
 	Login string `json:"login"`
