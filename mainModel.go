@@ -1,10 +1,10 @@
 package main
 
 import (
-	"gh-hubbub/filters"
-	"gh-hubbub/orgs"
-	"gh-hubbub/shared"
-	"gh-hubbub/user"
+	"gh-reponark/filters"
+	"gh-reponark/orgs"
+	"gh-reponark/shared"
+	"gh-reponark/users"
 	"reflect"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -97,9 +97,9 @@ func (m *MainModel) Next(message shared.NextMessage) tea.Cmd {
 	head, _ := m.stack.Peek()
 
 	switch head.(type) {
-	case user.AuthenticatingModel:
-		newModel = user.NewUserModel(message.ModelData.(user.User), m.width-2, m.height-2)
-	case user.UserModel:
+	case users.AuthenticatingModel:
+		newModel = users.NewUserModel(message.ModelData.(users.User), m.width-2, m.height-2)
+	case users.UserModel:
 		newModel = orgs.NewModel(message.ModelData.(string), m.width-2, m.height-2)
 	case orgs.Model:
 		newModel = filters.NewModel(m.width-2, m.height-2)
@@ -119,6 +119,11 @@ func (m *MainModel) Previous(message shared.PreviousMessage) tea.Cmd {
 	if err != nil {
 		return tea.Quit
 	}
+
+	// TODO: see if this works instead of the madness below
+	// if message.ModelData != nil {
+	// 	return m.UpdateChild(message.ModelData)
+	// }
 
 	switch head.(type) {
 	case filters.Model:

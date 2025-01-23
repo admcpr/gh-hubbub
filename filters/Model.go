@@ -1,8 +1,8 @@
 package filters
 
 import (
-	"gh-hubbub/repos"
-	"gh-hubbub/shared"
+	"gh-reponark/repos"
+	"gh-reponark/shared"
 	"sort"
 	"time"
 

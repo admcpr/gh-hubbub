@@ -1,7 +1,7 @@
 package models
 
 import (
-	"gh-hubbub/shared"
+	"gh-reponark/shared"
 
 	"github.com/charmbracelet/lipgloss/v2"
 )

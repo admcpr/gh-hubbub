@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"gh-hubbub/shared"
+	"gh-reponark/shared"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"

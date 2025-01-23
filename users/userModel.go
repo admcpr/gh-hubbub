@@ -1,11 +1,11 @@
-package user
+package users
 
 import (
 	"fmt"
 	"sort"
 
-	"gh-hubbub/orgs"
-	"gh-hubbub/shared"
+	"gh-reponark/orgs"
+	"gh-reponark/shared"
 
 	"github.com/charmbracelet/bubbles/v2/list"
 	tea "github.com/charmbracelet/bubbletea/v2"

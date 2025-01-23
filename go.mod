@@ -1,8 +1,6 @@
-module gh-hubbub
+module gh-reponark
 
-go 1.22
-
-toolchain go1.22.1
+go 1.23
 
 require (
 	github.com/charmbracelet/bubbles/v2 v2.0.0-alpha.2

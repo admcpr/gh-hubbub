@@ -2,7 +2,7 @@ package repos
 
 import (
 	"fmt"
-	"gh-hubbub/shared"
+	"gh-reponark/shared"
 	"reflect"
 	"regexp"
 	"sort"

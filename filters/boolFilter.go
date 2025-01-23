@@ -2,8 +2,8 @@ package filters
 
 import (
 	"fmt"
-	"gh-hubbub/repos"
-	"gh-hubbub/shared"
+	"gh-reponark/repos"
+	"gh-reponark/shared"
 )
 
 type BoolFilter struct {

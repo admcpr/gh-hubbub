@@ -5,9 +5,9 @@ import (
 	"log"
 	"sort"
 
-	"gh-hubbub/filters"
-	"gh-hubbub/repos"
-	"gh-hubbub/shared"
+	"gh-reponark/filters"
+	"gh-reponark/repos"
+	"gh-reponark/shared"
 
 	"github.com/charmbracelet/bubbles/v2/list"
 	"github.com/charmbracelet/bubbles/v2/progress"

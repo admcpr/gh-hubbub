@@ -2,7 +2,7 @@ package filters
 
 import (
 	"fmt"
-	"gh-hubbub/shared"
+	"gh-reponark/shared"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"

@@ -1,7 +1,7 @@
 package repos
 
 import (
-	"gh-hubbub/shared"
+	"gh-reponark/shared"
 	"sort"
 
 	"github.com/charmbracelet/bubbles/v2/list"

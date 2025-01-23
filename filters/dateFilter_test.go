@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"gh-hubbub/repos"
+	"gh-reponark/repos"
 	"testing"
 	"time"
 

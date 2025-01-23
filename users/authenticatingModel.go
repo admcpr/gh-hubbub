@@ -1,8 +1,8 @@
-package user
+package users
 
 import (
 	"fmt"
-	"gh-hubbub/shared"
+	"gh-reponark/shared"
 	"os/user"
 
 	"github.com/charmbracelet/bubbles/v2/spinner"

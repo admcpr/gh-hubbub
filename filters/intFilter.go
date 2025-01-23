@@ -2,7 +2,7 @@ package filters
 
 import (
 	"fmt"
-	"gh-hubbub/repos"
+	"gh-reponark/repos"
 )
 
 type IntFilter struct {

@@ -1,7 +1,7 @@
 package repos
 
 import (
-	"gh-hubbub/shared"
+	"gh-reponark/shared"
 
 	"github.com/charmbracelet/bubbles/v2/paginator"
 	tea "github.com/charmbracelet/bubbletea/v2"

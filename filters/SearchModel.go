@@ -1,8 +1,8 @@
 package filters
 
 import (
-	"gh-hubbub/repos"
-	"gh-hubbub/shared"
+	"gh-reponark/repos"
+	"gh-reponark/shared"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
 	tea "github.com/charmbracelet/bubbletea/v2"
