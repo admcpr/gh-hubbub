@@ -1,4 +1,4 @@
-package models
+package repos
 
 import (
 	"gh-reponark/shared"
