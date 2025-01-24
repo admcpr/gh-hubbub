@@ -1,6 +1,6 @@
 package keyMaps
 
-import "github.com/charmbracelet/bubbles/key"
+import "github.com/charmbracelet/bubbles/v2/key"
 
 // keyMap defines a set of keybindings. To work for help it must satisfy
 // key.Map. It could also very easily be a map[string]key.Binding.
