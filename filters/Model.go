@@ -71,13 +71,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
-		case "esc":
+		case "esc", "ctrl+enter":
 			return m, func() tea.Msg {
-				return shared.PreviousMessage{ModelData: m.filters}
-			}
-		case "ctrl+enter":
-			return m, func() tea.Msg {
-				return shared.PreviousMessage{ModelData: m.filters}
+				return shared.PreviousMessage{Message: FiltersMsg(m.filters)}
 			}
 		}
 

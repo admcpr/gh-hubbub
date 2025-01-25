@@ -85,5 +85,5 @@ func (m *BoolModel) GetValue() bool {
 }
 
 func (m BoolModel) SendFilterMsg() tea.Msg {
-	return shared.PreviousMessage{ModelData: NewBoolFilter(m.Name, m.GetValue())}
+	return shared.PreviousMessage{Message: AddFilterMsg(NewBoolFilter(m.Name, m.GetValue()))}
 }

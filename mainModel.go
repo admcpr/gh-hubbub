@@ -5,7 +5,6 @@ import (
 	"gh-reponark/orgs"
 	"gh-reponark/shared"
 	"gh-reponark/users"
-	"reflect"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
@@ -19,11 +18,11 @@ type MainModel struct {
 
 func NewMainModel() MainModel {
 	stack := shared.ModelStack{}
-	// stack.Push(NewAuthenticatingModel())
+	stack.Push(users.NewAuthenticatingModel())
 	// stack.Push(NewBoolModel("Is something true", false, 0, 0))
 	// stack.Push(NewDateModel("Date between", time.Now(), time.Now().Add(time.Hour*24*7), 0, 0))
 	// stack.Push(NewIntModel("Number between", 0, 100, 0, 0))
-	stack.Push(filters.NewModel(0, 0))
+	// stack.Push(filters.NewModel(0, 0))
 
 	return MainModel{
 		stack: stack,
@@ -114,27 +113,14 @@ func (m *MainModel) Next(message shared.NextMessage) tea.Cmd {
 }
 
 func (m *MainModel) Previous(message shared.PreviousMessage) tea.Cmd {
-	head, err := m.stack.Pop()
+	_, err := m.stack.Pop()
 
 	if err != nil {
 		return tea.Quit
 	}
 
-	// TODO: see if this works instead of the madness below
-	// if message.ModelData != nil {
-	// 	return m.UpdateChild(message.ModelData)
-	// }
-
-	switch head.(type) {
-	case filters.Model:
-		// This is all a big mess, need to refactor to something less stinky
-		if message.ModelData != nil && reflect.TypeOf(message.ModelData) == reflect.TypeOf(filters.FilterMap{}) {
-			return m.UpdateChild(filters.FiltersMsg(message.ModelData.(filters.FilterMap)))
-		}
-	case filters.IntModel, filters.DateModel, filters.BoolModel:
-		if message.ModelData != nil {
-			return m.UpdateChild(filters.AddFilterMsg(message.ModelData.(filters.Filter)))
-		}
+	if message.Message != nil {
+		return m.UpdateChild(message.Message)
 	}
 
 	return nil

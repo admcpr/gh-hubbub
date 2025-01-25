@@ -118,5 +118,5 @@ func (m *IntModel) GetValue() (int, int) {
 
 func (m IntModel) SendAddFilterMsg() tea.Msg {
 	from, to := m.GetValue()
-	return shared.PreviousMessage{ModelData: NewIntFilter(m.Name, from, to)}
+	return shared.PreviousMessage{Message: AddFilterMsg(NewIntFilter(m.Name, from, to))}
 }
