@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -29,22 +29,22 @@ func (s *BoolFilterSuite) TestGetName() {
 func (s *BoolFilterSuite) TestMatches() {
 	tests := []struct {
 		name     string
-		property repos.RepoProperty
+		property repo.RepoProperty
 		want     bool
 	}{
 		{
 			name:     "matching bool value",
-			property: repos.RepoProperty{Type: "bool", Value: true},
+			property: repo.RepoProperty{Type: "bool", Value: true},
 			want:     true,
 		},
 		{
 			name:     "non-matching bool value",
-			property: repos.RepoProperty{Type: "bool", Value: false},
+			property: repo.RepoProperty{Type: "bool", Value: false},
 			want:     false,
 		},
 		{
 			name:     "non-bool property type",
-			property: repos.RepoProperty{Type: "string", Value: "true"},
+			property: repo.RepoProperty{Type: "string", Value: "true"},
 			want:     false,
 		},
 	}

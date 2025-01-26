@@ -2,7 +2,7 @@ package filters
 
 import (
 	"fmt"
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 	"time"
 )
 
@@ -20,7 +20,7 @@ func (f DateFilter) GetName() string {
 	return f.Name
 }
 
-func (f DateFilter) Matches(property repos.RepoProperty) bool {
+func (f DateFilter) Matches(property repo.RepoProperty) bool {
 	if property.Type != "time.Time" {
 		return false
 	}

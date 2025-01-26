@@ -1,10 +1,11 @@
 package main
 
 import (
+	"gh-reponark/auth"
 	"gh-reponark/filters"
-	"gh-reponark/orgs"
+	"gh-reponark/org"
 	"gh-reponark/shared"
-	"gh-reponark/users"
+	"gh-reponark/user"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
@@ -18,7 +19,7 @@ type MainModel struct {
 
 func NewMainModel() MainModel {
 	stack := shared.ModelStack{}
-	stack.Push(users.NewAuthenticatingModel())
+	stack.Push(auth.NewModel())
 	// stack.Push(NewBoolModel("Is something true", false, 0, 0))
 	// stack.Push(NewDateModel("Date between", time.Now(), time.Now().Add(time.Hour*24*7), 0, 0))
 	// stack.Push(NewIntModel("Number between", 0, 100, 0, 0))
@@ -96,11 +97,11 @@ func (m *MainModel) Next(message shared.NextMessage) tea.Cmd {
 	head, _ := m.stack.Peek()
 
 	switch head.(type) {
-	case users.AuthenticatingModel:
-		newModel = users.NewUserModel(message.ModelData.(users.User), m.width-2, m.height-2)
-	case users.UserModel:
-		newModel = orgs.NewModel(message.ModelData.(string), m.width-2, m.height-2)
-	case orgs.Model:
+	case auth.Model:
+		newModel = user.NewModel(message.ModelData.(user.User), m.width-2, m.height-2)
+	case user.Model:
+		newModel = org.NewModel(message.ModelData.(string), m.width-2, m.height-2)
+	case org.Model:
 		newModel = filters.NewModel(m.width-2, m.height-2)
 	case filters.Model:
 		newModel = filters.NewFilterModel(message.ModelData.(filters.Property), m.width-2, m.height-2)

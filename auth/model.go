@@ -1,8 +1,9 @@
-package users
+package auth
 
 import (
 	"fmt"
 	"gh-reponark/shared"
+	user1 "gh-reponark/user"
 	"os/user"
 
 	"github.com/charmbracelet/bubbles/v2/spinner"
@@ -13,34 +14,34 @@ import (
 type AuthenticationErrorMsg struct{ Err error }
 type AuthenticatedMsg struct{ User user.User }
 
-type AuthenticatingModel struct {
+type Model struct {
 	spinner spinner.Model
 	error   error
 	// width   int
 	// height  int
 }
 
-func (m *AuthenticatingModel) SetDimensions(width, height int) {
+func (m *Model) SetDimensions(width, height int) {
 	// m.width = width
 	// m.height = height
 }
 
-func NewAuthenticatingModel() AuthenticatingModel {
+func NewModel() Model {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 
-	return AuthenticatingModel{
+	return Model{
 		spinner: s,
 	}
 }
 
-func (m AuthenticatingModel) Init() (tea.Model, tea.Cmd) {
+func (m Model) Init() (tea.Model, tea.Cmd) {
 	cmds := []tea.Cmd{m.spinner.Tick, getUser}
 
 	return m, tea.Batch(cmds...)
 }
 
-func (m AuthenticatingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 
@@ -52,7 +53,7 @@ func (m AuthenticatingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m AuthenticatingModel) View() string {
+func (m Model) View() string {
 	if m.error != nil {
 		return fmt.Sprintf("Error authenticating: %s\nctrl+c to exit", m.error)
 	}
@@ -64,7 +65,7 @@ func getUser() tea.Msg {
 	if err != nil {
 		return AuthenticationErrorMsg{Err: err}
 	}
-	response := User{}
+	response := user1.User{}
 
 	err = client.Get("user", &response)
 	if err != nil {

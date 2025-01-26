@@ -1,17 +1,17 @@
 package filters
 
 import (
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 )
 
 type FilterMap map[string]Filter
 
-func (FilterMap *FilterMap) FilterRepos(repoConfigs []repos.RepoConfig) []repos.RepoConfig {
+func (FilterMap *FilterMap) FilterRepos(repoConfigs []repo.RepoConfig) []repo.RepoConfig {
 	if FilterMap == nil {
 		return repoConfigs
 	}
 
-	filteredConfigs := []repos.RepoConfig{}
+	filteredConfigs := []repo.RepoConfig{}
 
 	for _, repo := range repoConfigs {
 		matches := true

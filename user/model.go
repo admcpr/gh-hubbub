@@ -1,10 +1,10 @@
-package users
+package user
 
 import (
 	"fmt"
 	"sort"
 
-	"gh-reponark/orgs"
+	"gh-reponark/org"
 	"gh-reponark/shared"
 
 	"github.com/charmbracelet/bubbles/v2/list"
@@ -13,10 +13,10 @@ import (
 )
 
 type ErrMsg struct{ Err error }
-type OrgListMsg struct{ Organisations []orgs.Organisation }
+type OrgListMsg struct{ Organisations []org.Organisation }
 
-type UserModel struct {
-	organisations  []orgs.Organisation
+type Model struct {
+	organisations  []org.Organisation
 	User           User
 	SelectedOrgUrl string
 	list           list.Model
@@ -24,7 +24,7 @@ type UserModel struct {
 	height         int
 }
 
-func NewUserModel(user User, width, height int) UserModel {
+func NewModel(user User, width, height int) Model {
 	userList := list.New([]list.Item{}, shared.DefaultDelegate, width, height)
 
 	userList.Title = "User: " + user.Name
@@ -32,19 +32,19 @@ func NewUserModel(user User, width, height int) UserModel {
 	userList.Styles.Title = shared.TitleStyle
 	userList.SetShowTitle(true)
 
-	return UserModel{User: user, list: userList, width: width, height: height}
+	return Model{User: user, list: userList, width: width, height: height}
 }
 
-func (m *UserModel) SetDimensions(width, height int) {
+func (m *Model) SetDimensions(width, height int) {
 	m.width = width
 	m.height = height
 }
 
-func (m UserModel) Init() (tea.Model, tea.Cmd) {
+func (m Model) Init() (tea.Model, tea.Cmd) {
 	return m, getOrganisations
 }
 
-func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -81,22 +81,22 @@ func (m UserModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m UserModel) View() string {
+func (m Model) View() string {
 	m.list.SetWidth(m.width)
 	m.list.SetHeight(m.height)
 	return shared.AppStyle.Render(m.list.View())
 }
 
-func (m UserModel) SelectedOrg() orgs.Organisation {
+func (m Model) SelectedOrg() org.Organisation {
 	return m.organisations[m.list.Index()]
 }
 
 func getOrganisations() tea.Msg {
 	client, err := api.DefaultRESTClient()
 	if err != nil {
-		return AuthenticationErrorMsg{Err: err}
+		return ErrMsg{Err: err}
 	}
-	response := []orgs.Organisation{}
+	response := []org.Organisation{}
 
 	err = client.Get("user/orgs", &response)
 	if err != nil {

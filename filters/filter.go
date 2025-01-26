@@ -1,11 +1,11 @@
 package filters
 
 import (
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 )
 
 type Filter interface {
 	GetName() string
-	Matches(property repos.RepoProperty) bool
+	Matches(property repo.RepoProperty) bool
 	String() string
 }

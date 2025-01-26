@@ -1,6 +1,6 @@
-package orgs
+package org
 
-type OrganizationQuery struct {
+type Query struct {
 	Organization struct {
 		Id           string
 		Login        string

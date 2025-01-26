@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 	"gh-reponark/shared"
 
 	"github.com/charmbracelet/bubbles/v2/textinput"
@@ -11,7 +11,7 @@ import (
 
 type FilterSearchModel struct {
 	textinput  textinput.Model
-	repository repos.Repository
+	repository repo.Repository
 	properties map[string]Property
 }
 
@@ -26,7 +26,7 @@ func NewFilterSearchModel() FilterSearchModel {
 	ti.SetWidth(20)
 	ti.ShowSuggestions = true
 
-	repository := repos.Repository{}
+	repository := repo.Repository{}
 
 	return FilterSearchModel{
 		textinput:  ti,
@@ -91,8 +91,8 @@ func (m FilterSearchModel) SendNextMsg() tea.Msg {
 }
 
 func getFilters() tea.Msg {
-	rq := repos.Repository{}
-	rp := repos.NewRepoConfig(rq)
+	rq := repo.Repository{}
+	rp := repo.NewRepoConfig(rq)
 
 	return filtersListMsg(rp)
 }

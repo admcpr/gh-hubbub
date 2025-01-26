@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -30,12 +30,12 @@ func (s *IntFilterSuite) TestGetName() {
 func (s *IntFilterSuite) TestMatches() {
 	tests := []struct {
 		name     string
-		property repos.RepoProperty
+		property repo.RepoProperty
 		want     bool
 	}{
 		{
 			name: "value within range",
-			property: repos.RepoProperty{
+			property: repo.RepoProperty{
 				Type:  "int",
 				Value: 50,
 			},
@@ -43,7 +43,7 @@ func (s *IntFilterSuite) TestMatches() {
 		},
 		{
 			name: "value at lower bound",
-			property: repos.RepoProperty{
+			property: repo.RepoProperty{
 				Type:  "int",
 				Value: 1,
 			},
@@ -51,7 +51,7 @@ func (s *IntFilterSuite) TestMatches() {
 		},
 		{
 			name: "value at upper bound",
-			property: repos.RepoProperty{
+			property: repo.RepoProperty{
 				Type:  "int",
 				Value: 100,
 			},
@@ -59,7 +59,7 @@ func (s *IntFilterSuite) TestMatches() {
 		},
 		{
 			name: "value below range",
-			property: repos.RepoProperty{
+			property: repo.RepoProperty{
 				Type:  "int",
 				Value: 0,
 			},
@@ -67,7 +67,7 @@ func (s *IntFilterSuite) TestMatches() {
 		},
 		{
 			name: "value above range",
-			property: repos.RepoProperty{
+			property: repo.RepoProperty{
 				Type:  "int",
 				Value: 101,
 			},
@@ -75,7 +75,7 @@ func (s *IntFilterSuite) TestMatches() {
 		},
 		{
 			name: "invalid property type",
-			property: repos.RepoProperty{
+			property: repo.RepoProperty{
 				Type:  "string",
 				Value: "50",
 			},
@@ -83,7 +83,7 @@ func (s *IntFilterSuite) TestMatches() {
 		},
 		{
 			name: "negative value",
-			property: repos.RepoProperty{
+			property: repo.RepoProperty{
 				Type:  "int",
 				Value: -1,
 			},

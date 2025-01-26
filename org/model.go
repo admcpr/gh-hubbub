@@ -1,4 +1,4 @@
-package orgs
+package org
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"sort"
 
 	"gh-reponark/filters"
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 	"gh-reponark/shared"
 
 	"github.com/charmbracelet/bubbles/v2/list"
@@ -18,17 +18,17 @@ import (
 )
 
 type ApiErrorMsg struct{ Err error }
-type orgQueryMsg OrganizationQuery
-type repoQueryMsg repos.Query
+type orgQueryMsg Query
+type repoQueryMsg repo.Query
 
 type Model struct {
 	Title     string
 	repoCount int
-	repos     []repos.RepoConfig
+	repos     []repo.RepoConfig
 	filters   filters.FilterMap
 
 	repoList  list.Model
-	repoModel repos.Model
+	repoModel repo.Model
 
 	width  int
 	height int
@@ -41,7 +41,7 @@ func NewModel(title string, width, height int) *Model {
 		Title:     title,
 		width:     width,
 		height:    height,
-		repoModel: repos.NewModel(width/2, height),
+		repoModel: repo.NewModel(width/2, height),
 		repoList:  list.New([]list.Item{}, shared.SimpleItemDelegate{}, width/2, height),
 		progress:  progress.New(progress.WithoutPercentage()),
 	}
@@ -88,7 +88,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case repoQueryMsg:
-		m.repos = append(m.repos, repos.NewRepoConfig(msg.Repository))
+		m.repos = append(m.repos, repo.NewRepoConfig(msg.Repository))
 
 		if m.repoCount == len(m.repos) {
 			sort.Slice(m.repos, func(i, j int) bool {
@@ -127,7 +127,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "tab", "shift+tab":
 			repoModel, cmd := m.repoModel.Update(msg)
-			m.repoModel = repoModel.(repos.Model)
+			m.repoModel = repoModel.(repo.Model)
 			return m, cmd
 		default:
 			m.repoList, cmd = m.repoList.Update(msg)
@@ -167,7 +167,7 @@ func getRepoDetails(owner string, name string) tea.Cmd {
 		if err != nil {
 			log.Fatal(err)
 		}
-		repoQuery := repos.Query{}
+		repoQuery := repo.Query{}
 
 		variables := map[string]interface{}{
 			"owner": graphql.String(owner),
@@ -190,7 +190,7 @@ func getRepoList(login string) tea.Cmd {
 			return ApiErrorMsg{Err: err}
 		}
 
-		var organizationQuery = OrganizationQuery{}
+		var organizationQuery = Query{}
 
 		variables := map[string]interface{}{
 			"login": graphql.String(login),

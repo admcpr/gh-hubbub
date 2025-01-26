@@ -2,7 +2,7 @@ package filters
 
 import (
 	"fmt"
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 	"gh-reponark/shared"
 )
 
@@ -19,7 +19,7 @@ func (f BoolFilter) GetName() string {
 	return f.Name
 }
 
-func (f BoolFilter) Matches(property repos.RepoProperty) bool {
+func (f BoolFilter) Matches(property repo.RepoProperty) bool {
 	if property.Type != "bool" {
 		return false
 	}

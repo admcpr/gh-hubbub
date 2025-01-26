@@ -2,7 +2,7 @@ package filters
 
 import (
 	"fmt"
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 )
 
 type IntFilter struct {
@@ -19,7 +19,7 @@ func (f IntFilter) GetName() string {
 	return f.Name
 }
 
-func (f IntFilter) Matches(property repos.RepoProperty) bool {
+func (f IntFilter) Matches(property repo.RepoProperty) bool {
 	if property.Type != "int" {
 		return false
 	}

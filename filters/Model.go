@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"gh-reponark/repos"
+	"gh-reponark/repo"
 	"gh-reponark/shared"
 	"sort"
 	"time"
@@ -19,7 +19,7 @@ type FiltersMsg FilterMap
 type Model struct {
 	filterSearch tea.Model
 	filtersList  list.Model
-	repository   repos.Repository
+	repository   repo.Repository
 	help         help.Model
 	keymap       filterKeyMap
 	properties   map[string]Property
@@ -42,7 +42,7 @@ type Property struct {
 func NewModel(width, height int) *Model {
 	fsm := NewFilterSearchModel()
 	list := list.New([]list.Item{}, shared.SimpleItemDelegate{}, width, height-4)
-	repository := repos.Repository{}
+	repository := repo.Repository{}
 
 	help := help.New()
 	keymap := filterKeyMap{}
@@ -112,7 +112,7 @@ func (m Model) View() string {
 	// }
 }
 
-type filtersListMsg repos.RepoConfig
+type filtersListMsg repo.RepoConfig
 
 func NewFiltersList(filters map[string]Filter, width, height int) list.Model {
 	items := make([]list.Item, len(filters))
