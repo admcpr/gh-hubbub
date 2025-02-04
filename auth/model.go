@@ -3,8 +3,7 @@ package auth
 import (
 	"fmt"
 	"gh-reponark/shared"
-	user1 "gh-reponark/user"
-	"os/user"
+	"gh-reponark/user"
 
 	"github.com/charmbracelet/bubbles/v2/spinner"
 	tea "github.com/charmbracelet/bubbletea/v2"
@@ -65,7 +64,7 @@ func getUser() tea.Msg {
 	if err != nil {
 		return AuthenticationErrorMsg{Err: err}
 	}
-	response := user1.User{}
+	response := user.User{}
 
 	err = client.Get("user", &response)
 	if err != nil {
